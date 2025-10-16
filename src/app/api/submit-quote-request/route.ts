@@ -1,5 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Enterprise type definitions
+interface ContactForm {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  company: string
+  canCall: boolean
+  preferredCallTime: string
+}
+
+interface CanSelection {
+  quantity: number
+  totalPrice: number
+}
+
+interface QuoteRequestData {
+  contactForm: ContactForm
+  canSelection: CanSelection | null
+  wantsSample: boolean
+  country: string
+  submittedAt: string
+  ip: string
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Parse request data
@@ -40,8 +65,10 @@ export async function POST(request: NextRequest) {
     // Invio email con Resend
     try {
       await sendNotificationEmail(sanitizedData)
-    } catch (emailError: any) {
-      // Email sending failed silently
+    } catch (emailError: unknown) {
+      // Enterprise error logging
+      const errorMessage = emailError instanceof Error ? emailError.message : 'Unknown email error'
+      console.error('⚠️ Email sending failed:', errorMessage)
     }
 
     // Risposta successo
@@ -51,7 +78,11 @@ export async function POST(request: NextRequest) {
       quoteId: `quote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     })
     
-  } catch (error: any) {
+  } catch (error: unknown) {
+    // Enterprise error logging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('❌ Quote submission error:', errorMessage)
+    
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -60,8 +91,16 @@ export async function POST(request: NextRequest) {
 }
 
 // Funzione email semplificata senza React Email
-async function sendNotificationEmail(data: any) {
+async function sendNotificationEmail(data: QuoteRequestData): Promise<{ success: boolean }> {
   // Simulazione invio email enterprise
+  console.log('📧 Email notification:', {
+    customer: `${data.contactForm.firstName} ${data.contactForm.lastName}`,
+    email: data.contactForm.email,
+    company: data.contactForm.company,
+    quantity: data.canSelection?.quantity,
+    wantsSample: data.wantsSample
+  })
+  
   await new Promise(resolve => setTimeout(resolve, 100))
   
   return { success: true }

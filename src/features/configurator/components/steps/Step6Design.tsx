@@ -97,9 +97,11 @@ export function Step6Design() {
       // Se arriviamo qui, qualcosa è andato storto (dovrebbe aver fatto redirect)
       return false
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsPaymentProcessing(false)
-      setSubmitError(error.message || 'Errore durante l\'elaborazione del pagamento')
+      const errorMessage = error instanceof Error ? error.message : 'Errore durante l\'elaborazione del pagamento'
+      setSubmitError(errorMessage)
+      console.error('💳 Payment error:', error)
       return false
     }
   }
@@ -154,9 +156,11 @@ export function Step6Design() {
       
       return true
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsSubmitting(false)
-      setSubmitError(error.message || 'Errore durante l\'invio della richiesta')
+      const errorMessage = error instanceof Error ? error.message : 'Errore durante l\'invio della richiesta'
+      setSubmitError(errorMessage)
+      console.error('📤 Form submission error:', error)
       return false
     }
   }
@@ -180,7 +184,7 @@ export function Step6Design() {
     // Flow biforcato enterprise
     if (state.wantsSample) {
       // CON campione: Prima pagamento, poi l'utente tornerà su success page
-      const paymentSuccess = await handleStripePayment()
+      await handleStripePayment()
       // Nota: se il pagamento va a buon fine, l'utente viene reindirizzato a Stripe
       // Il form submission avverrà nella success page dopo il pagamento
     } else {

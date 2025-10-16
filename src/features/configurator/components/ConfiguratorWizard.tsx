@@ -85,9 +85,8 @@ export function ConfiguratorWizard() {
     }
   }
 
-  // Progress calculation
+  // Progress calculation enterprise
   const completedSteps = steps.filter(step => step.isCompleted).length
-  const progressPercentage = (completedSteps / steps.length) * 100
 
   const renderProgressBar = () => {
     // Progress basato su step corrente, non su completamento

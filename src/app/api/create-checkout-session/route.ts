@@ -25,8 +25,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Import Stripe dinamicamente
-    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+    // Import Stripe dinamicamente per Next.js enterprise
+    const Stripe = (await import('stripe')).default
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2024-06-20'
+    })
 
     // Crea Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -70,7 +73,11 @@ export async function POST(request: NextRequest) {
       url: session.url
     })
     
-  } catch (error: any) {
+  } catch (error: unknown) {
+    // Enterprise error logging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('❌ Stripe checkout session creation failed:', errorMessage)
+    
     return NextResponse.json(
       { 
         success: false, 

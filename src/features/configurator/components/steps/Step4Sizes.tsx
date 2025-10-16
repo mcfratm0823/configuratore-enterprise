@@ -50,7 +50,7 @@ export function Step4Sizes() {
   return (
     <div className="space-y-6">
       <div className="text-sm text-gray-600 mb-6">
-        Ecco il tuo preventivo per l'ordine White Label
+        Ecco il tuo preventivo per l&apos;ordine White Label
       </div>
 
       {/* Preventivo Summary Enterprise */}

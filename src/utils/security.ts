@@ -169,7 +169,7 @@ export function validateOrderData(orderData: Partial<SecureOrderData>): {
 /**
  * 🛡️ SECURE ERROR HANDLER - Error handling senza info sensibili
  */
-export function handleSecureError(error: any): string {
+export function handleSecureError(error: unknown): string {
   // Non esporre mai dettagli interni al client
   if (typeof error === 'string') {
     return error.substring(0, 100);

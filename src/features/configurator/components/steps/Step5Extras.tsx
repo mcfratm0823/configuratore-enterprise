@@ -32,7 +32,7 @@ export function Step5Extras() {
     return (
       <div className="space-y-6">
         <div className="text-sm text-red-600 mb-6">
-          ⚠️ Devi prima attivare "Vuoi continuare?" nello Step 4
+          ⚠️ Devi prima attivare &quot;Vuoi continuare?&quot; nello Step 4
         </div>
         <div className="border border-red-200 bg-red-50 rounded-lg p-6 text-center">
           <p className="text-red-700">
@@ -74,8 +74,11 @@ export function Step5Extras() {
         actions.setHasDownloadedTemplate(true)
       }, 2000)
       
-    } catch (error) {
+    } catch (error: unknown) {
       setIsDownloading(false)
+      // Enterprise error handling
+      const errorMessage = error instanceof Error ? error.message : 'Download failed'
+      console.error('📥 PDF download error:', errorMessage)
       // TODO: Mostrare error message all'utente
     }
   }
@@ -195,7 +198,7 @@ startxref
           </h3>
           
           <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
-            Scarica il file PDF con le dimensioni esatte dell'etichetta e i testi obbligatori per la tua lattina da 200ml
+            Scarica il file PDF con le dimensioni esatte dell&apos;etichetta e i testi obbligatori per la tua lattina da 200ml
           </p>
 
         </div>

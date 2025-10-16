@@ -3,6 +3,8 @@
 // 🚀 STRIPE SERVICE NEXT.JS ENTERPRISE
 // Simplified payment service for sample orders €50
 
+import type { Stripe } from '@stripe/stripe-js'
+
 export interface OrderData {
   // Customer info
   customerEmail: string
@@ -24,7 +26,7 @@ export interface CheckoutSession {
 
 class StripeService {
   private publishableKey: string
-  private stripe: any = null
+  private stripe: Stripe | null = null
 
   constructor() {
     // Environment variables Next.js
@@ -37,8 +39,9 @@ class StripeService {
       try {
         const { loadStripe } = await import('@stripe/stripe-js')
         this.stripe = await loadStripe(this.publishableKey)
-      } catch (error) {
-        // Stripe initialization failed silently
+      } catch (error: unknown) {
+        // Enterprise error logging
+        console.warn('⚠️ Stripe initialization failed:', error instanceof Error ? error.message : 'Unknown error')
       }
     }
   }
@@ -89,7 +92,9 @@ class StripeService {
         url: data.url
       }
       
-    } catch (error) {
+    } catch (error: unknown) {
+      // Enterprise error logging
+      console.error('💳 Checkout session creation failed:', error instanceof Error ? error.message : 'Unknown error')
       return null
     }
   }
