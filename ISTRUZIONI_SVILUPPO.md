@@ -689,10 +689,59 @@ const privateLabelSteps = [
 
 ---
 
+## 📧 CONFIGURAZIONE EMAIL RESEND
+
+### **Stato Attuale (Testing Mode)**
+- **Destinatario**: `a.guarnieri.portfolio@gmail.com` (email verificata)
+- **Mittente**: `onboarding@resend.dev` (dominio Resend di default)
+- **Limitazione**: Solo email di test al proprietario account Resend
+
+### **Setup Produzione per Cliente Futuro**
+Quando il cliente avrà il suo dominio personalizzato:
+
+1. **Verifica Dominio su Resend**
+   - Vai su https://resend.com/domains
+   - Aggiungi il dominio del cliente (es. `cliente.com`)
+   - Configura record DNS:
+     ```
+     Type: MX | Name: cliente.com | Value: feedback-smtp.eu-west-1.amazonses.com
+     Type: TXT | Name: cliente.com | Value: "v=spf1 include:amazonses.com ~all"
+     Type: CNAME | Name: [codice]._domainkey.cliente.com | Value: [codice].dkim.amazonses.com
+     ```
+
+2. **Aggiorna Codice per Produzione**
+   ```typescript
+   // In src/app/api/submit-quote-request/route.ts
+   from: 'noreply@cliente.com',  // Cambia da onboarding@resend.dev
+   to: 'info@cliente.com',       // Cambia da a.guarnieri.portfolio@gmail.com
+   ```
+
+3. **Deploy Modifiche**
+   ```bash
+   git add . && git commit -m "Update email addresses for client domain" && git push
+   ```
+
+### **Note Tecniche Email**
+- **Resend API Key**: `re_6SoqiqEV_2u8wtWwGjC9W6E5DF7Ghcpzt` (configurata su Vercel)
+- **Modalità Test**: Solo email verificate (a.guarnieri.portfolio@gmail.com)
+- **Produzione**: Richiede dominio verificato per destinatari esterni
+- **Monitoring**: Verificare delivery rate e bounce rate
+- **DNS Records**: SPF/DKIM essenziali per deliverability
+
+### **Template Email Enterprise**
+```html
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h2 style="color: #2d5a3d;">Nuova Richiesta di Preventivo White Label</h2>
+  <!-- Dati cliente, ordine, contatti -->
+</div>
+```
+
+---
+
 ## 🎯 CONCLUSIONI ENTERPRISE
 
 ### **Stato Attuale Next.js**
-Il configuratore è **enterprise-ready con Next.js 15**, architettura moderna, performance ottimali e type safety completa. Ready per production deployment con fix finali.
+Il configuratore è **enterprise-ready con Next.js 15**, architettura moderna, performance ottimali e type safety completa. **EMAIL INTEGRATION ATTIVA** con Resend.
 
 ### **Punti di Forza Architettura**
 - **Modern Stack**: Next.js 15 + React 19 + TypeScript 5
@@ -701,17 +750,18 @@ Il configuratore è **enterprise-ready con Next.js 15**, architettura moderna, p
 - **Security**: Type safety, input validation, secure defaults
 - **Scalability**: Feature-based architecture, modular design
 - **Developer Experience**: Hot reload, TypeScript, ESLint
+- **Email Service**: Resend integration con error handling enterprise
 
 ### **Next Steps Immediati**
-1. **Complete Build Fix**: Stripe API version compatibility
-2. **Deploy Vercel**: Production environment setup
-3. **Email Integration**: Resend production configuration
+1. ✅ **Build Fix Completato**: Stripe API + TypeScript strict
+2. ✅ **Deploy Vercel Attivo**: Production environment configurato
+3. ✅ **Email Integration Funzionante**: Resend API configurato
 4. **Quality Assurance**: End-to-end testing del flusso completo
 
 ---
 
-*Documento aggiornato: 2025-10-16*  
-*Versione: 3.0 - Next.js 15 Enterprise*  
-*Stato: Enterprise Ready - Deploy Pending*  
+*Documento aggiornato: 2025-10-17*  
+*Versione: 3.1 - Next.js 15 Enterprise + Email Service*  
+*Stato: Production Ready - Email Integration Active*  
 *Framework: Next.js 15.5.5 + React 19 + TypeScript 5*  
 *Autore: Enterprise Development Team*
