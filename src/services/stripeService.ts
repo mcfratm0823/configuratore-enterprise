@@ -128,5 +128,4 @@ class StripeService {
 // Singleton instance
 export const stripeService = new StripeService()
 
-// Export types
-export type { OrderData, CheckoutSession }
+// Types exported inline above

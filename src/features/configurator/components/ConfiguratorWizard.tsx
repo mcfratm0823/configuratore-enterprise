@@ -85,8 +85,8 @@ export function ConfiguratorWizard() {
     }
   }
 
-  // Progress calculation enterprise
-  const completedSteps = steps.filter(step => step.isCompleted).length
+  // Progress calculation enterprise  
+  // const completedSteps = steps.filter(step => step.isCompleted).length // Future use
 
   const renderProgressBar = () => {
     // Progress basato su step corrente, non su completamento

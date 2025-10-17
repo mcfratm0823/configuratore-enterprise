@@ -27,9 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Import Stripe dinamicamente per Next.js enterprise
     const Stripe = (await import('stripe')).default
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2024-06-20'
-    })
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
     // Crea Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

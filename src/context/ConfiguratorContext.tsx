@@ -269,7 +269,5 @@ export function useConfigurator() {
 }
 
 // ============================================================================
-// EXPORTS
+// EXPORTS - Types exported inline where needed
 // ============================================================================
-
-export type { ConfiguratorState, CanSelection, PricingData }

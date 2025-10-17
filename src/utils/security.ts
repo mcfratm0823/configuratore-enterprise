@@ -175,7 +175,7 @@ export function handleSecureError(error: unknown): string {
     return error.substring(0, 100);
   }
   
-  if (error?.message) {
+  if (error instanceof Error) {
     return error.message.substring(0, 100);
   }
   
