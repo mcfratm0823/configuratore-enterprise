@@ -291,8 +291,8 @@ async function sendCustomerConfirmation(data: QuoteRequestData): Promise<void> {
     },
     body: JSON.stringify({
       from: 'onboarding@resend.dev',
-      to: data.contactForm.email, // EMAIL DINAMICA DEL RICHIEDENTE
-      subject: emailSubject,
+      to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
+      subject: `${emailSubject} - Per: ${data.contactForm.email}`, // Aggiungiamo email originale nel subject
       html: emailContent
     })
   })
