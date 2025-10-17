@@ -4,6 +4,7 @@
 // State management enterprise per configuratore White Label/Private Label
 
 import React, { createContext, useContext, useReducer, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 
 // ============================================================================
 // TYPES & INTERFACES - ARCHITETTURA PREMIUM
@@ -208,6 +209,11 @@ function configuratorReducer(state: ConfiguratorState, action: ConfiguratorActio
 interface ConfiguratorContextType {
   state: ConfiguratorState
   actions: {
+    // Navigation actions
+    startConfigurator: () => void
+    goToLanding: () => void
+    
+    // State actions
     setCurrentStep: (step: number) => void
     setServiceType: (type: ServiceType) => void
     setServiceSubType: (subType: ServiceSubType) => void
@@ -234,8 +240,19 @@ interface ConfiguratorProviderProps {
 
 export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
   const [state, dispatch] = useReducer(configuratorReducer, initialState)
+  const router = useRouter()
 
   const actions = {
+    // Navigation actions enterprise
+    startConfigurator: () => {
+      dispatch({ type: 'SET_CURRENT_STEP', payload: 1 })
+      router.push('/configurator')
+    },
+    goToLanding: () => {
+      router.push('/')
+    },
+    
+    // State actions
     setCurrentStep: (step: number) => dispatch({ type: 'SET_CURRENT_STEP', payload: step }),
     setServiceType: (type: ServiceType) => dispatch({ type: 'SET_SERVICE_TYPE', payload: type }),
     setServiceSubType: (subType: ServiceSubType) => dispatch({ type: 'SET_SERVICE_SUB_TYPE', payload: subType }),
