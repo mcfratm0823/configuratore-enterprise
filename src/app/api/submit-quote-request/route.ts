@@ -167,7 +167,7 @@ async function sendNotificationEmail(data: QuoteRequestData): Promise<{ success:
       },
       body: JSON.stringify({
         from: 'onboarding@resend.dev',
-        to: 'info@zero823.com',
+        to: 'a.guarnieri.portfolio@gmail.com',
         subject: emailSubject,
         html: emailContent
       })
