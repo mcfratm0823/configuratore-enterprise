@@ -74,14 +74,21 @@ export function Step6Design() {
         throw new Error('Email non valida per il pagamento')
       }
 
-      // Dati ordine semplificati per Stripe
+      // Dati ordine completi per Stripe + Webhook
       const orderData: OrderData = {
         customerEmail: state.contactForm.email.trim(),
         customerName: `${state.contactForm.firstName.trim()} ${state.contactForm.lastName.trim()}`,
         quantity: 1, // Un campione
         totalPrice: 50, // €50 fisso
         sessionId: state.sessionId,
-        createdAt: new Date()
+        createdAt: new Date(),
+        customerData: {
+          contactForm: state.contactForm,
+          canSelection: state.canSelection,
+          country: state.country,
+          sessionId: state.sessionId,
+          ip: 'client-side' // Sarà aggiornato nel webhook
+        }
       }
       
       // Crea checkout session

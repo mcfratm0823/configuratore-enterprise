@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const { customerEmail, customerName, amount, sessionId } = await request.json()
+    const { customerEmail, customerName, amount, sessionId, customerData } = await request.json()
 
     // Validation enterprise
-    if (!customerEmail || !customerName) {
+    if (!customerEmail || !customerName || !customerData) {
       return NextResponse.json(
         { success: false, error: 'Customer data required' },
         { status: 400 }
@@ -54,7 +54,8 @@ export async function POST(request: NextRequest) {
         type: 'sample_request',
         customer_name: customerName,
         session_id: sessionId || 'unknown',
-        amount: '50.00'
+        amount: '50.00',
+        customerData: JSON.stringify(customerData) // Tutti i dati per webhook
       },
       // Enterprise settings
       billing_address_collection: 'auto',

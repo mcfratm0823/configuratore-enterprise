@@ -17,6 +17,9 @@ export interface OrderData {
   // Meta
   sessionId: string
   createdAt: Date
+  
+  // Full customer data for webhook
+  customerData?: any
 }
 
 export interface CheckoutSession {
@@ -72,7 +75,8 @@ class StripeService {
           customerEmail: orderData.customerEmail,
           customerName: orderData.customerName,
           amount: 5000, // €50 in centesimi
-          sessionId: orderData.sessionId
+          sessionId: orderData.sessionId,
+          customerData: orderData.customerData // Dati completi per webhook
         })
       })
 

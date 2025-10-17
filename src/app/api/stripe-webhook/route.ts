@@ -1,0 +1,317 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { headers } from 'next/headers'
+
+// Stripe webhook endpoint per gestire pagamenti completati
+export async function POST(request: NextRequest) {
+  const body = await request.text()
+  const signature = headers().get('stripe-signature')
+
+  if (!signature) {
+    console.error('❌ Missing Stripe signature')
+    return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
+  }
+
+  try {
+    const Stripe = (await import('stripe')).default
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2024-06-20'
+    })
+
+    // Verify webhook signature per security
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+    const event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+
+    console.log('🔔 Stripe webhook received:', event.type)
+
+    // Handle successful payment
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as any
+      
+      console.log('💳 Payment completed for session:', session.id)
+      console.log('📧 Customer email:', session.customer_details?.email)
+      console.log('💰 Amount paid:', session.amount_total / 100, 'EUR')
+
+      // Extract metadata from session (customer data)
+      const metadata = session.metadata || {}
+      
+      if (!metadata.customerData) {
+        console.error('❌ No customer data in session metadata')
+        return NextResponse.json({ error: 'Missing customer data' }, { status: 400 })
+      }
+
+      // Parse customer data
+      const customerData = JSON.parse(metadata.customerData)
+      
+      // Prepare quote data for email
+      const quoteData = {
+        contactForm: customerData.contactForm,
+        canSelection: customerData.canSelection,
+        wantsSample: true, // Always true for paid samples
+        country: customerData.country,
+        paymentCompleted: true,
+        paymentSessionId: session.id,
+        amountPaid: session.amount_total / 100,
+        submittedAt: new Date().toISOString(),
+        ip: customerData.ip || 'webhook'
+      }
+
+      // Send emails after confirmed payment
+      try {
+        await sendNotificationEmailsAfterPayment(quoteData)
+        console.log('✅ Emails sent successfully after payment confirmation')
+      } catch (emailError) {
+        console.error('❌ Failed to send emails after payment:', emailError)
+        // Non fail the webhook - payment is confirmed anyway
+      }
+    }
+
+    return NextResponse.json({ received: true })
+
+  } catch (error: unknown) {
+    console.error('❌ Stripe webhook error:', error instanceof Error ? error.message : 'Unknown error')
+    return NextResponse.json({ error: 'Webhook error' }, { status: 400 })
+  }
+}
+
+// Email function specifically for post-payment
+async function sendNotificationEmailsAfterPayment(data: any): Promise<void> {
+  if (!process.env.RESEND_API_KEY) {
+    console.error('❌ RESEND_API_KEY not found')
+    return
+  }
+
+  try {
+    // Send both admin and customer emails in parallel
+    const [adminResult, customerResult] = await Promise.allSettled([
+      sendAdminNotificationWithPayment(data),
+      sendCustomerConfirmationWithPayment(data)
+    ])
+
+    // Log results
+    if (adminResult.status === 'fulfilled') {
+      console.log('✅ Admin payment notification sent')
+    } else {
+      console.error('❌ Admin payment notification failed:', adminResult.reason)
+    }
+
+    if (customerResult.status === 'fulfilled') {
+      console.log('✅ Customer payment confirmation sent')
+    } else {
+      console.error('❌ Customer payment confirmation failed:', customerResult.reason)
+    }
+
+  } catch (error) {
+    console.error('❌ Error sending payment emails:', error)
+    throw error
+  }
+}
+
+// Admin email with payment confirmation
+async function sendAdminNotificationWithPayment(data: any): Promise<void> {
+  const RESEND_API_KEY = process.env.RESEND_API_KEY!
+  
+  const emailSubject = `✅ PAGAMENTO CONFERMATO - ${data.contactForm.company || data.contactForm.firstName} - €${data.amountPaid}`
+  
+  const emailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h2 style="margin: 0;">💳 PAGAMENTO CONFERMATO</h2>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">€${data.amountPaid} - Campione White Label</p>
+      </div>
+      
+      <div style="padding: 30px; border: 1px solid #ddd; border-top: none;">
+        <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="color: #155724; margin-top: 0;">✅ Dettagli Pagamento:</h3>
+          <ul style="list-style: none; padding: 0; color: #155724;">
+            <li><strong>Importo:</strong> €${data.amountPaid}</li>
+            <li><strong>Session ID:</strong> ${data.paymentSessionId}</li>
+            <li><strong>Data:</strong> ${new Date(data.submittedAt).toLocaleString('it-IT')}</li>
+            <li><strong>Status:</strong> PAYMENT_CONFIRMED</li>
+          </ul>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #333; margin-top: 0;">👤 Dati Cliente:</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><strong>Nome:</strong> ${data.contactForm.firstName} ${data.contactForm.lastName}</li>
+            <li><strong>Email:</strong> ${data.contactForm.email}</li>
+            <li><strong>Telefono:</strong> ${data.contactForm.phone || 'Non fornito'}</li>
+            <li><strong>Azienda:</strong> ${data.contactForm.company || 'Non fornita'}</li>
+            <li><strong>Paese:</strong> ${data.country}</li>
+          </ul>
+        </div>
+
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #333; margin-top: 0;">📦 Dettagli Ordine:</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><strong>Quantità lattine:</strong> ${data.canSelection?.quantity || 'Non specificata'}</li>
+            <li><strong>Prezzo preventivo:</strong> €${data.canSelection?.totalPrice || 'N/A'}</li>
+            <li><strong>Campione richiesto:</strong> ✅ SÌ - PAGATO (€${data.amountPaid})</li>
+          </ul>
+        </div>
+
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #856404; margin-top: 0;">🚀 AZIONI RICHIESTE:</h3>
+          <ul style="color: #856404; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;"><strong>Preparare campione</strong> per spedizione</li>
+            <li style="margin: 8px 0;"><strong>Contattare cliente</strong> entro 24h</li>
+            <li style="margin: 8px 0;"><strong>Inviare tracking</strong> spedizione campione</li>
+            <li style="margin: 8px 0;"><strong>Follow-up</strong> per preventivo completo</li>
+          </ul>
+        </div>
+
+        <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #333; margin-top: 0;">📞 Preferenze Contatto:</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><strong>Consenso chiamata:</strong> ${data.contactForm.canCall ? 'SÌ' : 'NO'}</li>
+            <li><strong>Orario preferito:</strong> ${data.contactForm.preferredCallTime || 'Non specificato'}</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+        <p style="color: #999; font-size: 12px; margin: 0;">
+          Configuratore Enterprise - White Label Packaging<br>
+          Notifica automatica pagamento confermato - Stripe Webhook
+        </p>
+      </div>
+    </div>
+  `
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'onboarding@resend.dev',
+      to: 'a.guarnieri.portfolio@gmail.com',
+      subject: emailSubject,
+      html: emailContent
+    })
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(`Admin payment email failed: ${errorData.message || response.statusText}`)
+  }
+
+  const result = await response.json()
+  console.log('✅ Admin payment notification sent:', result.id)
+}
+
+// Customer email with payment confirmation
+async function sendCustomerConfirmationWithPayment(data: any): Promise<void> {
+  const RESEND_API_KEY = process.env.RESEND_API_KEY!
+  
+  const emailSubject = `✅ Pagamento confermato - Campione in preparazione - Configuratore Enterprise`
+  
+  const emailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+      <div style="background: #28a745; color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">🎉 Pagamento Confermato!</h1>
+        <p style="margin: 15px 0 0 0; font-size: 18px; opacity: 0.9;">Il tuo campione è in preparazione</p>
+      </div>
+      
+      <div style="padding: 30px;">
+        <h2 style="color: #28a745; margin-top: 0;">Ciao ${data.contactForm.firstName}!</h2>
+        
+        <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
+          Fantastico! Il tuo pagamento di <strong>€${data.amountPaid}</strong> è stato confermato con successo. 
+          Il nostro team sta già preparando il tuo campione White Label personalizzato.
+        </p>
+        
+        <div style="background: #d4edda; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #28a745;">
+          <h3 style="color: #155724; margin-top: 0; font-size: 18px;">✅ Stato del tuo ordine:</h3>
+          <ul style="color: #155724; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;"><strong>Pagamento:</strong> Confermato (€${data.amountPaid})</li>
+            <li style="margin: 8px 0;"><strong>Campione:</strong> In preparazione</li>
+            <li style="margin: 8px 0;"><strong>Spedizione:</strong> Entro 2-3 giorni lavorativi</li>
+            <li style="margin: 8px 0;"><strong>Tracking:</strong> Ti invieremo il codice</li>
+          </ul>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Riepilogo della tua richiesta:</h3>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Dati di contatto:</strong><br>
+            <span style="color: #666;">
+              ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
+              ${data.contactForm.email}<br>
+              ${data.contactForm.phone}<br>
+              ${data.contactForm.company}
+            </span>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Dettagli progetto:</strong><br>
+            <span style="color: #666;">
+              Paese: ${data.country}<br>
+              Quantità lattine: ${data.canSelection?.quantity || 'Non specificata'}<br>
+              Prezzo preventivo: €${data.canSelection?.totalPrice || 'N/A'}<br>
+              Campione: ✅ Pagato e confermato
+            </span>
+          </div>
+        </div>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Prossimi passi:</h3>
+          <ul style="color: #333; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;">Il nostro team preparerà il tuo campione personalizzato</li>
+            <li style="margin: 8px 0;">Riceverai il codice tracking entro 2-3 giorni</li>
+            <li style="margin: 8px 0;">Ti contatteremo per discutere il preventivo completo</li>
+            <li style="margin: 8px 0;">Potrai valutare la qualità prima dell'ordine finale</li>
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+            <strong>Hai domande? Scrivici a: info@configuratore-enterprise.com</strong>
+          </div>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <p style="color: #856404; margin: 0; text-align: center;">
+            <strong>📦 Il tuo campione verrà spedito all'indirizzo che ci comunicherai via email</strong>
+          </p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; text-align: center; margin-top: 40px;">
+          <em>Pagamento confermato il: ${new Date(data.submittedAt).toLocaleString('it-IT')}</em><br>
+          <em>ID Transazione: ${data.paymentSessionId}</em>
+        </p>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+        <p style="color: #999; font-size: 12px; margin: 0;">
+          Configuratore Enterprise - White Label Packaging<br>
+          Email di conferma pagamento generata automaticamente
+        </p>
+      </div>
+    </div>
+  `
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'onboarding@resend.dev',
+      to: 'a.guarnieri.portfolio@gmail.com', // Temp: solo email verificata
+      subject: `${emailSubject} - Per: ${data.contactForm.email}`,
+      html: emailContent
+    })
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(`Customer payment email failed: ${errorData.message || response.statusText}`)
+  }
+
+  const result = await response.json()
+  console.log('✅ Customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+}
