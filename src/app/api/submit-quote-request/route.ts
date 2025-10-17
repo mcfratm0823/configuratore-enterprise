@@ -94,12 +94,14 @@ export async function POST(request: NextRequest) {
 async function sendNotificationEmail(data: QuoteRequestData): Promise<{ success: boolean }> {
   // Verifica chiave Resend
   if (!process.env.RESEND_API_KEY) {
-    console.log('📧 Email notification (NO API KEY):', {
+    console.error('❌ RESEND_API_KEY not found in environment variables')
+    console.log('📧 Email notification (NO API KEY - FALLING BACK TO CONSOLE LOG):', {
       customer: `${data.contactForm.firstName} ${data.contactForm.lastName}`,
       email: data.contactForm.email,
       company: data.contactForm.company,
       quantity: data.canSelection?.quantity,
-      wantsSample: data.wantsSample
+      wantsSample: data.wantsSample,
+      timestamp: new Date().toISOString()
     })
     return { success: true }
   }
@@ -107,6 +109,7 @@ async function sendNotificationEmail(data: QuoteRequestData): Promise<{ success:
   try {
     // Chiamata diretta API Resend (senza SDK per evitare dependency issues)
     const RESEND_API_KEY = process.env.RESEND_API_KEY
+    console.log('🔑 RESEND_API_KEY found:', RESEND_API_KEY ? 'YES' : 'NO')
 
     // Contenuto email enterprise
     const emailSubject = `Nuova Richiesta Quote White Label - ${data.contactForm.company || data.contactForm.firstName}`
