@@ -61,10 +61,9 @@ export async function POST(request: NextRequest) {
       ip: request.headers.get('x-forwarded-for') || 'unknown'
     }
 
-
-    // Invio email con Resend
+    // Invio email con Resend (double flow)
     try {
-      await sendNotificationEmail(sanitizedData)
+      await sendNotificationEmails(sanitizedData)
     } catch (emailError: unknown) {
       // Enterprise error logging
       const errorMessage = emailError instanceof Error ? emailError.message : 'Unknown email error'
@@ -90,8 +89,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Funzione email enterprise con Resend
-async function sendNotificationEmail(data: QuoteRequestData): Promise<{ success: boolean }> {
+// Funzione email enterprise con Resend (Double Flow)
+async function sendNotificationEmails(data: QuoteRequestData): Promise<{ success: boolean }> {
   // Verifica chiave Resend
   if (!process.env.RESEND_API_KEY) {
     console.error('❌ RESEND_API_KEY not found in environment variables')
@@ -107,90 +106,202 @@ async function sendNotificationEmail(data: QuoteRequestData): Promise<{ success:
   }
 
   try {
-    // Chiamata diretta API Resend (senza SDK per evitare dependency issues)
-    const RESEND_API_KEY = process.env.RESEND_API_KEY
-    console.log('🔑 RESEND_API_KEY found:', RESEND_API_KEY ? 'YES' : 'NO')
+    // Invio parallelo: Admin + Customer confirmation
+    const [adminResult, customerResult] = await Promise.allSettled([
+      sendAdminNotification(data),
+      sendCustomerConfirmation(data)
+    ])
 
-    // Contenuto email enterprise
-    const emailSubject = `Nuova Richiesta Quote White Label - ${data.contactForm.company || data.contactForm.firstName}`
-    
-    const emailContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2d5a3d;">Nuova Richiesta di Preventivo White Label</h2>
-        
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Dati Cliente:</h3>
-          <ul style="list-style: none; padding: 0;">
-            <li><strong>Nome:</strong> ${data.contactForm.firstName} ${data.contactForm.lastName}</li>
-            <li><strong>Email:</strong> ${data.contactForm.email}</li>
-            <li><strong>Telefono:</strong> ${data.contactForm.phone || 'Non fornito'}</li>
-            <li><strong>Azienda:</strong> ${data.contactForm.company || 'Non fornita'}</li>
-            <li><strong>Paese:</strong> ${data.country}</li>
-          </ul>
-        </div>
-
-        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Dettagli Ordine:</h3>
-          <ul style="list-style: none; padding: 0;">
-            <li><strong>Quantità lattine:</strong> ${data.canSelection?.quantity || 'Non specificata'}</li>
-            <li><strong>Prezzo totale:</strong> €${data.canSelection?.totalPrice || 'N/A'}</li>
-            <li><strong>Richiede campione:</strong> ${data.wantsSample ? 'SÌ (€50)' : 'NO'}</li>
-          </ul>
-        </div>
-
-        <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Preferenze Contatto:</h3>
-          <ul style="list-style: none; padding: 0;">
-            <li><strong>Consenso chiamata:</strong> ${data.contactForm.canCall ? 'SÌ' : 'NO'}</li>
-            <li><strong>Orario preferito:</strong> ${data.contactForm.preferredCallTime || 'Non specificato'}</li>
-          </ul>
-        </div>
-
-        <p style="color: #666; font-size: 14px;">
-          <em>Richiesta inviata il: ${new Date(data.submittedAt).toLocaleString('it-IT')}</em>
-        </p>
-        
-        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-        <p style="color: #999; font-size: 12px; text-align: center;">
-          Configuratore Enterprise - White Label Packaging<br>
-          Generato automaticamente dal sistema
-        </p>
-      </div>
-    `
-
-    // Chiamata diretta API Resend (senza SDK)
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'onboarding@resend.dev',
-        to: 'a.guarnieri.portfolio@gmail.com',
-        subject: emailSubject,
-        html: emailContent
-      })
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(`Resend API error: ${errorData.message || response.statusText}`)
+    // Log risultati
+    if (adminResult.status === 'fulfilled') {
+      console.log('✅ Admin email inviata con successo')
+    } else {
+      console.error('❌ Admin email fallita:', adminResult.reason)
     }
 
-    const result = await response.json()
-
-    console.log('✅ Email inviata con successo:', {
-      id: result.id,
-      customer: `${data.contactForm.firstName} ${data.contactForm.lastName}`,
-      email: data.contactForm.email,
-      company: data.contactForm.company
-    })
+    if (customerResult.status === 'fulfilled') {
+      console.log('✅ Customer confirmation inviata con successo')
+    } else {
+      console.error('❌ Customer confirmation fallita:', customerResult.reason)
+    }
 
     return { success: true }
     
   } catch (error: unknown) {
-    console.error('❌ Errore invio email Resend:', error instanceof Error ? error.message : 'Unknown error')
+    console.error('❌ Errore generale invio email:', error instanceof Error ? error.message : 'Unknown error')
     throw error
   }
+}
+
+// Email Admin (quella esistente)
+async function sendAdminNotification(data: QuoteRequestData): Promise<void> {
+  const RESEND_API_KEY = process.env.RESEND_API_KEY!
+  
+  // Contenuto email admin
+  const emailSubject = `Nuova Richiesta Quote White Label - ${data.contactForm.company || data.contactForm.firstName}`
+  
+  const emailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2d5a3d;">Nuova Richiesta di Preventivo White Label</h2>
+      
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Dati Cliente:</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li><strong>Nome:</strong> ${data.contactForm.firstName} ${data.contactForm.lastName}</li>
+          <li><strong>Email:</strong> ${data.contactForm.email}</li>
+          <li><strong>Telefono:</strong> ${data.contactForm.phone || 'Non fornito'}</li>
+          <li><strong>Azienda:</strong> ${data.contactForm.company || 'Non fornita'}</li>
+          <li><strong>Paese:</strong> ${data.country}</li>
+        </ul>
+      </div>
+
+      <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Dettagli Ordine:</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li><strong>Quantità lattine:</strong> ${data.canSelection?.quantity || 'Non specificata'}</li>
+          <li><strong>Prezzo totale:</strong> €${data.canSelection?.totalPrice || 'N/A'}</li>
+          <li><strong>Richiede campione:</strong> ${data.wantsSample ? 'SÌ (€50)' : 'NO'}</li>
+        </ul>
+      </div>
+
+      <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Preferenze Contatto:</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li><strong>Consenso chiamata:</strong> ${data.contactForm.canCall ? 'SÌ' : 'NO'}</li>
+          <li><strong>Orario preferito:</strong> ${data.contactForm.preferredCallTime || 'Non specificato'}</li>
+        </ul>
+      </div>
+
+      <p style="color: #666; font-size: 14px;">
+        <em>Richiesta inviata il: ${new Date(data.submittedAt).toLocaleString('it-IT')}</em>
+      </p>
+      
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+      <p style="color: #999; font-size: 12px; text-align: center;">
+        Configuratore Enterprise - White Label Packaging<br>
+        Generato automaticamente dal sistema
+      </p>
+    </div>
+  `
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'onboarding@resend.dev',
+      to: 'a.guarnieri.portfolio@gmail.com',
+      subject: emailSubject,
+      html: emailContent
+    })
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(`Admin email failed: ${errorData.message || response.statusText}`)
+  }
+
+  const result = await response.json()
+  console.log('✅ Admin email inviata:', result.id)
+}
+
+// Email Customer Confirmation (NUOVA)
+async function sendCustomerConfirmation(data: QuoteRequestData): Promise<void> {
+  const RESEND_API_KEY = process.env.RESEND_API_KEY!
+  
+  // Contenuto email customer
+  const emailSubject = `Conferma richiesta preventivo - Configuratore Enterprise`
+  
+  const emailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+      <div style="background: #2d5a3d; color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">📦 Configuratore Enterprise</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Conferma richiesta preventivo</p>
+      </div>
+      
+      <div style="padding: 30px;">
+        <h2 style="color: #2d5a3d; margin-top: 0;">Ciao ${data.contactForm.firstName}!</h2>
+        
+        <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
+          Grazie per aver utilizzato il nostro configuratore enterprise. Abbiamo ricevuto la tua richiesta di preventivo 
+          per packaging White Label e ti contatteremo a breve.
+        </p>
+        
+        <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Riepilogo della tua richiesta:</h3>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Dati di contatto:</strong><br>
+            <span style="color: #666;">
+              ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
+              ${data.contactForm.email}<br>
+              ${data.contactForm.phone}<br>
+              ${data.contactForm.company}
+            </span>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Dettagli ordine:</strong><br>
+            <span style="color: #666;">
+              Paese: ${data.country}<br>
+              Quantità lattine: ${data.canSelection?.quantity || 'Non specificata'}<br>
+              Prezzo totale: €${data.canSelection?.totalPrice || 'N/A'}<br>
+              Campione richiesto: ${data.wantsSample ? 'SÌ (€50)' : 'NO'}
+            </span>
+          </div>
+        </div>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Prossimi passi:</h3>
+          <ul style="color: #333; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;">Analizzeremo la tua richiesta entro 24 ore</li>
+            <li style="margin: 8px 0;">Ti invieremo un preventivo dettagliato personalizzato</li>
+            <li style="margin: 8px 0;">Un nostro esperto ti contatterà per finalizzare i dettagli</li>
+            ${data.wantsSample ? '<li style="margin: 8px 0;">Il campione verrà spedito dopo conferma pagamento</li>' : ''}
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+            <strong>Hai domande? Scrivici a: info@configuratore-enterprise.com</strong>
+          </div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; text-align: center; margin-top: 40px;">
+          <em>Richiesta inviata il: ${new Date(data.submittedAt).toLocaleString('it-IT')}</em>
+        </p>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+        <p style="color: #999; font-size: 12px; margin: 0;">
+          Configuratore Enterprise - White Label Packaging<br>
+          Email di conferma generata automaticamente
+        </p>
+      </div>
+    </div>
+  `
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'onboarding@resend.dev',
+      to: data.contactForm.email, // EMAIL DINAMICA DEL RICHIEDENTE
+      subject: emailSubject,
+      html: emailContent
+    })
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(`Customer email failed: ${errorData.message || response.statusText}`)
+  }
+
+  const result = await response.json()
+  console.log('✅ Customer confirmation inviata a:', data.contactForm.email, '- ID:', result.id)
 }
