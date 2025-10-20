@@ -19,7 +19,7 @@ export interface OrderData {
   createdAt: Date
   
   // Full customer data for webhook
-  customerData?: any
+  customerData?: unknown
 }
 
 export interface CheckoutSession {

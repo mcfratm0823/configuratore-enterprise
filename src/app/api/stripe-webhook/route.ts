@@ -25,14 +25,27 @@ export async function POST(request: NextRequest) {
 
     // Handle successful payment
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as any
+      const session = event.data.object as unknown
       
-      console.log('💳 Payment completed for session:', session.id)
-      console.log('📧 Customer email:', session.customer_details?.email)
-      console.log('💰 Amount paid:', session.amount_total / 100, 'EUR')
+      // Type guard for session object
+      if (!session || typeof session !== 'object' || !('id' in session)) {
+        console.error('❌ Invalid session object in webhook')
+        return NextResponse.json({ error: 'Invalid session' }, { status: 400 })
+      }
+
+      const sessionData = session as {
+        id: string
+        customer_details?: { email?: string }
+        amount_total?: number
+        metadata?: Record<string, string>
+      }
+      
+      console.log('💳 Payment completed for session:', sessionData.id)
+      console.log('📧 Customer email:', sessionData.customer_details?.email)
+      console.log('💰 Amount paid:', (sessionData.amount_total || 0) / 100, 'EUR')
 
       // Extract metadata from session (customer data)
-      const metadata = session.metadata || {}
+      const metadata = sessionData.metadata || {}
       
       if (!metadata.customerData) {
         console.error('❌ No customer data in session metadata')
@@ -49,8 +62,8 @@ export async function POST(request: NextRequest) {
         wantsSample: true, // Always true for paid samples
         country: customerData.country,
         paymentCompleted: true,
-        paymentSessionId: session.id,
-        amountPaid: session.amount_total / 100,
+        paymentSessionId: sessionData.id,
+        amountPaid: (sessionData.amount_total || 0) / 100,
         submittedAt: new Date().toISOString(),
         ip: customerData.ip || 'webhook'
       }
@@ -73,8 +86,32 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Type for payment data
+interface PaymentData {
+  contactForm: {
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+    company: string
+    canCall: boolean
+    preferredCallTime: string
+  }
+  canSelection: {
+    quantity: number
+    totalPrice: number
+  } | null
+  wantsSample: boolean
+  country: string
+  paymentCompleted: boolean
+  paymentSessionId: string
+  amountPaid: number
+  submittedAt: string
+  ip: string
+}
+
 // Email function specifically for post-payment
-async function sendNotificationEmailsAfterPayment(data: any): Promise<void> {
+async function sendNotificationEmailsAfterPayment(data: PaymentData): Promise<void> {
   if (!process.env.RESEND_API_KEY) {
     console.error('❌ RESEND_API_KEY not found')
     return
@@ -107,7 +144,7 @@ async function sendNotificationEmailsAfterPayment(data: any): Promise<void> {
 }
 
 // Admin email with payment confirmation
-async function sendAdminNotificationWithPayment(data: any): Promise<void> {
+async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const emailSubject = `✅ PAGAMENTO CONFERMATO - ${data.contactForm.company || data.contactForm.firstName} - €${data.amountPaid}`
@@ -202,7 +239,7 @@ async function sendAdminNotificationWithPayment(data: any): Promise<void> {
 }
 
 // Customer email with payment confirmation
-async function sendCustomerConfirmationWithPayment(data: any): Promise<void> {
+async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const emailSubject = `✅ Pagamento confermato - Campione in preparazione - Configuratore Enterprise`

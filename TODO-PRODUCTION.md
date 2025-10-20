@@ -31,6 +31,61 @@
 
 ---
 
+## 🔄 STRIPE WEBHOOK - MIGRAZIONE DOMINIO CLIENTE
+
+### **Setup Attuale (Vercel Deploy)**
+- ✅ **Webhook URL**: `https://configuratore-enterprise.vercel.app/api/stripe-webhook`
+- ✅ **Eventi**: `checkout.session.completed`
+- ✅ **Webhook Secret**: Configurato su Vercel Environment Variables
+- ✅ **Test Mode**: Stripe Dashboard test environment
+
+### **Migrazione Dominio Cliente (Future)**
+**Quando il cliente avrà dominio personalizzato:**
+
+1. **Stripe Dashboard Update** (2 minuti):
+   ```
+   Old URL: https://configuratore-enterprise.vercel.app/api/stripe-webhook
+   New URL: https://configuratore-cliente.com/api/stripe-webhook
+   ```
+   - Vai su Stripe Dashboard → Webhooks
+   - Clicca sul webhook esistente
+   - Modifica "Endpoint URL"
+   - **Webhook Secret rimane uguale** ✅
+
+2. **Vercel Domain Setup**:
+   ```
+   - Aggiungi custom domain su Vercel project
+   - Configure DNS records del cliente
+   - Environment variables rimangono uguali
+   - Codice rimane identico
+   ```
+
+3. **Produzione Live**:
+   ```
+   - Switch da Test Mode → Live Mode su Stripe
+   - Update Environment Variables con Live Keys:
+     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+     STRIPE_SECRET_KEY=sk_live_...
+     STRIPE_WEBHOOK_SECRET=whsec_live_...
+   ```
+
+### **Vantaggi Setup Modular**
+- 🟢 **No setup da zero**: Solo URL update
+- 🟢 **Webhook secret riutilizzabile**: No need regenerate
+- 🟢 **Environment variables**: Copy/paste ready
+- 🟢 **Codice immutato**: Zero code changes
+- 🟢 **Test → Live**: Seamless transition
+
+### **Checklist Migrazione**
+- [ ] **Domain cliente** acquired e configured
+- [ ] **Vercel custom domain** setup
+- [ ] **Stripe webhook URL** updated
+- [ ] **Test payments** con nuovo dominio
+- [ ] **Live keys** environment variables
+- [ ] **Email deliverability** check
+
+---
+
 ## 🟡 MIGLIORAMENTI FUNZIONALI
 
 ### 🎨 USER EXPERIENCE
