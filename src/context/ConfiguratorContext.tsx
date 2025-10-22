@@ -42,6 +42,19 @@ export interface PricingData {
   vatRate: number
 }
 
+export interface VolumeFormatSelection {
+  volumeLiters: number
+  formatMl: number
+  totalPieces: number
+  cartonsCount: number
+  isCustomVolume: boolean
+}
+
+export interface PackagingSelection {
+  selectedPackaging: string
+  packagingType: 'label' | 'digital'
+}
+
 export interface ConfiguratorState {
   // Navigation
   currentStep: number
@@ -60,6 +73,19 @@ export interface ConfiguratorState {
   
   // White Label PDF Downloaded Flag
   hasDownloadedTemplate: boolean
+  
+  // Private Label Beverage Selection
+  beverageSelection: {
+    selectedBeverage: string
+    customBeverageText: string
+    isCustom: boolean
+  } | null
+  
+  // Private Label Volume and Format Selection
+  volumeFormatSelection: VolumeFormatSelection | null
+  
+  // Private Label Packaging Selection
+  packagingSelection: PackagingSelection | null
   
   // Form Contact Data
   contactForm: {
@@ -95,6 +121,9 @@ type ConfiguratorAction =
   | { type: 'SET_CAN_SELECTION'; payload: CanSelection }
   | { type: 'SET_WANTS_TO_CONTINUE_QUOTE'; payload: boolean }
   | { type: 'SET_HAS_DOWNLOADED_TEMPLATE'; payload: boolean }
+  | { type: 'SET_BEVERAGE_SELECTION'; payload: ConfiguratorState['beverageSelection'] }
+  | { type: 'SET_VOLUME_FORMAT_SELECTION'; payload: VolumeFormatSelection }
+  | { type: 'SET_PACKAGING_SELECTION'; payload: PackagingSelection }
   | { type: 'SET_CONTACT_FORM'; payload: Partial<ConfiguratorState['contactForm']> }
   | { type: 'SET_PAYMENT_COMPLETED'; payload: boolean }
   | { type: 'RESET_STATE' }
@@ -112,6 +141,9 @@ const initialState: ConfiguratorState = {
   canSelection: null,
   wantsToContinueQuote: false,
   hasDownloadedTemplate: false,
+  beverageSelection: null,
+  volumeFormatSelection: null,
+  packagingSelection: null,
   contactForm: {
     firstName: '',
     lastName: '',
@@ -185,6 +217,15 @@ function configuratorReducer(state: ConfiguratorState, action: ConfiguratorActio
     case 'SET_HAS_DOWNLOADED_TEMPLATE':
       return { ...state, hasDownloadedTemplate: action.payload }
       
+    case 'SET_BEVERAGE_SELECTION':
+      return { ...state, beverageSelection: action.payload }
+      
+    case 'SET_VOLUME_FORMAT_SELECTION':
+      return { ...state, volumeFormatSelection: action.payload }
+      
+    case 'SET_PACKAGING_SELECTION':
+      return { ...state, packagingSelection: action.payload }
+      
     case 'SET_CONTACT_FORM':
       return { 
         ...state, 
@@ -222,8 +263,12 @@ interface ConfiguratorContextType {
     setCanSelection: (selection: CanSelection) => void
     setWantsToContinueQuote: (wants: boolean) => void
     setHasDownloadedTemplate: (downloaded: boolean) => void
+    setBeverageSelection: (selection: ConfiguratorState['beverageSelection']) => void
+    setVolumeFormatSelection: (selection: VolumeFormatSelection) => void
+    setPackagingSelection: (selection: PackagingSelection) => void
     setContactForm: (formData: Partial<ConfiguratorState['contactForm']>) => void
     setPaymentCompleted: (completed: boolean) => void
+    nextStep: () => void
     resetState: () => void
   }
 }
@@ -261,8 +306,12 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
     setCanSelection: (selection: CanSelection) => dispatch({ type: 'SET_CAN_SELECTION', payload: selection }),
     setWantsToContinueQuote: (wants: boolean) => dispatch({ type: 'SET_WANTS_TO_CONTINUE_QUOTE', payload: wants }),
     setHasDownloadedTemplate: (downloaded: boolean) => dispatch({ type: 'SET_HAS_DOWNLOADED_TEMPLATE', payload: downloaded }),
+    setBeverageSelection: (selection: ConfiguratorState['beverageSelection']) => dispatch({ type: 'SET_BEVERAGE_SELECTION', payload: selection }),
+    setVolumeFormatSelection: (selection: VolumeFormatSelection) => dispatch({ type: 'SET_VOLUME_FORMAT_SELECTION', payload: selection }),
+    setPackagingSelection: (selection: PackagingSelection) => dispatch({ type: 'SET_PACKAGING_SELECTION', payload: selection }),
     setContactForm: (formData: Partial<ConfiguratorState['contactForm']>) => dispatch({ type: 'SET_CONTACT_FORM', payload: formData }),
     setPaymentCompleted: (completed: boolean) => dispatch({ type: 'SET_PAYMENT_COMPLETED', payload: completed }),
+    nextStep: () => dispatch({ type: 'SET_CURRENT_STEP', payload: state.currentStep + 1 }),
     resetState: () => dispatch({ type: 'RESET_STATE' })
   }
 

@@ -64,19 +64,15 @@ export function Step3Materials() {
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 mb-6">
-        Scegli la quantità di lattine da 200ml per il tuo ordine White Label
-      </div>
-
       {/* Grid 2x2 Enterprise Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {canOptions.map((option) => (
           <div
             key={option.quantity}
             onClick={() => handleCanSelection(option.quantity, option.cartonsCount, option.pricePerCan)}
-            className={`rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 hover:scale-105 ${
+            className={`rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
               state.canSelection?.quantity === option.quantity
-                ? 'border-2 border-[#2d5a3d] bg-green-50 scale-105' 
+                ? 'border-2 border-[#2d5a3d] bg-green-50' 
                 : 'border border-gray-200 bg-white'
             }`}
           >
@@ -108,18 +104,15 @@ export function Step3Materials() {
         ))}
       </div>
 
-      {/* Selected Can Info */}
+      {/* Selected Can Info - Integrated */}
       {state.canSelection && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <h4 className="font-medium text-green-900 mb-2">
-            Selezione Attuale
-          </h4>
-          <div className="text-sm text-green-700">
-            <div className="flex justify-between">
+        <div className="pt-2 border-t border-gray-200">
+          <div className="text-sm text-gray-700 space-y-1">
+            <div className="flex justify-between items-center">
               <span>{state.canSelection.quantity.toLocaleString()} lattine × €{(state.canSelection.totalPrice / state.canSelection.quantity).toFixed(2)}</span>
               <span className="font-medium">€{state.canSelection.totalPrice.toFixed(2)}</span>
             </div>
-            <div className="text-xs text-green-600 mt-1">
+            <div className="text-xs text-gray-500">
               {state.canSelection.cartonsCount} cartoni da 24 lattine ciascuno
             </div>
           </div>

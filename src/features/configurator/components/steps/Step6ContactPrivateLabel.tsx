@@ -4,25 +4,22 @@ import { useConfigurator, ServiceSubType } from '@/context'
 import { useState } from 'react'
 import { stripeService, type OrderData } from '@/services/stripeService'
 
-export function Step6Design() {
+export function Step6ContactPrivateLabel() {
   const { state, actions } = useConfigurator()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false)
   const [submitError, setSubmitError] = useState('')
   
-  // Se non è White Label, mostra placeholder per Private Label
-  if (state.serviceSubType !== ServiceSubType.WHITELABEL) {
+  // Solo per Private Label
+  if (state.serviceSubType !== ServiceSubType.PRIVATELABEL) {
     return (
       <div className="space-y-6">
         <div className="text-sm text-gray-600 mb-6">
-          Design brief per il tuo progetto Private Label
+          Form contatto disponibile solo per Private Label
         </div>
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
           <p className="text-gray-500">
-            Configurazione Private Label in arrivo...
-          </p>
-          <p className="text-xs text-gray-400 mt-2">
-            Sistema enterprise in sviluppo
+            Step non applicabile per White Label
           </p>
         </div>
       </div>
@@ -30,15 +27,15 @@ export function Step6Design() {
   }
 
   // Prerequisite validation enterprise critica
-  if (!state.hasDownloadedTemplate) {
+  if (!state.packagingSelection) {
     return (
       <div className="space-y-6">
         <div className="text-sm text-red-600 mb-6">
-          ⚠️ Devi prima scaricare il template nello Step 5
+          ⚠️ Devi prima completare la selezione packaging nello Step 5
         </div>
         <div className="border border-red-200 bg-red-50 rounded-lg p-6 text-center">
           <p className="text-red-700">
-            Completa il download del template per procedere con la richiesta
+            Completa la scelta del packaging per procedere con la richiesta
           </p>
         </div>
       </div>
@@ -63,72 +60,23 @@ export function Step6Design() {
     return emailRegex.test(email.trim())
   }
 
-  // Pagamento Stripe enterprise
-  const handleStripePayment = async (): Promise<boolean> => {
-    setIsPaymentProcessing(true)
-    setSubmitError('')
-    
-    try {
-      // Validation specifica per Stripe
-      if (!isEmailValid(state.contactForm.email)) {
-        throw new Error('Email non valida per il pagamento')
-      }
-
-      // Dati ordine completi per Stripe + Webhook
-      const orderData: OrderData = {
-        customerEmail: state.contactForm.email.trim(),
-        customerName: `${state.contactForm.firstName.trim()} ${state.contactForm.lastName.trim()}`,
-        quantity: 1, // Un campione
-        totalPrice: 50, // €50 fisso
-        sessionId: state.sessionId,
-        createdAt: new Date(),
-        customerData: {
-          contactForm: state.contactForm,
-          canSelection: state.canSelection,
-          country: state.country,
-          sessionId: state.sessionId,
-          ip: 'client-side' // Sarà aggiornato nel webhook
-        }
-      }
-      
-      // Crea checkout session
-      const checkoutSession = await stripeService.createCheckoutSession(orderData)
-      
-      if (!checkoutSession) {
-        throw new Error('Impossibile creare la sessione di pagamento Stripe')
-      }
-      
-      // Redirect a Stripe Checkout
-      await stripeService.redirectToCheckout(checkoutSession.id, checkoutSession.url)
-      
-      // Se arriviamo qui, qualcosa è andato storto (dovrebbe aver fatto redirect)
-      return false
-      
-    } catch (error: unknown) {
-      setIsPaymentProcessing(false)
-      const errorMessage = error instanceof Error ? error.message : 'Errore durante l\'elaborazione del pagamento'
-      setSubmitError(errorMessage)
-      console.error('💳 Payment error:', error)
-      return false
-    }
-  }
-
-  // Invio form enterprise
+  // Invio form enterprise Private Label
   const handleFormSubmission = async (): Promise<boolean> => {
     setIsSubmitting(true)
     setSubmitError('')
     
     try {
-      // Prepara dati completi per l'API
+      // Prepara dati completi per l'API Private Label
       const formData = {
         // Dati contatto
         contactForm: state.contactForm,
         
-        // Dati configurazione
+        // Dati configurazione Private Label
         country: state.country,
-        canSelection: state.canSelection,
+        beverageSelection: state.beverageSelection,
+        volumeFormatSelection: state.volumeFormatSelection,
+        packagingSelection: state.packagingSelection,
         wantsSample: state.wantsSample,
-        hasDownloadedTemplate: state.hasDownloadedTemplate,
         
         // Stato pagamento
         paymentCompleted: state.paymentCompleted,
@@ -136,7 +84,7 @@ export function Step6Design() {
         // Meta
         sessionId: state.sessionId,
         submittedAt: new Date().toISOString(),
-        requestType: 'white-label-quote'
+        requestType: 'private-label-quote'
       }
       
       // Chiamata API
@@ -167,7 +115,75 @@ export function Step6Design() {
       setIsSubmitting(false)
       const errorMessage = error instanceof Error ? error.message : 'Errore durante l\'invio della richiesta'
       setSubmitError(errorMessage)
-      console.error('📤 Form submission error:', error)
+      console.error('📤 Private Label form submission error:', error)
+      return false
+    }
+  }
+
+  // Pagamento Stripe per campioni Private Label (stesso del White Label)
+  const handleStripePayment = async (): Promise<boolean> => {
+    setIsPaymentProcessing(true)
+    setSubmitError('')
+    
+    try {
+      // Validation specifica per Stripe
+      if (!isEmailValid(state.contactForm.email)) {
+        throw new Error('Email non valida per il pagamento')
+      }
+
+      // Debug Private Label data
+      console.log('🔧 Private Label Debug:', {
+        beverageSelection: state.beverageSelection,
+        volumeFormatSelection: state.volumeFormatSelection,
+        packagingSelection: state.packagingSelection,
+        country: state.country,
+        contactForm: state.contactForm
+      })
+
+      // Dati ordine completi per Stripe + Webhook (Private Label)
+      const orderData: OrderData = {
+        customerEmail: state.contactForm.email.trim(),
+        customerName: `${state.contactForm.firstName.trim()} ${state.contactForm.lastName.trim()}`,
+        quantity: 1, // Un campione
+        totalPrice: 50, // €50 fisso
+        sessionId: state.sessionId,
+        createdAt: new Date(),
+        customerData: {
+          contactForm: state.contactForm,
+          
+          // Dati specifici Private Label - SAFE
+          country: state.country || 'italia',
+          beverageSelection: state.beverageSelection || null,
+          volumeFormatSelection: state.volumeFormatSelection || null,
+          packagingSelection: state.packagingSelection || null,
+          wantsSample: true,
+          serviceType: 'private-label',
+          
+          sessionId: state.sessionId,
+          ip: 'client-side' // Sarà aggiornato nel webhook
+        }
+      }
+      
+      console.log('🔧 Final orderData:', JSON.stringify(orderData, null, 2))
+      
+      // Crea checkout session
+      const checkoutSession = await stripeService.createCheckoutSession(orderData)
+      
+      if (!checkoutSession) {
+        throw new Error('Impossibile creare la sessione di pagamento Stripe')
+      }
+      
+      // Redirect a Stripe Checkout
+      await stripeService.redirectToCheckout(checkoutSession.id, checkoutSession.url)
+      
+      // Se arriviamo qui, qualcosa è andato storto (dovrebbe aver fatto redirect)
+      return false
+      
+    } catch (error: unknown) {
+      setIsPaymentProcessing(false)
+      const errorMessage = error instanceof Error ? error.message : 'Errore durante l\'elaborazione del pagamento'
+      setSubmitError(errorMessage)
+      console.error('💳 Private Label payment error:', error)
       return false
     }
   }
@@ -188,18 +204,16 @@ export function Step6Design() {
       return
     }
     
-    // Flow biforcato enterprise
+    // Private Label: gestione campioni come White Label
     if (state.wantsSample) {
-      // CON campione: Prima pagamento, poi l'utente tornerà su success page
+      // CON campione: Prima pagamento Stripe
       await handleStripePayment()
-      // Nota: se il pagamento va a buon fine, l'utente viene reindirizzato a Stripe
-      // Il form submission avverrà nella success page dopo il pagamento
     } else {
       // SENZA campione: Invio diretto del form
       const submissionSuccess = await handleFormSubmission()
       if (submissionSuccess) {
-        // Redirect a pagina di ringraziamento
-        window.location.href = '/thank-you?type=white-label'
+        // Redirect a pagina di ringraziamento Private Label
+        window.location.href = '/thank-you?type=private-label'
       }
     }
   }
@@ -347,31 +361,28 @@ export function Step6Design() {
           </div>
         </div>
 
-        {/* Sample Request Info Enterprise */}
-        {state.wantsSample && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium text-gray-900">Campione Richiesto</h4>
-                <p className="text-sm text-gray-600 mt-1">
-                  Pagamento €50 richiesto tramite Stripe
-                </p>
+        {/* Private Label Project Summary - Minimal */}
+        <div className="pt-2 border-t border-gray-200">
+          <div className="text-sm text-gray-700 space-y-1">
+            {state.beverageSelection && (
+              <div className="flex justify-between items-center">
+                <span>Bevanda: {state.beverageSelection.selectedBeverage === 'rd-custom' ? 
+                  `R&D - ${state.beverageSelection.customBeverageText}` : 
+                  state.beverageSelection.selectedBeverage}</span>
               </div>
-              <div className="text-xl font-bold text-[#2d5a3d]">
-                €50,00
+            )}
+            {state.volumeFormatSelection && (
+              <div className="flex justify-between items-center">
+                <span>Produzione: {state.volumeFormatSelection.volumeLiters.toLocaleString()} litri × {state.volumeFormatSelection.formatMl}ml = {state.volumeFormatSelection.totalPieces.toLocaleString()} pezzi</span>
               </div>
-            </div>
-            
-            {state.paymentCompleted && (
-              <div className="flex items-center text-green-700 mt-4 p-3 bg-green-50 rounded-lg">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span className="font-medium">Pagamento completato con successo</span>
+            )}
+            {state.packagingSelection && (
+              <div className="flex justify-between items-center">
+                <span>Packaging: {state.packagingSelection.packagingType === 'label' ? 'Etichetta Antiumidità' : 'Stampa Digitale'}</span>
               </div>
             )}
           </div>
-        )}
+        </div>
 
         {/* Submit Button Enterprise */}
         <div className="flex justify-center pt-4">
@@ -388,9 +399,9 @@ export function Step6Design() {
               <>
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Elaborazione pagamento...
+                Reindirizzamento a pagamento...
               </>
             ) : isSubmitting ? (
               <>
@@ -400,19 +411,19 @@ export function Step6Design() {
                 </svg>
                 Invio in corso...
               </>
-            ) : state.wantsSample && !state.paymentCompleted ? (
+            ) : state.wantsSample ? (
               <>
                 <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                Paga €50 e Invia Richiesta
+                Procedi al pagamento campione (€50)
               </>
             ) : (
               <>
                 <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
-                Invia Richiesta
+                Invia Richiesta Private Label
               </>
             )}
           </button>

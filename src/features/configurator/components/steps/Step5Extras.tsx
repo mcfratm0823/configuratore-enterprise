@@ -172,9 +172,6 @@ startxref
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 mb-6">
-        Scarica il template per creare la tua etichetta personalizzata
-      </div>
 
       {/* Template Download Card Enterprise */}
       <div className="bg-white border border-gray-200 rounded-lg p-8 text-center shadow-sm">

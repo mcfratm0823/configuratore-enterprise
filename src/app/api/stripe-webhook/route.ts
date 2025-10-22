@@ -46,20 +46,45 @@ export async function POST(request: NextRequest) {
       // Extract metadata from session (customer data)
       const metadata = sessionData.metadata || {}
       
-      if (!metadata.customerData) {
+      if (!metadata.contact_data || !metadata.config_data) {
         console.error('❌ No customer data in session metadata')
         return NextResponse.json({ error: 'Missing customer data' }, { status: 400 })
       }
 
-      // Parse customer data
-      const customerData = JSON.parse(metadata.customerData)
+      // Parse customer data from separated fields
+      const contactForm = JSON.parse(metadata.contact_data)
+      const configData = JSON.parse(metadata.config_data)
       
-      // Prepare quote data for email
+      // Reconstruct customerData object
+      const customerData = {
+        contactForm,
+        ...configData,
+        serviceType: metadata.service_type || 'white-label',
+        sessionId: metadata.session_id,
+        ip: 'webhook'
+      }
+      
+      // Restore full beverage text for emails if available
+      if (metadata.full_beverage_text && customerData.beverageSelection) {
+        customerData.beverageSelection.customBeverageText = metadata.full_beverage_text
+      }
+      
+      // Prepare quote data for email (supports both White Label and Private Label)
       const quoteData = {
         contactForm: customerData.contactForm,
-        canSelection: customerData.canSelection,
+        
+        // White Label data
+        canSelection: customerData.canSelection || null,
+        
+        // Private Label data
+        beverageSelection: customerData.beverageSelection || null,
+        volumeFormatSelection: customerData.volumeFormatSelection || null,
+        packagingSelection: customerData.packagingSelection || null,
+        
+        // Common data
         wantsSample: true, // Always true for paid samples
         country: customerData.country,
+        serviceType: customerData.serviceType || 'white-label',
         paymentCompleted: true,
         paymentSessionId: sessionData.id,
         amountPaid: (sessionData.amount_total || 0) / 100,
@@ -85,7 +110,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Type for payment data
+// Type for payment data (unified for White Label and Private Label)
 interface PaymentData {
   contactForm: {
     firstName: string
@@ -96,12 +121,35 @@ interface PaymentData {
     canCall: boolean
     preferredCallTime: string
   }
+  
+  // White Label data
   canSelection: {
     quantity: number
     totalPrice: number
   } | null
+  
+  // Private Label data
+  beverageSelection: {
+    selectedBeverage: string
+    customBeverageText: string
+    isCustom: boolean
+  } | null
+  volumeFormatSelection: {
+    volumeLiters: number
+    formatMl: number
+    totalPieces: number
+    cartonsCount: number
+    isCustomVolume: boolean
+  } | null
+  packagingSelection: {
+    selectedPackaging: string
+    packagingType: 'label' | 'digital'
+  } | null
+  
+  // Common data
   wantsSample: boolean
   country: string
+  serviceType: string
   paymentCompleted: boolean
   paymentSessionId: string
   amountPaid: number
@@ -146,13 +194,14 @@ async function sendNotificationEmailsAfterPayment(data: PaymentData): Promise<vo
 async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
-  const emailSubject = `✅ PAGAMENTO CONFERMATO - ${data.contactForm.company || data.contactForm.firstName} - €${data.amountPaid}`
+  const isPrivateLabel = data.serviceType === 'private-label'
+  const emailSubject = `✅ PAGAMENTO CONFERMATO - ${isPrivateLabel ? 'PRIVATE LABEL' : 'WHITE LABEL'} - ${data.contactForm.company || data.contactForm.firstName} - €${data.amountPaid}`
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
         <h2 style="margin: 0;">💳 PAGAMENTO CONFERMATO</h2>
-        <p style="margin: 10px 0 0 0; font-size: 18px;">€${data.amountPaid} - Campione White Label</p>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">€${data.amountPaid} - Campione ${isPrivateLabel ? 'Private Label' : 'White Label'}</p>
       </div>
       
       <div style="padding: 30px; border: 1px solid #ddd; border-top: none;">
@@ -178,10 +227,19 @@ async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void
         </div>
 
         <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">📦 Dettagli Ordine:</h3>
+          <h3 style="color: #333; margin-top: 0;">📦 Dettagli Progetto:</h3>
           <ul style="list-style: none; padding: 0;">
-            <li><strong>Quantità lattine:</strong> ${data.canSelection?.quantity || 'Non specificata'}</li>
-            <li><strong>Prezzo preventivo:</strong> €${data.canSelection?.totalPrice || 'N/A'}</li>
+            ${data.canSelection ? `
+              <li><strong>Tipo:</strong> White Label</li>
+              <li><strong>Quantità lattine:</strong> ${data.canSelection.quantity}</li>
+              <li><strong>Prezzo preventivo:</strong> €${data.canSelection.totalPrice}</li>
+            ` : ''}
+            ${data.beverageSelection ? `
+              <li><strong>Tipo:</strong> Private Label</li>
+              <li><strong>Bevanda:</strong> ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}</li>
+              ${data.volumeFormatSelection ? `<li><strong>Produzione:</strong> ${data.volumeFormatSelection.volumeLiters.toLocaleString()} litri × ${data.volumeFormatSelection.formatMl}ml = ${data.volumeFormatSelection.totalPieces.toLocaleString()} pezzi</li>` : ''}
+              ${data.packagingSelection ? `<li><strong>Packaging:</strong> ${data.packagingSelection.packagingType === 'label' ? 'Etichetta Antiumidità' : 'Stampa Digitale'}</li>` : ''}
+            ` : ''}
             <li><strong>Campione richiesto:</strong> ✅ SÌ - PAGATO (€${data.amountPaid})</li>
           </ul>
         </div>
@@ -207,7 +265,7 @@ async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void
       
       <div style="background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
         <p style="color: #999; font-size: 12px; margin: 0;">
-          Configuratore Enterprise - White Label Packaging<br>
+          Configuratore Enterprise - ${isPrivateLabel ? 'Private Label' : 'White Label'} Packaging<br>
           Notifica automatica pagamento confermato - Stripe Webhook
         </p>
       </div>
@@ -241,7 +299,8 @@ async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void
 async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
-  const emailSubject = `✅ Pagamento confermato - Campione in preparazione - Configuratore Enterprise`
+  const isPrivateLabel = data.serviceType === 'private-label'
+  const emailSubject = `✅ Pagamento confermato - Campione ${isPrivateLabel ? 'Private Label' : 'White Label'} in preparazione`
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
@@ -255,7 +314,7 @@ async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<v
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Fantastico! Il tuo pagamento di <strong>€${data.amountPaid}</strong> è stato confermato con successo. 
-          Il nostro team sta già preparando il tuo campione White Label personalizzato.
+          Il nostro team sta già preparando il tuo campione ${isPrivateLabel ? 'Private Label' : 'White Label'} personalizzato.
         </p>
         
         <div style="background: #d4edda; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #28a745;">
@@ -285,8 +344,17 @@ async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<v
             <strong style="color: #2d5a3d;">Dettagli progetto:</strong><br>
             <span style="color: #666;">
               Paese: ${data.country}<br>
-              Quantità lattine: ${data.canSelection?.quantity || 'Non specificata'}<br>
-              Prezzo preventivo: €${data.canSelection?.totalPrice || 'N/A'}<br>
+              ${data.canSelection ? `
+                Tipo: White Label<br>
+                Quantità lattine: ${data.canSelection.quantity}<br>
+                Prezzo preventivo: €${data.canSelection.totalPrice}<br>
+              ` : ''}
+              ${data.beverageSelection ? `
+                Tipo: Private Label<br>
+                Bevanda: ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}<br>
+                ${data.volumeFormatSelection ? `Produzione: ${data.volumeFormatSelection.volumeLiters.toLocaleString()} litri × ${data.volumeFormatSelection.formatMl}ml<br>` : ''}
+                ${data.packagingSelection ? `Packaging: ${data.packagingSelection.packagingType === 'label' ? 'Etichetta Antiumidità' : 'Stampa Digitale'}<br>` : ''}
+              ` : ''}
               Campione: ✅ Pagato e confermato
             </span>
           </div>
@@ -322,7 +390,7 @@ async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<v
       
       <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
         <p style="color: #999; font-size: 12px; margin: 0;">
-          Configuratore Enterprise - White Label Packaging<br>
+          Configuratore Enterprise - ${isPrivateLabel ? 'Private Label' : 'White Label'} Packaging<br>
           Email di conferma pagamento generata automaticamente
         </p>
       </div>

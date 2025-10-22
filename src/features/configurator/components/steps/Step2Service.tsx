@@ -30,10 +30,6 @@ export function Step2Service() {
 
   return (
     <div className="space-y-6">
-        <div className="text-sm text-gray-600 mb-6">
-          Scegli il tipo di servizio che meglio si adatta alle tue esigenze
-        </div>
-
         <div className="grid gap-4">
           {serviceSubTypes.map((service) => (
             <div

@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
+  console.log('🔧 DEBUG: Starting checkout session creation')
+  console.log('🔧 DEBUG: STRIPE_SECRET_KEY exists?', !!process.env.STRIPE_SECRET_KEY)
+  
   try {
     // Verifica chiave Stripe
     if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('❌ STRIPE_SECRET_KEY not configured')
       throw new Error('Stripe secret key not configured')
     }
 
     // Parse request body
     const { customerEmail, customerName, amount, sessionId, customerData } = await request.json()
+    
+    console.log('🔧 DEBUG: Request data:', { customerEmail, customerName, amount, sessionId })
 
     // Validation enterprise
     if (!customerEmail || !customerName || !customerData) {
+      console.error('❌ Missing customer data:', { customerEmail: !!customerEmail, customerName: !!customerName, customerData: !!customerData })
       return NextResponse.json(
         { success: false, error: 'Customer data required' },
         { status: 400 }
@@ -19,6 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (amount !== 5000) { // €50 in centesimi
+      console.error('❌ Invalid amount:', amount, 'expected: 5000')
       return NextResponse.json(
         { success: false, error: 'Invalid amount for sample order' },
         { status: 400 }
@@ -55,7 +63,23 @@ export async function POST(request: NextRequest) {
         customer_name: customerName,
         session_id: sessionId || 'unknown',
         amount: '50.00',
-        customerData: JSON.stringify(customerData) // Tutti i dati per webhook
+        service_type: customerData.serviceType || 'white-label',
+        // Dividiamo i dati in più campi per rispettare il limite 500 char
+        contact_data: JSON.stringify(customerData.contactForm || {}),
+        config_data: JSON.stringify({
+          country: customerData.country,
+          canSelection: customerData.canSelection,
+          beverageSelection: customerData.beverageSelection ? {
+            ...customerData.beverageSelection,
+            // Tronca il testo custom per metadata (max 100 char)
+            customBeverageText: customerData.beverageSelection.customBeverageText?.substring(0, 100) || ''
+          } : null,
+          volumeFormatSelection: customerData.volumeFormatSelection,
+          packagingSelection: customerData.packagingSelection,
+          wantsSample: customerData.wantsSample
+        }),
+        // Salviamo il testo completo in un campo separato (per le email)
+        full_beverage_text: customerData.beverageSelection?.customBeverageText?.substring(0, 450) || ''
       },
       // Enterprise settings
       billing_address_collection: 'auto',
@@ -76,11 +100,12 @@ export async function POST(request: NextRequest) {
     // Enterprise error logging
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error('❌ Stripe checkout session creation failed:', errorMessage)
+    console.error('❌ Full error:', error)
     
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Payment session creation failed' 
+        error: `Payment session creation failed: ${errorMessage}` 
       },
       { status: 500 }
     )

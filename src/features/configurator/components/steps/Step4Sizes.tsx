@@ -49,10 +49,6 @@ export function Step4Sizes() {
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 mb-6">
-        Ecco il tuo preventivo per l&apos;ordine White Label
-      </div>
-
       {/* Preventivo Summary Enterprise */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
@@ -109,40 +105,39 @@ export function Step4Sizes() {
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Continue Toggle Enterprise */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <h4 className="font-medium text-gray-900 mb-1">
-              Vuoi continuare?
-            </h4>
-            <p className="text-sm text-gray-600">
-              Procedi per scaricare il template e richiedere un preventivo personalizzato
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <span className={`text-sm font-medium ${state.wantsToContinueQuote ? 'text-[#2d5a3d]' : 'text-gray-500'}`}>
-              {state.wantsToContinueQuote ? 'Sì' : 'No'}
-            </span>
-            <button
-              onClick={handleContinueToggle}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#2d5a3d] focus:ring-offset-2 ${
-                state.wantsToContinueQuote ? 'bg-[#2d5a3d]' : 'bg-gray-300'
-              }`}
-              aria-label={state.wantsToContinueQuote ? 'Disabilita continuazione' : 'Abilita continuazione'}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  state.wantsToContinueQuote ? 'translate-x-6' : 'translate-x-1'
+        
+        {/* Continue Toggle Enterprise - Integrated */}
+        <div className="pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-900 mb-1">
+                Vuoi continuare?
+              </h4>
+              <p className="text-sm text-gray-600">
+                Procedi per scaricare il template e richiedere un preventivo personalizzato
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <span className={`text-sm font-medium ${state.wantsToContinueQuote ? 'text-[#2d5a3d]' : 'text-gray-500'}`}>
+                {state.wantsToContinueQuote ? 'Sì' : 'No'}
+              </span>
+              <button
+                onClick={handleContinueToggle}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#2d5a3d] focus:ring-offset-2 ${
+                  state.wantsToContinueQuote ? 'bg-[#2d5a3d]' : 'bg-gray-300'
                 }`}
-              />
-            </button>
+                aria-label={state.wantsToContinueQuote ? 'Disabilita continuazione' : 'Abilita continuazione'}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    state.wantsToContinueQuote ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   )
