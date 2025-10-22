@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   console.log('🔧 DEBUG: Starting checkout session creation')
   console.log('🔧 DEBUG: STRIPE_SECRET_KEY exists?', !!process.env.STRIPE_SECRET_KEY)
+  console.log('🔧 DEBUG: request.nextUrl.origin:', request.nextUrl.origin)
   
   try {
     // Verifica chiave Stripe
@@ -56,8 +57,8 @@ export async function POST(request: NextRequest) {
       ],
       mode: 'payment',
       customer_email: customerEmail,
-      success_url: `${request.nextUrl.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.nextUrl.origin}/cancel`,
+      success_url: `https://configuratore-enterprise.vercel.app/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://configuratore-enterprise.vercel.app/cancel`,
       metadata: {
         type: 'sample_request',
         customer_name: customerName,
