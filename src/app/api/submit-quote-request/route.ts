@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { UnifiedQuoteData, isWhiteLabel, isPrivateLabel } from '@/types/api-interfaces'
+import { getBeverageDisplayName, getBeverageDisplayNameEnglish } from '@/utils/beverage-mapping'
 
 export async function POST(request: NextRequest) {
   try {
@@ -211,7 +212,7 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
           ` : ''}
           ${data.beverageSelection ? `
             <li><strong>Tipo:</strong> Private Label</li>
-            <li><strong>Bevanda:</strong> ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}</li>
+            <li><strong>Bevanda:</strong> ${getBeverageDisplayName(data.beverageSelection.selectedBeverage, data.beverageSelection.customBeverageText)}</li>
             ${data.volumeFormatSelection ? `<li><strong>Produzione:</strong> ${data.volumeFormatSelection.volumeLiters.toLocaleString()} litri × ${data.volumeFormatSelection.formatMl}ml = ${data.volumeFormatSelection.totalPieces.toLocaleString()} pezzi</li>` : ''}
             ${data.packagingSelection ? `<li><strong>Packaging:</strong> ${data.packagingSelection.packagingType === 'label' ? 'Etichetta Antiumidità' : 'Stampa Digitale'}</li>` : ''}
           ` : ''}
@@ -310,11 +311,20 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
           </div>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Dettagli ordine:</strong><br>
+            <strong style="color: #2d5a3d;">Dettagli progetto:</strong><br>
             <span style="color: #666;">
               Paese: ${data.country}<br>
-              Quantità lattine: ${data.canSelection?.quantity || 'Non specificata'}<br>
-              Prezzo totale: €${data.canSelection?.totalPrice || 'N/A'}<br>
+              ${data.canSelection ? `
+                Tipo: White Label<br>
+                Quantità lattine: ${data.canSelection.quantity}<br>
+                Prezzo totale: €${data.canSelection.totalPrice}<br>
+              ` : ''}
+              ${data.beverageSelection ? `
+                Tipo: Private Label<br>
+                Bevanda: ${getBeverageDisplayName(data.beverageSelection.selectedBeverage, data.beverageSelection.customBeverageText)}<br>
+                ${data.volumeFormatSelection ? `Produzione: ${data.volumeFormatSelection.volumeLiters.toLocaleString()} litri × ${data.volumeFormatSelection.formatMl}ml<br>` : ''}
+                ${data.packagingSelection ? `Packaging: ${data.packagingSelection.packagingType === 'label' ? 'Etichetta Antiumidità' : 'Stampa Digitale'}<br>` : ''}
+              ` : ''}
               Campione richiesto: ${data.wantsSample ? 'SÌ (€50)' : 'NO'}
             </span>
           </div>
@@ -417,7 +427,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
               ` : ''}
               ${data.beverageSelection ? `
                 Type: Private Label<br>
-                Beverage: ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}<br>
+                Beverage: ${getBeverageDisplayNameEnglish(data.beverageSelection.selectedBeverage, data.beverageSelection.customBeverageText)}<br>
                 ${data.volumeFormatSelection ? `Production: ${data.volumeFormatSelection.volumeLiters.toLocaleString()} liters × ${data.volumeFormatSelection.formatMl}ml<br>` : ''}
                 ${data.packagingSelection ? `Packaging: ${data.packagingSelection.packagingType === 'label' ? 'Anti-humidity Label' : 'Digital Print'}<br>` : ''}
               ` : ''}
