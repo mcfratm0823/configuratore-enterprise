@@ -300,6 +300,18 @@ async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<v
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const isPrivateLabel = data.serviceType === 'private-label'
+  const isItaly = data.country?.toLowerCase() === 'italy'
+  
+  // Send Italian email for Italy, English for all other countries
+  if (isItaly) {
+    await sendCustomerConfirmationItalian(data, RESEND_API_KEY, isPrivateLabel)
+  } else {
+    await sendCustomerConfirmationEnglish(data, RESEND_API_KEY, isPrivateLabel)
+  }
+}
+
+// Italian customer email
+async function sendCustomerConfirmationItalian(data: PaymentData, RESEND_API_KEY: string, isPrivateLabel: boolean): Promise<void> {
   const emailSubject = `✅ Pagamento confermato - Campione ${isPrivateLabel ? 'Private Label' : 'White Label'} in preparazione`
   
   const emailContent = `
@@ -413,9 +425,131 @@ async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<v
 
   if (!response.ok) {
     const errorData = await response.json()
-    throw new Error(`Customer payment email failed: ${errorData.message || response.statusText}`)
+    throw new Error(`Italian customer payment email failed: ${errorData.message || response.statusText}`)
   }
 
   const result = await response.json()
-  console.log('✅ Customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+  console.log('✅ Italian customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+}
+
+// English customer email
+async function sendCustomerConfirmationEnglish(data: PaymentData, RESEND_API_KEY: string, isPrivateLabel: boolean): Promise<void> {
+  const emailSubject = `✅ Payment Confirmed - Your ${isPrivateLabel ? 'Private Label' : 'White Label'} Sample is Being Prepared`
+  
+  const emailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+      <div style="background: #28a745; color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">🎉 Payment Confirmed!</h1>
+        <p style="margin: 15px 0 0 0; font-size: 18px; opacity: 0.9;">Your sample is being prepared</p>
+      </div>
+      
+      <div style="padding: 30px;">
+        <h2 style="color: #28a745; margin-top: 0;">Hello ${data.contactForm.firstName}!</h2>
+        
+        <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
+          Fantastic! Your payment of <strong>€${data.amountPaid}</strong> has been successfully confirmed. 
+          Our team is already preparing your personalized ${isPrivateLabel ? 'Private Label' : 'White Label'} sample.
+        </p>
+        
+        <div style="background: #d4edda; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #28a745;">
+          <h3 style="color: #155724; margin-top: 0; font-size: 18px;">✅ Your Order Status:</h3>
+          <ul style="color: #155724; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;"><strong>Payment:</strong> Confirmed (€${data.amountPaid})</li>
+            <li style="margin: 8px 0;"><strong>Sample:</strong> Being prepared</li>
+            <li style="margin: 8px 0;"><strong>Shipping:</strong> Within 2-3 business days</li>
+            <li style="margin: 8px 0;"><strong>Tracking:</strong> We'll send you the code</li>
+          </ul>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Summary of Your Request:</h3>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Contact Details:</strong><br>
+            <span style="color: #666;">
+              ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
+              ${data.contactForm.email}<br>
+              ${data.contactForm.phone}<br>
+              ${data.contactForm.company}
+            </span>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Project Details:</strong><br>
+            <span style="color: #666;">
+              Country: ${data.country}<br>
+              ${data.canSelection ? `
+                Type: White Label<br>
+                Can Quantity: ${data.canSelection.quantity}<br>
+                Estimated Price: €${data.canSelection.totalPrice}<br>
+              ` : ''}
+              ${data.beverageSelection ? `
+                Type: Private Label<br>
+                Beverage: ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}<br>
+                ${data.volumeFormatSelection ? `Production: ${data.volumeFormatSelection.volumeLiters.toLocaleString()} liters × ${data.volumeFormatSelection.formatMl}ml<br>` : ''}
+                ${data.packagingSelection ? `Packaging: ${data.packagingSelection.packagingType === 'label' ? 'Anti-humidity Label' : 'Digital Print'}<br>` : ''}
+              ` : ''}
+              Sample: ✅ Paid and confirmed
+            </span>
+          </div>
+        </div>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Next Steps:</h3>
+          <ul style="color: #333; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;">Our team will prepare your personalized sample</li>
+            <li style="margin: 8px 0;">You'll receive the tracking code within 2-3 days</li>
+            <li style="margin: 8px 0;">We'll contact you to discuss the complete quote</li>
+            <li style="margin: 8px 0;">You can evaluate quality before placing the final order</li>
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+            <strong>Have questions? Contact us at: info@configuratore-enterprise.com</strong>
+          </div>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <p style="color: #856404; margin: 0; text-align: center;">
+            <strong>📦 Your sample will be shipped to the address you'll provide via email</strong>
+          </p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; text-align: center; margin-top: 40px;">
+          <em>Payment confirmed on: ${new Date(data.submittedAt).toLocaleString('en-US')}</em><br>
+          <em>Transaction ID: ${data.paymentSessionId}</em>
+        </p>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+        <p style="color: #999; font-size: 12px; margin: 0;">
+          Enterprise Configurator - ${isPrivateLabel ? 'Private Label' : 'White Label'} Packaging<br>
+          Automated payment confirmation email
+        </p>
+      </div>
+    </div>
+  `
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'onboarding@resend.dev',
+      to: 'a.guarnieri.portfolio@gmail.com', // Temp: solo email verificata
+      subject: `${emailSubject} - For: ${data.contactForm.email}`,
+      html: emailContent
+    })
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(`English customer payment email failed: ${errorData.message || response.statusText}`)
+  }
+
+  const result = await response.json()
+  console.log('✅ English customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
 }

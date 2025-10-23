@@ -207,11 +207,22 @@ async function sendAdminNotification(data: QuoteRequestData): Promise<void> {
   console.log('✅ Admin email inviata:', result.id)
 }
 
-// Email Customer Confirmation (NUOVA)
+// Email Customer Confirmation with language selection
 async function sendCustomerConfirmation(data: QuoteRequestData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
-  // Contenuto email customer
+  const isItaly = data.country?.toLowerCase() === 'italy'
+  
+  // Send Italian email for Italy, English for all other countries
+  if (isItaly) {
+    await sendCustomerConfirmationItalian(data, RESEND_API_KEY)
+  } else {
+    await sendCustomerConfirmationEnglish(data, RESEND_API_KEY)
+  }
+}
+
+// Italian customer confirmation
+async function sendCustomerConfirmationItalian(data: QuoteRequestData, RESEND_API_KEY: string): Promise<void> {
   const emailSubject = `Conferma richiesta preventivo - Configuratore Enterprise`
   
   const emailContent = `
@@ -292,16 +303,112 @@ async function sendCustomerConfirmation(data: QuoteRequestData): Promise<void> {
     body: JSON.stringify({
       from: 'onboarding@resend.dev',
       to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
-      subject: `${emailSubject} - Per: ${data.contactForm.email}`, // Aggiungiamo email originale nel subject
+      subject: `${emailSubject} - Per: ${data.contactForm.email}`,
       html: emailContent
     })
   })
 
   if (!response.ok) {
     const errorData = await response.json()
-    throw new Error(`Customer email failed: ${errorData.message || response.statusText}`)
+    throw new Error(`Italian customer email failed: ${errorData.message || response.statusText}`)
   }
 
   const result = await response.json()
-  console.log('✅ Customer confirmation inviata a:', data.contactForm.email, '- ID:', result.id)
+  console.log('✅ Italian customer confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+}
+
+// English customer confirmation
+async function sendCustomerConfirmationEnglish(data: QuoteRequestData, RESEND_API_KEY: string): Promise<void> {
+  const emailSubject = `Quote Request Confirmation - Enterprise Configurator`
+  
+  const emailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+      <div style="background: #2d5a3d; color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">📦 Enterprise Configurator</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Quote request confirmation</p>
+      </div>
+      
+      <div style="padding: 30px;">
+        <h2 style="color: #2d5a3d; margin-top: 0;">Hello ${data.contactForm.firstName}!</h2>
+        
+        <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
+          Thank you for using our enterprise configurator. We have received your quote request 
+          for White Label packaging and will contact you shortly.
+        </p>
+        
+        <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Summary of your request:</h3>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Contact details:</strong><br>
+            <span style="color: #666;">
+              ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
+              ${data.contactForm.email}<br>
+              ${data.contactForm.phone}<br>
+              ${data.contactForm.company}
+            </span>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #2d5a3d;">Order details:</strong><br>
+            <span style="color: #666;">
+              Country: ${data.country}<br>
+              Can quantity: ${data.canSelection?.quantity || 'Not specified'}<br>
+              Total price: €${data.canSelection?.totalPrice || 'N/A'}<br>
+              Sample requested: ${data.wantsSample ? 'YES (€50)' : 'NO'}
+            </span>
+          </div>
+        </div>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Next steps:</h3>
+          <ul style="color: #333; margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;">We'll analyze your request within 24 hours</li>
+            <li style="margin: 8px 0;">You'll receive a detailed personalized quote</li>
+            <li style="margin: 8px 0;">Our expert will contact you to finalize details</li>
+            ${data.wantsSample ? '<li style="margin: 8px 0;">Sample will be shipped after payment confirmation</li>' : ''}
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+            <strong>Have questions? Contact us at: info@configuratore-enterprise.com</strong>
+          </div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; text-align: center; margin-top: 40px;">
+          <em>Request submitted on: ${new Date(data.submittedAt).toLocaleString('en-US')}</em>
+        </p>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+        <p style="color: #999; font-size: 12px; margin: 0;">
+          Enterprise Configurator - White Label Packaging<br>
+          Automated confirmation email
+        </p>
+      </div>
+    </div>
+  `
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'onboarding@resend.dev',
+      to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
+      subject: `${emailSubject} - For: ${data.contactForm.email}`,
+      html: emailContent
+    })
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(`English customer email failed: ${errorData.message || response.statusText}`)
+  }
+
+  const result = await response.json()
+  console.log('✅ English customer confirmation sent to:', data.contactForm.email, '- ID:', result.id)
 }
