@@ -9,6 +9,7 @@ export interface ContactForm {
   company: string
   canCall: boolean
   preferredCallTime: string
+  emailOnly: boolean
 }
 
 // White Label specific data

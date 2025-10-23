@@ -330,17 +330,35 @@ export function Step6ContactPrivateLabel() {
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
-                id="canCall"
-                checked={state.contactForm.canCall}
-                onChange={(e) => actions.setContactForm({ canCall: e.target.checked })}
+                id="emailOnly"
+                checked={state.contactForm.emailOnly}
+                onChange={(e) => actions.setContactForm({ 
+                  emailOnly: e.target.checked,
+                  // Se seleziona "solo email", disabilita automaticamente le chiamate
+                  ...(e.target.checked && { canCall: false, preferredCallTime: '' })
+                })}
                 className="w-4 h-4 text-[#2d5a3d] bg-gray-100 border-gray-300 rounded focus:ring-[#2d5a3d] focus:ring-2"
               />
-              <label htmlFor="canCall" className="text-sm text-gray-700">
+              <label htmlFor="emailOnly" className="text-sm text-gray-700">
+                Voglio essere contattato esclusivamente via email
+              </label>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="canCall"
+                checked={state.contactForm.canCall}
+                disabled={state.contactForm.emailOnly}
+                onChange={(e) => actions.setContactForm({ canCall: e.target.checked })}
+                className="w-4 h-4 text-[#2d5a3d] bg-gray-100 border-gray-300 rounded focus:ring-[#2d5a3d] focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <label htmlFor="canCall" className={`text-sm ${state.contactForm.emailOnly ? 'text-gray-400' : 'text-gray-700'}`}>
                 Acconsento a essere contattato telefonicamente
               </label>
             </div>
             
-            {state.contactForm.canCall && (
+            {state.contactForm.canCall && !state.contactForm.emailOnly && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Quando preferisci essere contattato?

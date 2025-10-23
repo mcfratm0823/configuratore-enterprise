@@ -96,6 +96,7 @@ export interface ConfiguratorState {
     company: string
     canCall: boolean
     preferredCallTime: string
+    emailOnly: boolean
   }
   
   // Payment Status
@@ -151,7 +152,8 @@ const initialState: ConfiguratorState = {
     phone: '',
     company: '',
     canCall: false,
-    preferredCallTime: ''
+    preferredCallTime: '',
+    emailOnly: false
   },
   paymentCompleted: false,
   sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

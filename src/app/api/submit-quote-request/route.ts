@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
         phone: String(contactForm.phone || '').substring(0, 20).trim(),
         company: String(contactForm.company || '').substring(0, 100).trim(),
         canCall: Boolean(contactForm.canCall),
-        preferredCallTime: String(contactForm.preferredCallTime || '').substring(0, 20)
+        preferredCallTime: String(contactForm.preferredCallTime || '').substring(0, 20),
+        emailOnly: Boolean(contactForm.emailOnly) // Backward compatible: default false if missing
       },
       
       // White Label data
@@ -223,8 +224,9 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
       <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Preferenze Contatto:</h3>
         <ul style="list-style: none; padding: 0;">
-          <li><strong>Consenso chiamata:</strong> ${data.contactForm.canCall ? 'SÌ' : 'NO'}</li>
-          <li><strong>Orario preferito:</strong> ${data.contactForm.preferredCallTime || 'Non specificato'}</li>
+          <li><strong>Modalità contatto preferita:</strong> ${data.contactForm.emailOnly ? '📧 SOLO EMAIL' : '📞 Telefono consentito'}</li>
+          ${data.contactForm.emailOnly ? '' : `<li><strong>Consenso chiamata:</strong> ${data.contactForm.canCall ? 'SÌ' : 'NO'}</li>`}
+          ${data.contactForm.canCall && !data.contactForm.emailOnly ? `<li><strong>Orario preferito:</strong> ${data.contactForm.preferredCallTime || 'Non specificato'}</li>` : ''}
         </ul>
       </div>
 
@@ -327,6 +329,18 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
               ` : ''}
               Campione richiesto: ${data.wantsSample ? 'SÌ (€50)' : 'NO'}
             </span>
+          </div>
+        </div>
+        
+        <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📞 Come ti contatteremo:</h3>
+          <div style="color: #333; margin: 10px 0;">
+            ${data.contactForm.emailOnly 
+              ? '<strong style="color: #2d5a3d;">📧 Ti contatteremo esclusivamente via email</strong> come da tua richiesta.' 
+              : data.contactForm.canCall 
+                ? `<strong style="color: #2d5a3d;">📞 Ti contatteremo telefonicamente</strong> ${data.contactForm.preferredCallTime ? `preferibilmente ${data.contactForm.preferredCallTime.toLowerCase()}` : ''} oppure via email.`
+                : '<strong style="color: #2d5a3d;">📧 Ti contatteremo via email</strong> (non hai dato consenso alle chiamate).'
+            }
           </div>
         </div>
         
@@ -433,6 +447,18 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
               ` : ''}
               Sample requested: ${data.wantsSample ? 'YES (€50)' : 'NO'}
             </span>
+          </div>
+        </div>
+        
+        <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📞 How we'll contact you:</h3>
+          <div style="color: #333; margin: 10px 0;">
+            ${data.contactForm.emailOnly 
+              ? '<strong style="color: #2d5a3d;">📧 We will contact you exclusively via email</strong> as requested.' 
+              : data.contactForm.canCall 
+                ? `<strong style="color: #2d5a3d;">📞 We will contact you by phone</strong> ${data.contactForm.preferredCallTime ? `preferably in the ${data.contactForm.preferredCallTime.toLowerCase()}` : ''} or via email.`
+                : '<strong style="color: #2d5a3d;">📧 We will contact you via email</strong> (you did not consent to phone calls).'
+            }
           </div>
         </div>
         

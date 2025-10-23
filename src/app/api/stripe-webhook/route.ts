@@ -216,8 +216,9 @@ async function sendAdminNotificationWithPayment(data: UnifiedQuoteData): Promise
         <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #333; margin-top: 0;">📞 Preferenze Contatto:</h3>
           <ul style="list-style: none; padding: 0;">
-            <li><strong>Consenso chiamata:</strong> ${data.contactForm.canCall ? 'SÌ' : 'NO'}</li>
-            <li><strong>Orario preferito:</strong> ${data.contactForm.preferredCallTime || 'Non specificato'}</li>
+            <li><strong>Modalità contatto preferita:</strong> ${data.contactForm?.emailOnly ? '📧 SOLO EMAIL' : '📞 Telefono consentito'}</li>
+            ${data.contactForm?.emailOnly ? '' : `<li><strong>Consenso chiamata:</strong> ${data.contactForm?.canCall ? 'SÌ' : 'NO'}</li>`}
+            ${data.contactForm?.canCall && !data.contactForm?.emailOnly ? `<li><strong>Orario preferito:</strong> ${data.contactForm?.preferredCallTime || 'Non specificato'}</li>` : ''}
           </ul>
         </div>
       </div>
