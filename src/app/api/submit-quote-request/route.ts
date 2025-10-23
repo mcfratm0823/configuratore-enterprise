@@ -148,16 +148,16 @@ async function sendNotificationEmails(data: UnifiedQuoteData): Promise<{ success
   }
 }
 
-// Email Admin (quella esistente)
-async function sendAdminNotification(data: QuoteRequestData): Promise<void> {
+// Email Admin - Unified per White Label + Private Label
+async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
-  // Contenuto email admin
-  const emailSubject = `Nuova Richiesta Quote White Label - ${data.contactForm.company || data.contactForm.firstName}`
+  const isPrivateLabel = data.serviceType === 'private-label'
+  const emailSubject = `Nuova Richiesta Quote ${isPrivateLabel ? 'PRIVATE LABEL' : 'WHITE LABEL'} - ${data.contactForm.company || data.contactForm.firstName}`
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #2d5a3d;">Nuova Richiesta di Preventivo White Label</h2>
+      <h2 style="color: #2d5a3d;">Nuova Richiesta di Preventivo ${isPrivateLabel ? 'Private Label' : 'White Label'}</h2>
       
       <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Dati Cliente:</h3>
