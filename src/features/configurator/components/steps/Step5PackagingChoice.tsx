@@ -47,17 +47,6 @@ export function Step5PackagingChoice() {
     )
   }
 
-  // Validation logic
-  const validateSelection = (): boolean => {
-    setValidationError('')
-    
-    if (!selectedPackaging) {
-      setValidationError('Seleziona il tipo di packaging')
-      return false
-    }
-    
-    return true
-  }
 
   // Handle packaging selection
   const handlePackagingSelect = (packagingId: string) => {

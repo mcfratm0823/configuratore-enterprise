@@ -222,8 +222,8 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
   console.log('✅ Admin email inviata:', result.id)
 }
 
-// Email Customer Confirmation with language selection
-async function sendCustomerConfirmation(data: QuoteRequestData): Promise<void> {
+// Email Customer Confirmation with language selection - Unified per White Label + Private Label
+async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const isItaly = data.country?.toLowerCase() === 'italy'
@@ -236,9 +236,10 @@ async function sendCustomerConfirmation(data: QuoteRequestData): Promise<void> {
   }
 }
 
-// Italian customer confirmation
-async function sendCustomerConfirmationItalian(data: QuoteRequestData, RESEND_API_KEY: string): Promise<void> {
-  const emailSubject = `Conferma richiesta preventivo - Configuratore Enterprise`
+// Italian customer confirmation - Unified per White Label + Private Label
+async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_API_KEY: string): Promise<void> {
+  const isPrivateLabel = data.serviceType === 'private-label'
+  const emailSubject = `Conferma richiesta preventivo ${isPrivateLabel ? 'Private Label' : 'White Label'} - Configuratore Enterprise`
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
@@ -252,7 +253,7 @@ async function sendCustomerConfirmationItalian(data: QuoteRequestData, RESEND_AP
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Grazie per aver utilizzato il nostro configuratore enterprise. Abbiamo ricevuto la tua richiesta di preventivo 
-          per packaging White Label e ti contatteremo a breve.
+          per packaging ${isPrivateLabel ? 'Private Label' : 'White Label'} e ti contatteremo a breve.
         </p>
         
         <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
@@ -302,7 +303,7 @@ async function sendCustomerConfirmationItalian(data: QuoteRequestData, RESEND_AP
       
       <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
         <p style="color: #999; font-size: 12px; margin: 0;">
-          Configuratore Enterprise - White Label Packaging<br>
+          Configuratore Enterprise - ${isPrivateLabel ? 'Private Label' : 'White Label'} Packaging<br>
           Email di conferma generata automaticamente
         </p>
       </div>
