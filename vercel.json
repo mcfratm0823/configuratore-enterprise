@@ -36,18 +36,6 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/success",
-      "destination": "/?success=true",
-      "permanent": false
-    },
-    {
-      "source": "/cancel", 
-      "destination": "/?cancelled=true",
-      "permanent": false
-    }
-  ],
   "env": {
     "NEXT_PUBLIC_APP_URL": "https://configuratore-enterprise.vercel.app"
   }
