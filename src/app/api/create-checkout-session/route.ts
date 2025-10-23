@@ -35,10 +35,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Import Stripe dinamicamente per Next.js enterprise
+    console.log('🔧 DEBUG: About to import Stripe...')
     const Stripe = (await import('stripe')).default
+    console.log('🔧 DEBUG: Stripe imported successfully')
+    
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+    console.log('🔧 DEBUG: Stripe instance created')
+
+    // Debug URLs che stiamo per passare a Stripe
+    const successUrl = `https://configuratore-enterprise.vercel.app/success?session_id={CHECKOUT_SESSION_ID}`
+    const cancelUrl = `https://configuratore-enterprise.vercel.app/cancel`
+    
+    console.log('🔧 DEBUG: Success URL:', successUrl)
+    console.log('🔧 DEBUG: Cancel URL:', cancelUrl)
 
     // Crea Stripe Checkout Session
+    console.log('🔧 DEBUG: About to create Stripe session...')
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -57,8 +69,8 @@ export async function POST(request: NextRequest) {
       ],
       mode: 'payment',
       customer_email: customerEmail,
-      success_url: `https://configuratore-enterprise.vercel.app/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `https://configuratore-enterprise.vercel.app/cancel`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         type: 'sample_request',
         customer_name: customerName,
@@ -89,6 +101,15 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    console.log('🔧 DEBUG: Stripe session creation completed!')
+
+    // Debug risposta Stripe
+    console.log('🔧 DEBUG: Stripe session created:', {
+      id: session.id,
+      url: session.url,
+      success_url: session.success_url,
+      cancel_url: session.cancel_url
+    })
 
     // Risposta successo
     return NextResponse.json({
