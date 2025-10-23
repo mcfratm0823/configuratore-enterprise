@@ -1,37 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Enterprise type definitions
-interface ContactForm {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  company: string
-  canCall: boolean
-  preferredCallTime: string
-}
-
-interface CanSelection {
-  quantity: number
-  totalPrice: number
-}
-
-interface QuoteRequestData {
-  contactForm: ContactForm
-  canSelection: CanSelection | null
-  wantsSample: boolean
-  country: string
-  submittedAt: string
-  ip: string
-}
+import { UnifiedQuoteData, isWhiteLabel, isPrivateLabel } from '@/types/api-interfaces'
 
 export async function POST(request: NextRequest) {
   try {
     // Parse request data
     const formData = await request.json()
     
-    // Validation base
-    const { contactForm, canSelection, wantsSample, country } = formData
+    // Extract unified data structure (supporting both White Label and Private Label)
+    const { 
+      contactForm, 
+      canSelection, 
+      beverageSelection, 
+      volumeFormatSelection, 
+      packagingSelection, 
+      wantsSample, 
+      country,
+      requestType 
+    } = formData
     
     if (!contactForm || !contactForm.firstName || !contactForm.lastName || !contactForm.email) {
       return NextResponse.json(
@@ -40,8 +25,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sanitizzazione dati enterprise
-    const sanitizedData = {
+    // Determine service type
+    const serviceType = requestType === 'private-label-quote' ? 'private-label' : 'white-label'
+    
+    // Sanitizzazione dati enterprise con supporto completo White Label + Private Label
+    const sanitizedData: UnifiedQuoteData = {
       contactForm: {
         firstName: String(contactForm.firstName).substring(0, 50).trim(),
         lastName: String(contactForm.lastName).substring(0, 50).trim(),
@@ -51,12 +39,37 @@ export async function POST(request: NextRequest) {
         canCall: Boolean(contactForm.canCall),
         preferredCallTime: String(contactForm.preferredCallTime || '').substring(0, 20)
       },
+      
+      // White Label data
       canSelection: canSelection ? {
         quantity: Math.min(Math.max(1, Number(canSelection.quantity)), 10000),
         totalPrice: Number(canSelection.totalPrice) || 0
       } : null,
+      
+      // Private Label data
+      beverageSelection: beverageSelection ? {
+        selectedBeverage: String(beverageSelection.selectedBeverage).substring(0, 100),
+        customBeverageText: String(beverageSelection.customBeverageText || '').substring(0, 500),
+        isCustom: Boolean(beverageSelection.isCustom)
+      } : null,
+      
+      volumeFormatSelection: volumeFormatSelection ? {
+        volumeLiters: Math.max(0, Number(volumeFormatSelection.volumeLiters)),
+        formatMl: Math.max(0, Number(volumeFormatSelection.formatMl)),
+        totalPieces: Math.max(0, Number(volumeFormatSelection.totalPieces)),
+        cartonsCount: Math.max(0, Number(volumeFormatSelection.cartonsCount)),
+        isCustomVolume: Boolean(volumeFormatSelection.isCustomVolume)
+      } : null,
+      
+      packagingSelection: packagingSelection ? {
+        selectedPackaging: String(packagingSelection.selectedPackaging).substring(0, 100),
+        packagingType: packagingSelection.packagingType === 'digital' ? 'digital' : 'label'
+      } : null,
+      
+      // Common fields
       wantsSample: Boolean(wantsSample),
       country: String(country || '').substring(0, 50),
+      serviceType,
       submittedAt: new Date().toISOString(),
       ip: request.headers.get('x-forwarded-for') || 'unknown'
     }
@@ -89,8 +102,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Funzione email enterprise con Resend (Double Flow)
-async function sendNotificationEmails(data: QuoteRequestData): Promise<{ success: boolean }> {
+// Funzione email enterprise con Resend (Double Flow) - Unified per White Label + Private Label
+async function sendNotificationEmails(data: UnifiedQuoteData): Promise<{ success: boolean }> {
   // Verifica chiave Resend
   if (!process.env.RESEND_API_KEY) {
     console.error('❌ RESEND_API_KEY not found in environment variables')
@@ -98,7 +111,9 @@ async function sendNotificationEmails(data: QuoteRequestData): Promise<{ success
       customer: `${data.contactForm.firstName} ${data.contactForm.lastName}`,
       email: data.contactForm.email,
       company: data.contactForm.company,
+      serviceType: data.serviceType,
       quantity: data.canSelection?.quantity,
+      beverageSelection: data.beverageSelection?.selectedBeverage,
       wantsSample: data.wantsSample,
       timestamp: new Date().toISOString()
     })
@@ -317,9 +332,10 @@ async function sendCustomerConfirmationItalian(data: QuoteRequestData, RESEND_AP
   console.log('✅ Italian customer confirmation sent to:', data.contactForm.email, '- ID:', result.id)
 }
 
-// English customer confirmation
-async function sendCustomerConfirmationEnglish(data: QuoteRequestData, RESEND_API_KEY: string): Promise<void> {
-  const emailSubject = `Quote Request Confirmation - Enterprise Configurator`
+// English customer confirmation - Unified per White Label + Private Label
+async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_API_KEY: string): Promise<void> {
+  const isPrivateLabel = data.serviceType === 'private-label'
+  const emailSubject = `${isPrivateLabel ? 'Private Label' : 'White Label'} Quote Request Confirmation - Enterprise Configurator`
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
@@ -333,7 +349,7 @@ async function sendCustomerConfirmationEnglish(data: QuoteRequestData, RESEND_AP
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Thank you for using our enterprise configurator. We have received your quote request 
-          for White Label packaging and will contact you shortly.
+          for ${isPrivateLabel ? 'Private Label' : 'White Label'} packaging and will contact you shortly.
         </p>
         
         <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
@@ -350,11 +366,20 @@ async function sendCustomerConfirmationEnglish(data: QuoteRequestData, RESEND_AP
           </div>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Order details:</strong><br>
+            <strong style="color: #2d5a3d;">Project details:</strong><br>
             <span style="color: #666;">
               Country: ${data.country}<br>
-              Can quantity: ${data.canSelection?.quantity || 'Not specified'}<br>
-              Total price: €${data.canSelection?.totalPrice || 'N/A'}<br>
+              ${data.canSelection ? `
+                Type: White Label<br>
+                Can quantity: ${data.canSelection.quantity}<br>
+                Total price: €${data.canSelection.totalPrice}<br>
+              ` : ''}
+              ${data.beverageSelection ? `
+                Type: Private Label<br>
+                Beverage: ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}<br>
+                ${data.volumeFormatSelection ? `Production: ${data.volumeFormatSelection.volumeLiters.toLocaleString()} liters × ${data.volumeFormatSelection.formatMl}ml<br>` : ''}
+                ${data.packagingSelection ? `Packaging: ${data.packagingSelection.packagingType === 'label' ? 'Anti-humidity Label' : 'Digital Print'}<br>` : ''}
+              ` : ''}
               Sample requested: ${data.wantsSample ? 'YES (€50)' : 'NO'}
             </span>
           </div>
@@ -383,7 +408,7 @@ async function sendCustomerConfirmationEnglish(data: QuoteRequestData, RESEND_AP
       
       <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
         <p style="color: #999; font-size: 12px; margin: 0;">
-          Enterprise Configurator - White Label Packaging<br>
+          Enterprise Configurator - ${isPrivateLabel ? 'Private Label' : 'White Label'} Packaging<br>
           Automated confirmation email
         </p>
       </div>

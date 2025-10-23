@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
+import { UnifiedQuoteData } from '@/types/api-interfaces'
 
 // Stripe webhook endpoint per gestire pagamenti completati
 export async function POST(request: NextRequest) {
@@ -69,8 +70,8 @@ export async function POST(request: NextRequest) {
         customerData.beverageSelection.customBeverageText = metadata.full_beverage_text
       }
       
-      // Prepare quote data for email (supports both White Label and Private Label)
-      const quoteData = {
+      // Prepare unified quote data using the same interface as form submission
+      const quoteData: UnifiedQuoteData = {
         contactForm: customerData.contactForm,
         
         // White Label data
@@ -84,12 +85,14 @@ export async function POST(request: NextRequest) {
         // Common data
         wantsSample: true, // Always true for paid samples
         country: customerData.country,
-        serviceType: customerData.serviceType || 'white-label',
+        serviceType: customerData.serviceType === 'private-label' ? 'private-label' : 'white-label',
+        submittedAt: new Date().toISOString(),
+        ip: customerData.ip || 'webhook',
+        
+        // Payment specific data
         paymentCompleted: true,
         paymentSessionId: sessionData.id,
-        amountPaid: (sessionData.amount_total || 0) / 100,
-        submittedAt: new Date().toISOString(),
-        ip: customerData.ip || 'webhook'
+        amountPaid: (sessionData.amount_total || 0) / 100
       }
 
       // Send emails after confirmed payment
@@ -110,55 +113,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Type for payment data (unified for White Label and Private Label)
-interface PaymentData {
-  contactForm: {
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
-    company: string
-    canCall: boolean
-    preferredCallTime: string
-  }
-  
-  // White Label data
-  canSelection: {
-    quantity: number
-    totalPrice: number
-  } | null
-  
-  // Private Label data
-  beverageSelection: {
-    selectedBeverage: string
-    customBeverageText: string
-    isCustom: boolean
-  } | null
-  volumeFormatSelection: {
-    volumeLiters: number
-    formatMl: number
-    totalPieces: number
-    cartonsCount: number
-    isCustomVolume: boolean
-  } | null
-  packagingSelection: {
-    selectedPackaging: string
-    packagingType: 'label' | 'digital'
-  } | null
-  
-  // Common data
-  wantsSample: boolean
-  country: string
-  serviceType: string
-  paymentCompleted: boolean
-  paymentSessionId: string
-  amountPaid: number
-  submittedAt: string
-  ip: string
-}
+// Using unified interface - no longer need separate PaymentData interface
 
-// Email function specifically for post-payment
-async function sendNotificationEmailsAfterPayment(data: PaymentData): Promise<void> {
+// Email function specifically for post-payment using unified interface
+async function sendNotificationEmailsAfterPayment(data: UnifiedQuoteData): Promise<void> {
   if (!process.env.RESEND_API_KEY) {
     console.error('❌ RESEND_API_KEY not found')
     return
@@ -190,8 +148,8 @@ async function sendNotificationEmailsAfterPayment(data: PaymentData): Promise<vo
   }
 }
 
-// Admin email with payment confirmation
-async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void> {
+// Admin email with payment confirmation using unified interface
+async function sendAdminNotificationWithPayment(data: UnifiedQuoteData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const isPrivateLabel = data.serviceType === 'private-label'
@@ -295,8 +253,8 @@ async function sendAdminNotificationWithPayment(data: PaymentData): Promise<void
   console.log('✅ Admin payment notification sent:', result.id)
 }
 
-// Customer email with payment confirmation
-async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<void> {
+// Customer email with payment confirmation using unified interface
+async function sendCustomerConfirmationWithPayment(data: UnifiedQuoteData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const isPrivateLabel = data.serviceType === 'private-label'
@@ -310,8 +268,8 @@ async function sendCustomerConfirmationWithPayment(data: PaymentData): Promise<v
   }
 }
 
-// Italian customer email
-async function sendCustomerConfirmationItalian(data: PaymentData, RESEND_API_KEY: string, isPrivateLabel: boolean): Promise<void> {
+// Italian customer email using unified interface
+async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_API_KEY: string, isPrivateLabel: boolean): Promise<void> {
   const emailSubject = `✅ Pagamento confermato - Campione ${isPrivateLabel ? 'Private Label' : 'White Label'} in preparazione`
   
   const emailContent = `
@@ -432,8 +390,8 @@ async function sendCustomerConfirmationItalian(data: PaymentData, RESEND_API_KEY
   console.log('✅ Italian customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
 }
 
-// English customer email
-async function sendCustomerConfirmationEnglish(data: PaymentData, RESEND_API_KEY: string, isPrivateLabel: boolean): Promise<void> {
+// English customer email using unified interface
+async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_API_KEY: string, isPrivateLabel: boolean): Promise<void> {
   const emailSubject = `✅ Payment Confirmed - Your ${isPrivateLabel ? 'Private Label' : 'White Label'} Sample is Being Prepared`
   
   const emailContent = `
