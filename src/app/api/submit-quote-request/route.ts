@@ -25,7 +25,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Determine service type
+    // Validate and determine service type with explicit validation
+    if (!requestType || !['white-label-quote', 'private-label-quote'].includes(requestType)) {
+      console.error('❌ Invalid or missing requestType:', requestType)
+      return NextResponse.json(
+        { success: false, error: 'Invalid service type request' },
+        { status: 400 }
+      )
+    }
+    
     const serviceType = requestType === 'private-label-quote' ? 'private-label' : 'white-label'
     
     // Sanitizzazione dati enterprise con supporto completo White Label + Private Label
@@ -72,6 +80,29 @@ export async function POST(request: NextRequest) {
       serviceType,
       submittedAt: new Date().toISOString(),
       ip: request.headers.get('x-forwarded-for') || 'unknown'
+    }
+
+    // Data validation - ensure data structure matches service type
+    if (serviceType === 'white-label') {
+      if (!sanitizedData.canSelection) {
+        console.error('❌ White Label request missing canSelection data')
+        return NextResponse.json(
+          { success: false, error: 'White Label requests require can selection data' },
+          { status: 400 }
+        )
+      }
+    } else if (serviceType === 'private-label') {
+      if (!sanitizedData.beverageSelection || !sanitizedData.volumeFormatSelection || !sanitizedData.packagingSelection) {
+        console.error('❌ Private Label request missing product configuration:', {
+          hasBeverage: !!sanitizedData.beverageSelection,
+          hasVolume: !!sanitizedData.volumeFormatSelection,
+          hasPackaging: !!sanitizedData.packagingSelection
+        })
+        return NextResponse.json(
+          { success: false, error: 'Private Label requests require complete product configuration' },
+          { status: 400 }
+        )
+      }
     }
 
     // Invio email con Resend (double flow)
@@ -171,10 +202,19 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
       </div>
 
       <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #333; margin-top: 0;">Dettagli Ordine:</h3>
+        <h3 style="color: #333; margin-top: 0;">Dettagli Progetto:</h3>
         <ul style="list-style: none; padding: 0;">
-          <li><strong>Quantità lattine:</strong> ${data.canSelection?.quantity || 'Non specificata'}</li>
-          <li><strong>Prezzo totale:</strong> €${data.canSelection?.totalPrice || 'N/A'}</li>
+          ${data.canSelection ? `
+            <li><strong>Tipo:</strong> White Label</li>
+            <li><strong>Quantità lattine:</strong> ${data.canSelection.quantity}</li>
+            <li><strong>Prezzo totale:</strong> €${data.canSelection.totalPrice}</li>
+          ` : ''}
+          ${data.beverageSelection ? `
+            <li><strong>Tipo:</strong> Private Label</li>
+            <li><strong>Bevanda:</strong> ${data.beverageSelection.selectedBeverage === 'rd-custom' ? `R&D - ${data.beverageSelection.customBeverageText}` : data.beverageSelection.selectedBeverage}</li>
+            ${data.volumeFormatSelection ? `<li><strong>Produzione:</strong> ${data.volumeFormatSelection.volumeLiters.toLocaleString()} litri × ${data.volumeFormatSelection.formatMl}ml = ${data.volumeFormatSelection.totalPieces.toLocaleString()} pezzi</li>` : ''}
+            ${data.packagingSelection ? `<li><strong>Packaging:</strong> ${data.packagingSelection.packagingType === 'label' ? 'Etichetta Antiumidità' : 'Stampa Digitale'}</li>` : ''}
+          ` : ''}
           <li><strong>Richiede campione:</strong> ${data.wantsSample ? 'SÌ (€50)' : 'NO'}</li>
         </ul>
       </div>
