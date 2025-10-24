@@ -4,8 +4,8 @@ import path from 'path'
 
 export async function GET() {
   try {
-    // Path al file ZIP template
-    const zipPath = path.join(process.cwd(), 'public', 'templates', 'Testi_template.zip')
+    // Path al file ZIP template in src/assets
+    const zipPath = path.join(process.cwd(), 'src', 'assets', 'Testi_template.zip')
     
     // Verifica che il file esista
     if (!fs.existsSync(zipPath)) {

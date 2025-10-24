@@ -319,8 +319,8 @@ async function getTemplateAttachment(): Promise<{ filename: string; content: str
     const fs = await import('fs')
     const path = await import('path')
     
-    // Path diretto al file ZIP
-    const zipPath = path.join(process.cwd(), 'public', 'templates', 'Testi_template.zip')
+    // Path diretto al file ZIP in src/assets (più sicuro per Vercel)
+    const zipPath = path.join(process.cwd(), 'src', 'assets', 'Testi_template.zip')
     console.log('🔍 Reading template from filesystem:', zipPath)
     
     // Verifica esistenza file
