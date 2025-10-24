@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useConfigurator } from '@/context'
-import { Card } from '@/components/ui'
 
 export function Step1Country() {
   const { state, actions } = useConfigurator()
@@ -128,11 +127,12 @@ export function Step1Country() {
         {/* Country Selection Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {displayCountries.map((country) => (
-            <Card
+            <div
               key={country.id}
-              variant={state.country === country.id ? 'outlined' : 'default'}
-              className={`cursor-pointer transition-all hover:shadow-md hover:scale-105 text-center p-3 ${
-                state.country === country.id ? 'border-[#ed6d23] border-2 scale-105' : 'hover:border-gray-400'
+              className={`cursor-pointer transition-all hover:shadow-md hover:scale-105 text-center p-3 rounded-lg bg-white ${
+                state.country === country.id 
+                  ? 'border-2 border-[#ed6d23] scale-105' 
+                  : 'border border-gray-200 hover:border-gray-400'
               }`}
               onClick={() => handleCountrySelect(country.id)}
             >
@@ -142,7 +142,7 @@ export function Step1Country() {
               <h4 className="font-medium text-gray-900 text-xs leading-tight">
                 {country.label}
               </h4>
-            </Card>
+            </div>
           ))}
         </div>
 
