@@ -315,17 +315,30 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
 // Helper function per leggere e convertire ZIP in base64 - Enterprise Edge Compatible
 async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
   try {
-    // Fetch interno del file ZIP dal public path
-    const response = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/templates/Testi_template.zip`)
+    // Try multiple approaches for maximum compatibility
+    let response: Response
+    
+    // Approach 1: Direct URL fetch
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : process.env.NODE_ENV === 'production'
+        ? 'https://configuratore-nextjs.vercel.app'  // Fallback production URL
+        : 'http://localhost:3000'
+    
+    console.log('🔍 Trying to fetch template from:', `${baseUrl}/templates/Testi_template.zip`)
+    response = await fetch(`${baseUrl}/templates/Testi_template.zip`)
     
     if (!response.ok) {
-      console.error('❌ Template ZIP not found via fetch:', response.status)
+      console.error('❌ Template ZIP not found via fetch:', response.status, baseUrl)
       return null
     }
     
     const arrayBuffer = await response.arrayBuffer()
+    console.log('📦 ZIP file size:', arrayBuffer.byteLength, 'bytes')
+    
     const buffer = Buffer.from(arrayBuffer)
     const base64Content = buffer.toString('base64')
+    console.log('✅ Base64 conversion successful, length:', base64Content.length)
     
     return {
       filename: 'white-label-templates.zip',
@@ -460,7 +473,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
     to: string
     subject: string
     html: string
-    attachments?: Array<{ filename: string; content: string }>
+    attachments?: Array<{ filename: string; content: string; type?: string; disposition?: string }>
   } = {
     from: 'onboarding@resend.dev',
     to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
@@ -472,8 +485,11 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   if (attachment && data.serviceType === 'white-label') {
     emailPayload.attachments = [{
       filename: attachment.filename,
-      content: attachment.content
+      content: attachment.content,
+      type: 'application/zip',
+      disposition: 'attachment'
     }]
+    console.log('📎 Adding ZIP attachment:', attachment.filename, 'Size:', attachment.content.length)
   }
 
   const response = await fetch('https://api.resend.com/emails', {
@@ -617,7 +633,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
     to: string
     subject: string
     html: string
-    attachments?: Array<{ filename: string; content: string }>
+    attachments?: Array<{ filename: string; content: string; type?: string; disposition?: string }>
   } = {
     from: 'onboarding@resend.dev',
     to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
@@ -629,8 +645,11 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   if (attachment && data.serviceType === 'white-label') {
     emailPayload.attachments = [{
       filename: attachment.filename,
-      content: attachment.content
+      content: attachment.content,
+      type: 'application/zip',
+      disposition: 'attachment'
     }]
+    console.log('📎 Adding ZIP attachment:', attachment.filename, 'Size:', attachment.content.length)
   }
 
   const response = await fetch('https://api.resend.com/emails', {
