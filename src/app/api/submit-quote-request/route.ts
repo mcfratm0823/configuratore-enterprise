@@ -312,29 +312,28 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
   }
 }
 
-// Helper function per leggere ZIP direttamente dal filesystem
+// Helper function per scaricare ZIP da GitHub CDN - Enterprise Solution
 async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
   try {
-    // Import filesystem modules
-    const fs = await import('fs')
-    const path = await import('path')
+    // GitHub Raw URL - Global CDN professionale e gratis
+    const GITHUB_CDN_URL = 'https://raw.githubusercontent.com/mcfratm0823/configuratore-enterprise/main/assets/Testi_template.zip'
     
-    // Path diretto al file ZIP in src/assets (più sicuro per Vercel)
-    const zipPath = path.join(process.cwd(), 'src', 'assets', 'Testi_template.zip')
-    console.log('🔍 Reading template from filesystem:', zipPath)
+    console.log('🔍 Fetching template from GitHub CDN:', GITHUB_CDN_URL)
     
-    // Verifica esistenza file
-    if (!fs.existsSync(zipPath)) {
-      console.error('❌ Template ZIP not found at path:', zipPath)
+    const response = await fetch(GITHUB_CDN_URL)
+    
+    if (!response.ok) {
+      console.error('❌ GitHub CDN fetch failed:', response.status, response.statusText)
       return null
     }
     
-    // Leggi file direttamente
-    const fileBuffer = fs.readFileSync(zipPath)
-    console.log('📦 ZIP read successfully, size:', fileBuffer.length, 'bytes')
+    // Converti in ArrayBuffer
+    const arrayBuffer = await response.arrayBuffer()
+    console.log('📦 ZIP downloaded from CDN, size:', arrayBuffer.byteLength, 'bytes')
     
     // Converti in base64 per allegato email
-    const base64Content = fileBuffer.toString('base64')
+    const buffer = Buffer.from(arrayBuffer)
+    const base64Content = buffer.toString('base64')
     console.log('✅ Base64 conversion completed, length:', base64Content.length)
     
     return {
@@ -343,7 +342,7 @@ async function getTemplateAttachment(): Promise<{ filename: string; content: str
     }
     
   } catch (error) {
-    console.error('❌ Error reading template from filesystem:', error)
+    console.error('❌ Error fetching template from GitHub CDN:', error)
     return null
   }
 }

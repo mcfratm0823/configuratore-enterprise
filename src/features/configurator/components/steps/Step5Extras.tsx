@@ -48,8 +48,8 @@ export function Step5Extras() {
     setDownloadCompleted(false)
     
     try {
-      // Download ZIP template reale via API endpoint
-      const response = await fetch('/api/template-download')
+      // Download ZIP template da GitHub CDN
+      const response = await fetch('https://raw.githubusercontent.com/mcfratm0823/configuratore-enterprise/main/assets/Testi_template.zip')
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
