@@ -171,7 +171,8 @@ const initialState: ConfiguratorState = {
     company: '',
     canCall: false,
     preferredCallTime: '',
-    emailOnly: false
+    emailOnly: false,
+    billingData: undefined
   },
   paymentCompleted: false,
   sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

@@ -48,7 +48,20 @@ export async function POST(request: NextRequest) {
         company: String(contactForm.company || '').substring(0, 100).trim(),
         canCall: Boolean(contactForm.canCall),
         preferredCallTime: String(contactForm.preferredCallTime || '').substring(0, 20),
-        emailOnly: Boolean(contactForm.emailOnly) // Backward compatible: default false if missing
+        emailOnly: Boolean(contactForm.emailOnly), // Backward compatible: default false if missing
+        
+        // Dati fatturazione opzionali (sanitizzazione sicura)
+        billingData: contactForm.billingData ? {
+          vatNumber: contactForm.billingData.vatNumber ? String(contactForm.billingData.vatNumber).substring(0, 20).trim() : undefined,
+          fiscalCode: contactForm.billingData.fiscalCode ? String(contactForm.billingData.fiscalCode).substring(0, 20).trim() : undefined,
+          legalName: contactForm.billingData.legalName ? String(contactForm.billingData.legalName).substring(0, 100).trim() : undefined,
+          billingAddress: contactForm.billingData.billingAddress ? String(contactForm.billingData.billingAddress).substring(0, 200).trim() : undefined,
+          billingCity: contactForm.billingData.billingCity ? String(contactForm.billingData.billingCity).substring(0, 50).trim() : undefined,
+          billingPostalCode: contactForm.billingData.billingPostalCode ? String(contactForm.billingData.billingPostalCode).substring(0, 10).trim() : undefined,
+          billingProvince: contactForm.billingData.billingProvince ? String(contactForm.billingData.billingProvince).substring(0, 5).trim() : undefined,
+          sdi: contactForm.billingData.sdi ? String(contactForm.billingData.sdi).substring(0, 10).trim() : undefined,
+          pec: contactForm.billingData.pec ? String(contactForm.billingData.pec).toLowerCase().substring(0, 100).trim() : undefined
+        } : undefined
       },
       
       // White Label data
