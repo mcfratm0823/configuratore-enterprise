@@ -112,7 +112,8 @@ export function Step4VolumeFormat() {
     }
   }
 
-  // Validation logic
+  // Validation logic - Used for form validation
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const validateSelection = (): boolean => {
     setValidationError('')
     

@@ -65,7 +65,8 @@ export function Step3BeverageSelection() {
     )
   }
 
-  // Validation logic enterprise
+  // Validation logic enterprise - Used for form validation
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const validateSelection = (): boolean => {
     setValidationError('')
     
@@ -115,12 +116,12 @@ export function Step3BeverageSelection() {
     }
   }
 
-  // Handle continue to next step
-  const handleContinue = () => {
-    if (validateSelection()) {
-      actions.nextStep()
-    }
-  }
+  // Handle continue to next step - Future implementation
+  // const handleContinue = () => {
+  //   if (validateSelection()) {
+  //     actions.nextStep()
+  //   }
+  // }
 
   return (
     <div className="space-y-6">

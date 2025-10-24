@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Step6ContactPrivateLabel } from '@/features/configurator/components/steps/Step6ContactPrivateLabel'
@@ -62,13 +62,13 @@ const renderWithProviderForPrivateLabel = (component: React.ReactElement) => {
 }
 
 // Also keep the simple provider for other tests that don't need setup
-const renderWithProvider = (component: React.ReactElement) => {
-  return render(
-    <ConfiguratorProvider>
-      {component}
-    </ConfiguratorProvider>
-  )
-}
+// const renderWithProvider = (component: React.ReactElement) => {
+//   return render(
+//     <ConfiguratorProvider>
+//       {component}
+//     </ConfiguratorProvider>
+//   )
+// }
 
 describe('Step6ContactPrivateLabel', () => {
   const mockOnBack = jest.fn()

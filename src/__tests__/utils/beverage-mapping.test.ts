@@ -101,17 +101,17 @@ describe('beverage-mapping utils', () => {
 
   describe('edge cases', () => {
     test('handles undefined beverage ID', () => {
-      const result = getBeverageDisplayName(undefined as any)
+      const result = getBeverageDisplayName(undefined as unknown as string)
       expect(result).toBe(undefined)
     })
 
     test('handles null beverage ID', () => {
-      const result = getBeverageDisplayName(null as any)
+      const result = getBeverageDisplayName(null as unknown as string)
       expect(result).toBe(null)
     })
 
     test('handles numeric beverage ID', () => {
-      const result = getBeverageDisplayName(123 as any)
+      const result = getBeverageDisplayName(123 as unknown as string)
       expect(result).toBe(123)
     })
 

@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+// import { useSearchParams } from 'next/navigation' // Future use
 
 function SuccessContent() {
-  const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session_id')
+  // const searchParams = useSearchParams()
+  // const sessionId = searchParams.get('session_id') // Future use for session verification
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

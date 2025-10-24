@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ConfiguratorWizard } from '@/features/configurator/components/ConfiguratorWizard'
 import { ConfiguratorProvider } from '@/context/ConfiguratorContext'
@@ -112,7 +112,6 @@ describe('ConfiguratorWizard', () => {
   })
 
   test('validates required fields before proceeding', async () => {
-    const user = userEvent.setup()
     renderWithProvider(<ConfiguratorWizard />)
     
     // Try to proceed without selecting country

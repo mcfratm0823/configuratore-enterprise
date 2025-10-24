@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Step1Country } from '@/features/configurator/components/steps/Step1Country'
 import { ConfiguratorProvider } from '@/context/ConfiguratorContext'
