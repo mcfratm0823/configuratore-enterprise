@@ -78,7 +78,7 @@ function TestContent() {
             onClick={() => setCurrentTestStep(step)}
             className={`px-3 py-1 rounded text-sm font-medium border ${
               currentTestStep === step 
-                ? 'bg-[#2d5a3d] text-white border-[#2d5a3d]' 
+                ? 'bg-[#ed6d23] text-white border-[#ed6d23]' 
                 : 'bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100'
             }`}
           >

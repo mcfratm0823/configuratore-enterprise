@@ -26,7 +26,7 @@ export default function CancelPage() {
         <div className="space-y-3">
           <button
             onClick={() => window.location.href = '/configurator'}
-            className="w-full bg-[#2d5a3d] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#4a7c59] transition-colors"
+            className="w-full bg-[#ed6d23] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#d55a1a] transition-colors"
           >
             Torna al Configuratore
           </button>

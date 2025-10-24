@@ -223,7 +223,7 @@ export function Step6Design() {
                 required
                 value={state.contactForm.firstName}
                 onChange={(e) => actions.setContactForm({ firstName: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="Il tuo nome"
               />
             </div>
@@ -237,7 +237,7 @@ export function Step6Design() {
                 required
                 value={state.contactForm.lastName}
                 onChange={(e) => actions.setContactForm({ lastName: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="Il tuo cognome"
               />
             </div>
@@ -254,7 +254,7 @@ export function Step6Design() {
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
                   state.contactForm.email && !isEmailValid(state.contactForm.email) 
                     ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-[#2d5a3d]'
+                    : 'border-gray-300 focus:ring-[#ed6d23]'
                 }`}
                 placeholder="email@esempio.com"
               />
@@ -272,7 +272,7 @@ export function Step6Design() {
                 required
                 value={state.contactForm.phone}
                 onChange={(e) => actions.setContactForm({ phone: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="+39 123 456 7890"
               />
             </div>
@@ -286,7 +286,7 @@ export function Step6Design() {
                 required
                 value={state.contactForm.company}
                 onChange={(e) => actions.setContactForm({ company: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="Nome della tua azienda"
               />
             </div>
@@ -310,7 +310,7 @@ export function Step6Design() {
                   // Se seleziona "solo email", disabilita automaticamente le chiamate
                   ...(e.target.checked && { canCall: false, preferredCallTime: '' })
                 })}
-                className="w-4 h-4 text-[#2d5a3d] bg-gray-100 border-gray-300 rounded focus:ring-[#2d5a3d] focus:ring-2"
+                className="w-4 h-4 text-[#ed6d23] bg-gray-100 border-gray-300 rounded focus:ring-[#ed6d23] focus:ring-2"
               />
               <label htmlFor="emailOnly" className="text-sm text-gray-700">
                 Voglio essere contattato esclusivamente via email
@@ -324,7 +324,7 @@ export function Step6Design() {
                 checked={state.contactForm.canCall}
                 disabled={state.contactForm.emailOnly}
                 onChange={(e) => actions.setContactForm({ canCall: e.target.checked })}
-                className="w-4 h-4 text-[#2d5a3d] bg-gray-100 border-gray-300 rounded focus:ring-[#2d5a3d] focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-4 h-4 text-[#ed6d23] bg-gray-100 border-gray-300 rounded focus:ring-[#ed6d23] focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <label htmlFor="canCall" className={`text-sm ${state.contactForm.emailOnly ? 'text-gray-400' : 'text-gray-700'}`}>
                 Acconsento a essere contattato telefonicamente
@@ -339,7 +339,7 @@ export function Step6Design() {
                 <select
                   value={state.contactForm.preferredCallTime}
                   onChange={(e) => actions.setContactForm({ preferredCallTime: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent text-gray-900"
                 >
                   <option value="">Seleziona un orario</option>
                   <option value="mattina">Mattina (9:00 - 12:00)</option>
@@ -369,7 +369,7 @@ export function Step6Design() {
                   Pagamento €50 richiesto tramite Stripe
                 </p>
               </div>
-              <div className="text-xl font-bold text-[#2d5a3d]">
+              <div className="text-xl font-bold text-[#ed6d23]">
                 €50,00
               </div>
             </div>
@@ -390,10 +390,10 @@ export function Step6Design() {
           <button
             type="submit"
             disabled={!isFormValid() || isSubmitting || isPaymentProcessing}
-            className={`px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2d5a3d] ${
+            className={`px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed6d23] ${
               !isFormValid() || isSubmitting || isPaymentProcessing
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-[#2d5a3d] hover:bg-[#4a7c59]'
+                : 'bg-[#ed6d23] hover:bg-[#d55a1a]'
             }`}
           >
             {isPaymentProcessing ? (

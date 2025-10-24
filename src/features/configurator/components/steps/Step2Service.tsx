@@ -37,7 +37,7 @@ export function Step2Service() {
               onClick={() => handleServiceSubTypeSelect(service.subType)}
               className={`border rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
                 state.serviceSubType === service.subType 
-                  ? 'border-[#2d5a3d] bg-green-50' 
+                  ? 'border-[#ed6d23] bg-green-50' 
                   : 'border-gray-200'
               }`}
             >
@@ -60,7 +60,7 @@ export function Step2Service() {
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   state.serviceSubType === service.subType
-                    ? 'border-[#2d5a3d] bg-[#2d5a3d]'
+                    ? 'border-[#ed6d23] bg-[#ed6d23]'
                     : 'border-gray-300'
                 }`}>
                   {state.serviceSubType === service.subType && (

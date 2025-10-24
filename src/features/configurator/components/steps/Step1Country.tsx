@@ -121,7 +121,7 @@ export function Step1Country() {
             placeholder="Cerca paesi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border-b border-gray-300 focus:border-[#2d5a3d] focus:outline-none bg-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-2 border-b border-gray-300 focus:border-[#ed6d23] focus:outline-none bg-transparent text-gray-900 placeholder-gray-500"
           />
         </div>
 
@@ -132,7 +132,7 @@ export function Step1Country() {
               key={country.id}
               variant={state.country === country.id ? 'outlined' : 'default'}
               className={`cursor-pointer transition-all hover:shadow-md hover:scale-105 text-center p-3 ${
-                state.country === country.id ? 'border-[#2d5a3d] bg-green-50 scale-105' : 'hover:border-gray-400'
+                state.country === country.id ? 'border-[#ed6d23] bg-green-50 scale-105' : 'hover:border-gray-400'
               }`}
               onClick={() => handleCountrySelect(country.id)}
             >
@@ -151,7 +151,7 @@ export function Step1Country() {
           <div className="flex items-center gap-3 cursor-pointer" onClick={handleSampleToggle}>
             <button
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                state.wantsSample ? 'bg-[#2d5a3d]' : 'bg-gray-300'
+                state.wantsSample ? 'bg-[#ed6d23]' : 'bg-gray-300'
               }`}
             >
               <span

@@ -95,7 +95,7 @@ export function Step5Extras() {
       <div className="bg-white border border-gray-200 rounded-lg p-8 text-center shadow-sm">
         <div className="mb-6">
           <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors ${
-            downloadCompleted ? 'bg-green-600' : 'bg-[#2d5a3d]'
+            downloadCompleted ? 'bg-green-600' : 'bg-[#ed6d23]'
           }`}>
             {downloadCompleted ? (
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,12 +122,12 @@ export function Step5Extras() {
         <button
           onClick={handleDownloadZIP}
           disabled={isDownloading || downloadCompleted}
-          className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2d5a3d] ${
+          className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed6d23] ${
             downloadCompleted
               ? 'bg-green-600 cursor-default'
               : isDownloading 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-[#2d5a3d] hover:bg-[#4a7c59] hover:scale-105'
+                : 'bg-[#ed6d23] hover:bg-[#d55a1a] hover:scale-105'
           }`}
         >
           {downloadCompleted ? (

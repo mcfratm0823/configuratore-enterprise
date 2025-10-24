@@ -85,7 +85,7 @@ export function BillingSection({
                   value={billingData.vatNumber || ''}
                   onChange={(e) => handleFieldChange('vatNumber', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
               
@@ -99,7 +99,7 @@ export function BillingSection({
                   value={billingData.fiscalCode || ''}
                   onChange={(e) => handleFieldChange('fiscalCode', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
               
@@ -113,7 +113,7 @@ export function BillingSection({
                   value={billingData.legalName || ''}
                   onChange={(e) => handleFieldChange('legalName', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ export function BillingSection({
                   value={billingData.billingAddress || ''}
                   onChange={(e) => handleFieldChange('billingAddress', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
               
@@ -147,7 +147,7 @@ export function BillingSection({
                   value={billingData.billingCity || ''}
                   onChange={(e) => handleFieldChange('billingCity', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
               
@@ -161,7 +161,7 @@ export function BillingSection({
                   value={billingData.billingPostalCode || ''}
                   onChange={(e) => handleFieldChange('billingPostalCode', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
               
@@ -175,7 +175,7 @@ export function BillingSection({
                   value={billingData.billingProvince || ''}
                   onChange={(e) => handleFieldChange('billingProvince', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@ export function BillingSection({
                   value={billingData.sdi || ''}
                   onChange={(e) => handleFieldChange('sdi', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Codice destinatario per fatturazione elettronica
@@ -212,7 +212,7 @@ export function BillingSection({
                   value={billingData.pec || ''}
                   onChange={(e) => handleFieldChange('pec', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d5a3d] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Solo se non hai codice SDI

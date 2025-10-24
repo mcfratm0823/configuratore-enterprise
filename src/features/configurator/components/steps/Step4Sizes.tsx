@@ -83,7 +83,7 @@ export function Step4Sizes() {
               Totale preventivo
             </span>
             <div className="text-right">
-              <span className="text-xl font-bold text-[#2d5a3d]">
+              <span className="text-xl font-bold text-[#ed6d23]">
                 €{canSelectionTotal.toLocaleString('it-IT', { 
                   minimumFractionDigits: 2, 
                   maximumFractionDigits: 2 
@@ -119,13 +119,13 @@ export function Step4Sizes() {
             </div>
             
             <div className="flex items-center gap-3">
-              <span className={`text-sm font-medium ${state.wantsToContinueQuote ? 'text-[#2d5a3d]' : 'text-gray-500'}`}>
+              <span className={`text-sm font-medium ${state.wantsToContinueQuote ? 'text-[#ed6d23]' : 'text-gray-500'}`}>
                 {state.wantsToContinueQuote ? 'Sì' : 'No'}
               </span>
               <button
                 onClick={handleContinueToggle}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#2d5a3d] focus:ring-offset-2 ${
-                  state.wantsToContinueQuote ? 'bg-[#2d5a3d]' : 'bg-gray-300'
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 ${
+                  state.wantsToContinueQuote ? 'bg-[#ed6d23]' : 'bg-gray-300'
                 }`}
                 aria-label={state.wantsToContinueQuote ? 'Disabilita continuazione' : 'Abilita continuazione'}
               >

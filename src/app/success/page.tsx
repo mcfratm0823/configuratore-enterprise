@@ -21,7 +21,7 @@ function SuccessContent() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2d5a3d] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ed6d23] mx-auto mb-4"></div>
           <h2 className="text-xl font-medium text-gray-900 mb-2">Verificando il pagamento...</h2>
           <p className="text-gray-600">Attendere prego...</p>
         </div>
@@ -58,7 +58,7 @@ function SuccessContent() {
           
           <button
             onClick={() => window.location.href = '/configurator'}
-            className="w-full bg-[#2d5a3d] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#4a7c59] transition-colors"
+            className="w-full bg-[#ed6d23] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#d55a1a] transition-colors"
           >
             Configura un altro progetto
           </button>
@@ -80,7 +80,7 @@ export default function SuccessPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2d5a3d] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ed6d23] mx-auto mb-4"></div>
           <h2 className="text-xl font-medium text-gray-900 mb-2">Caricamento...</h2>
         </div>
       </div>

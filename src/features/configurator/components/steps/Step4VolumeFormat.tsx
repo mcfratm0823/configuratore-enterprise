@@ -223,7 +223,7 @@ export function Step4VolumeFormat() {
                 onClick={() => handleVolumeSelect(volume.id)}
                 className={`px-4 py-2 rounded-full transition-all text-sm font-medium ${
                   isSelected
-                    ? 'bg-[#2d5a3d] text-white' 
+                    ? 'bg-[#ed6d23] text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -247,7 +247,7 @@ export function Step4VolumeFormat() {
               onChange={(e) => handleCustomLitersChange(e.target.value)}
               placeholder="Inserisci litri (min. 1000)"
               min="1000"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:border-[#2d5a3d] focus:outline-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:border-[#ed6d23] focus:outline-none"
             />
           </div>
         )}
@@ -266,7 +266,7 @@ export function Step4VolumeFormat() {
                 onClick={() => handleFormatSelect(format.id)}
                 className={`px-4 py-2 rounded-full transition-all text-sm font-medium ${
                   isSelected
-                    ? 'bg-[#2d5a3d] text-white' 
+                    ? 'bg-[#ed6d23] text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >

@@ -146,7 +146,7 @@ export function ConfiguratorWizard() {
                 className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                   !currentStep.isCompleted
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-[#2d5a3d] text-white hover:bg-[#4a7c59]'
+                    : 'bg-[#ed6d23] text-white hover:bg-[#d55a1a]'
                 }`}
               >
                 Avanti →
@@ -174,7 +174,7 @@ export function ConfiguratorWizard() {
     return (
       <div className="w-full bg-gray-100 rounded-full h-1">
         <div 
-          className="h-1 rounded-full transition-all duration-700 ease-out bg-[#2d5a3d]"
+          className="h-1 rounded-full transition-all duration-700 ease-out bg-[#ed6d23]"
           style={{ width: `${stepProgressPercentage}%` }}
         />
       </div>
