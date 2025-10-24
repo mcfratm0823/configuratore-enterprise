@@ -469,7 +469,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   
   const emailPayload: {
     from: string
-    to: string
+    to: string | string[]
     subject: string
     html: string
     attachments?: Array<{ filename: string; content: string; type?: string; disposition?: string }>
@@ -631,7 +631,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   
   const emailPayload: {
     from: string
-    to: string
+    to: string | string[]
     subject: string
     html: string
     attachments?: Array<{ filename: string; content: string; type?: string; disposition?: string }>
