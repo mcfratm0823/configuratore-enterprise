@@ -316,8 +316,6 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
 async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
   try {
     // Try multiple approaches for maximum compatibility
-    let response: Response
-    
     // Approach 1: Direct URL fetch
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
@@ -326,7 +324,7 @@ async function getTemplateAttachment(): Promise<{ filename: string; content: str
         : 'http://localhost:3000'
     
     console.log('🔍 Trying to fetch template from:', `${baseUrl}/templates/Testi_template.zip`)
-    response = await fetch(`${baseUrl}/templates/Testi_template.zip`)
+    const response = await fetch(`${baseUrl}/templates/Testi_template.zip`)
     
     if (!response.ok) {
       console.error('❌ Template ZIP not found via fetch:', response.status, baseUrl)
