@@ -84,28 +84,15 @@ export function Step4VolumeFormat() {
 
   // Calculate production data
   const calculateProduction = () => {
-    if (!selectedVolume || !selectedFormat) return null
-
-    const volumeOption = volumeOptions.find(v => v.id === selectedVolume)
-    const formatOption = formatOptions.find(f => f.id === selectedFormat)
-    
-    if (!volumeOption || !formatOption) return null
-
-    let totalLiters = volumeOption.liters
-    if (volumeOption.isCustom && customLiters) {
-      totalLiters = parseInt(customLiters)
+    if (!state.volumeFormatSelection?.volumeLiters || !state.volumeFormatSelection?.formatMl) {
+      return null
     }
 
-    if (totalLiters <= 0 || formatOption.ml <= 0) return null
-
-    const totalPieces = Math.floor((totalLiters * 1000) / formatOption.ml)
-    const cartonsCount = Math.ceil(totalPieces / 24)
-
     return {
-      totalLiters,
-      formatMl: formatOption.ml,
-      totalPieces,
-      cartonsCount
+      totalLiters: state.volumeFormatSelection.volumeLiters,
+      formatMl: state.volumeFormatSelection.formatMl,
+      totalPieces: state.volumeFormatSelection.totalPieces,
+      cartonsCount: state.volumeFormatSelection.cartonsCount
     }
   }
 

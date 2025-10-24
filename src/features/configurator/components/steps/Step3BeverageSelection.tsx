@@ -45,8 +45,6 @@ const beverageOptions: BeverageOption[] = [
 
 export function Step3BeverageSelection() {
   const { state, actions } = useConfigurator()
-  const [selectedBeverage, setSelectedBeverage] = useState<string>('')
-  const [customBeverageText, setCustomBeverageText] = useState<string>('')
   const [validationError, setValidationError] = useState<string>('')
 
   // Solo per Private Label
@@ -70,12 +68,12 @@ export function Step3BeverageSelection() {
   const validateSelection = (): boolean => {
     setValidationError('')
     
-    if (!selectedBeverage) {
+    if (!state.beverageSelection?.selectedBeverage) {
       setValidationError('Seleziona una tipologia di bevanda')
       return false
     }
     
-    if (selectedBeverage === 'rd-custom' && !customBeverageText.trim()) {
+    if (state.beverageSelection.selectedBeverage === 'rd-custom' && !state.beverageSelection.customBeverageText?.trim()) {
       setValidationError('Specifica la bevanda che vuoi creare')
       return false
     }

@@ -28,7 +28,6 @@ const packagingOptions: PackagingOption[] = [
 
 export function Step5PackagingChoice() {
   const { state, actions } = useConfigurator()
-  const [selectedPackaging, setSelectedPackaging] = useState<string>('')
   const [validationError, setValidationError] = useState<string>('')
 
   // Solo per Private Label
@@ -50,7 +49,6 @@ export function Step5PackagingChoice() {
 
   // Handle packaging selection
   const handlePackagingSelect = (packagingId: string) => {
-    setSelectedPackaging(packagingId)
     setValidationError('')
     
     // Save to context
