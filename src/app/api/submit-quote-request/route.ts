@@ -312,38 +312,20 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
   }
 }
 
-// Helper function per leggere e convertire ZIP in base64 - Enterprise Edge Compatible
+// Helper function per leggere e convertire ZIP in base64 - TEST WITH SIMPLE PDF
 async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
   try {
-    // Try multiple approaches for maximum compatibility
-    // Approach 1: Direct URL fetch
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NODE_ENV === 'production'
-        ? 'https://configuratore-nextjs.vercel.app'  // Fallback production URL
-        : 'http://localhost:3000'
+    // TEMPORARY: Create a simple test PDF to verify attachment mechanism
+    const testPdfBase64 = 'JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nF2P0Q6CQAyF3+UrTkwjEfIZxhcwJkwCkuDsm/9vBxF4aNK23/1uT7tP8BRNywgKnGF6gRKFhOSkD+GQ0pYmJqOjLhOlT8HdPzO4N3sHY1hl9CcCa/qvQU0VUBgKGCYgBokABgSjCZIQqiQhB5oLiMojUaBCkBAhpEFBAAAAAP//AAAAAP//AAAAAAAAAAAAAAAAAAD//1BLAQIDABQABgAIAAAAIQAAAAAAAAAAAAAAAAIAAIAAXF/AABLBRRcAFAAAABAAAAAAAAAP+AAAAA4AAD8P//AoJEAOQ=='
     
-    console.log('🔍 Trying to fetch template from:', `${baseUrl}/templates/Testi_template.zip`)
-    const response = await fetch(`${baseUrl}/templates/Testi_template.zip`)
-    
-    if (!response.ok) {
-      console.error('❌ Template ZIP not found via fetch:', response.status, baseUrl)
-      return null
-    }
-    
-    const arrayBuffer = await response.arrayBuffer()
-    console.log('📦 ZIP file size:', arrayBuffer.byteLength, 'bytes')
-    
-    const buffer = Buffer.from(arrayBuffer)
-    const base64Content = buffer.toString('base64')
-    console.log('✅ Base64 conversion successful, length:', base64Content.length)
+    console.log('🧪 Using TEST PDF attachment for debugging')
     
     return {
-      filename: 'white-label-templates.zip',
-      content: base64Content
+      filename: 'test-template.pdf',
+      content: testPdfBase64
     }
   } catch (error) {
-    console.error('❌ Error reading template ZIP via fetch:', error)
+    console.error('❌ Error creating test attachment:', error)
     return null
   }
 }
@@ -465,6 +447,8 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
 
   // Prepara allegato ZIP solo per White Label
   const attachment = data.serviceType === 'white-label' ? await getTemplateAttachment() : null
+  console.log('🔍 EMAIL DEBUG - Service type:', data.serviceType)
+  console.log('🔍 EMAIL DEBUG - Attachment result:', attachment ? 'SUCCESS' : 'FAILED')
   
   const emailPayload: {
     from: string
@@ -484,7 +468,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
     emailPayload.attachments = [{
       filename: attachment.filename,
       content: attachment.content,
-      type: 'application/zip',
+      type: 'application/pdf',
       disposition: 'attachment'
     }]
     console.log('📎 Adding ZIP attachment:', attachment.filename, 'Size:', attachment.content.length)
@@ -625,6 +609,8 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
 
   // Prepara allegato ZIP solo per White Label
   const attachment = data.serviceType === 'white-label' ? await getTemplateAttachment() : null
+  console.log('🔍 EMAIL DEBUG - Service type:', data.serviceType)
+  console.log('🔍 EMAIL DEBUG - Attachment result:', attachment ? 'SUCCESS' : 'FAILED')
   
   const emailPayload: {
     from: string
@@ -644,7 +630,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
     emailPayload.attachments = [{
       filename: attachment.filename,
       content: attachment.content,
-      type: 'application/zip',
+      type: 'application/pdf',
       disposition: 'attachment'
     }]
     console.log('📎 Adding ZIP attachment:', attachment.filename, 'Size:', attachment.content.length)
