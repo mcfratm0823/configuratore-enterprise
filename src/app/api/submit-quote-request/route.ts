@@ -200,7 +200,7 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
   const RESEND_API_KEY = process.env.RESEND_API_KEY!
   
   const isPrivateLabel = data.serviceType === 'private-label'
-  const emailSubject = `Nuova Richiesta Quote ${isPrivateLabel ? 'PRIVATE LABEL' : 'WHITE LABEL'} - ${data.contactForm.company || data.contactForm.firstName}`
+  const emailSubject = `${data.contactForm.company || data.contactForm.firstName} - Nuova Richiesta ${isPrivateLabel ? 'PRIVATE LABEL' : 'WHITE LABEL'}`
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
