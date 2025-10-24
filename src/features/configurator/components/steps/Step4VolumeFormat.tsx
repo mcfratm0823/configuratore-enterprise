@@ -64,9 +64,6 @@ const formatOptions: FormatOption[] = [
 
 export function Step4VolumeFormat() {
   const { state, actions } = useConfigurator()
-  const [selectedVolume, setSelectedVolume] = useState<string>('')
-  const [customLiters, setCustomLiters] = useState<string>('')
-  const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [validationError, setValidationError] = useState<string>('')
 
   // Solo per Private Label
@@ -117,20 +114,18 @@ export function Step4VolumeFormat() {
   const validateSelection = (): boolean => {
     setValidationError('')
     
-    if (!selectedVolume) {
+    if (!state.volumeFormatSelection?.volumeLiters) {
       setValidationError('Seleziona il volume di produzione')
       return false
     }
     
-    if (!selectedFormat) {
+    if (!state.volumeFormatSelection?.formatMl) {
       setValidationError('Seleziona il formato lattina')
       return false
     }
 
-    const volumeOption = volumeOptions.find(v => v.id === selectedVolume)
-    if (volumeOption?.isCustom) {
-      const customValue = parseInt(customLiters)
-      if (!customLiters || isNaN(customValue) || customValue < 1000) {
+    if (state.volumeFormatSelection.isCustomVolume) {
+      if (state.volumeFormatSelection.volumeLiters < 1000) {
         setValidationError('Il volume minimo è 1000 litri')
         return false
       }
@@ -141,69 +136,88 @@ export function Step4VolumeFormat() {
 
   // Handle volume selection
   const handleVolumeSelect = (volumeId: string) => {
-    setSelectedVolume(volumeId)
     setValidationError('')
     
-    // Clear custom text if not custom
     const volumeOption = volumeOptions.find(v => v.id === volumeId)
-    if (!volumeOption?.isCustom) {
-      setCustomLiters('')
+    if (!volumeOption) return
+    
+    // Get current format selection
+    const currentFormatMl = state.volumeFormatSelection?.formatMl || 200
+    
+    if (volumeOption.isCustom) {
+      // Custom volume - set as custom but keep existing custom liters if any
+      const existingCustomLiters = state.volumeFormatSelection?.isCustomVolume 
+        ? state.volumeFormatSelection.volumeLiters 
+        : 1000
+      
+      const totalPieces = Math.floor((existingCustomLiters * 1000) / currentFormatMl)
+      const cartonsCount = Math.ceil(totalPieces / 24)
+      
+      actions.setVolumeFormatSelection({
+        volumeLiters: existingCustomLiters,
+        formatMl: currentFormatMl,
+        totalPieces,
+        cartonsCount,
+        isCustomVolume: true
+      })
+    } else {
+      // Predefined volume
+      const totalPieces = Math.floor((volumeOption.liters * 1000) / currentFormatMl)
+      const cartonsCount = Math.ceil(totalPieces / 24)
+      
+      actions.setVolumeFormatSelection({
+        volumeLiters: volumeOption.liters,
+        formatMl: currentFormatMl,
+        totalPieces,
+        cartonsCount,
+        isCustomVolume: false
+      })
     }
   }
 
   // Handle format selection
   const handleFormatSelect = (formatId: string) => {
-    setSelectedFormat(formatId)
     setValidationError('')
     
-    // Save to context if both selections are made
-    const volumeOption = volumeOptions.find(v => v.id === selectedVolume)
     const formatOption = formatOptions.find(f => f.id === formatId)
+    if (!formatOption) return
     
-    if (volumeOption && formatOption) {
-      let totalLiters = volumeOption.liters
-      if (volumeOption.isCustom && customLiters) {
-        totalLiters = parseInt(customLiters)
-      }
-      
-      if (totalLiters > 0) {
-        const totalPieces = Math.floor((totalLiters * 1000) / formatOption.ml)
-        const cartonsCount = Math.ceil(totalPieces / 24)
-        
-        actions.setVolumeFormatSelection({
-          volumeLiters: totalLiters,
-          formatMl: formatOption.ml,
-          totalPieces,
-          cartonsCount,
-          isCustomVolume: volumeOption.isCustom
-        })
-      }
-    }
+    // Get current volume selection or default
+    const currentVolumeLiters = state.volumeFormatSelection?.volumeLiters || 1000
+    const isCustomVolume = state.volumeFormatSelection?.isCustomVolume || false
+    
+    const totalPieces = Math.floor((currentVolumeLiters * 1000) / formatOption.ml)
+    const cartonsCount = Math.ceil(totalPieces / 24)
+    
+    actions.setVolumeFormatSelection({
+      volumeLiters: currentVolumeLiters,
+      formatMl: formatOption.ml,
+      totalPieces,
+      cartonsCount,
+      isCustomVolume
+    })
   }
 
   // Handle custom liters change
   const handleCustomLitersChange = (value: string) => {
-    setCustomLiters(value)
     setValidationError('')
     
-    // Save to context if format is also selected
-    if (selectedFormat && value) {
-      const formatOption = formatOptions.find(f => f.id === selectedFormat)
-      const totalLiters = parseInt(value)
-      
-      if (formatOption && totalLiters > 0) {
-        const totalPieces = Math.floor((totalLiters * 1000) / formatOption.ml)
-        const cartonsCount = Math.ceil(totalPieces / 24)
-        
-        actions.setVolumeFormatSelection({
-          volumeLiters: totalLiters,
-          formatMl: formatOption.ml,
-          totalPieces,
-          cartonsCount,
-          isCustomVolume: true
-        })
-      }
-    }
+    const totalLiters = parseInt(value) || 0
+    if (totalLiters <= 0) return
+    
+    // Get current format selection or default
+    const currentFormatMl = state.volumeFormatSelection?.formatMl || 200
+    
+    const totalPieces = Math.floor((totalLiters * 1000) / currentFormatMl)
+    const cartonsCount = Math.ceil(totalPieces / 24)
+    
+    actions.setVolumeFormatSelection({
+      volumeLiters: totalLiters,
+      formatMl: currentFormatMl,
+      totalPieces,
+      cartonsCount,
+      isCustomVolume: true
+    })
   }
 
   const productionData = calculateProduction()
