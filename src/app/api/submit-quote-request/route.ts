@@ -312,22 +312,27 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
   }
 }
 
-// Helper function per leggere e convertire ZIP in base64
+// Helper function per leggere e convertire ZIP in base64 - Enterprise Edge Compatible
 async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
   try {
-    const fs = await import('fs')
-    const path = await import('path')
+    // Fetch interno del file ZIP dal public path
+    const response = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/templates/Testi_template.zip`)
     
-    const zipPath = path.join(process.cwd(), 'public', 'templates', 'Testi_template.zip')
-    const zipBuffer = fs.readFileSync(zipPath)
-    const base64Content = zipBuffer.toString('base64')
+    if (!response.ok) {
+      console.error('❌ Template ZIP not found via fetch:', response.status)
+      return null
+    }
+    
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    const base64Content = buffer.toString('base64')
     
     return {
       filename: 'white-label-templates.zip',
       content: base64Content
     }
   } catch (error) {
-    console.error('❌ Error reading template ZIP:', error)
+    console.error('❌ Error reading template ZIP via fetch:', error)
     return null
   }
 }

@@ -66,7 +66,7 @@ export function ConfiguratorWizard() {
       description: "Finalizza la richiesta",
       component: state.serviceSubType === ServiceSubType.WHITELABEL ? Step6Design : Step6ContactPrivateLabel,
       isCompleted: state.paymentCompleted,
-      isAvailable: state.serviceSubType === ServiceSubType.WHITELABEL ? state.hasDownloadedTemplate : !!state.packagingSelection
+      isAvailable: state.serviceSubType === ServiceSubType.WHITELABEL ? state.wantsToContinueQuote : !!state.packagingSelection
     }
   ]
 
