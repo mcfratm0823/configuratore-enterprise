@@ -87,7 +87,7 @@ export interface ConfiguratorState {
   // Private Label Packaging Selection
   packagingSelection: PackagingSelection | null
   
-  // Form Contact Data
+  // Form Contact Data with billing information
   contactForm: {
     firstName: string
     lastName: string
@@ -97,6 +97,24 @@ export interface ConfiguratorState {
     canCall: boolean
     preferredCallTime: string
     emailOnly: boolean
+    
+    // Dati fatturazione facoltativi
+    billingData?: {
+      // Dati aziendali
+      vatNumber?: string                    // Partita IVA
+      fiscalCode?: string                   // Codice fiscale
+      legalName?: string                    // Denominazione sociale
+      
+      // Indirizzo fatturazione
+      billingAddress?: string               // Via/indirizzo
+      billingCity?: string                  // Città
+      billingPostalCode?: string           // CAP
+      billingProvince?: string             // Provincia
+      
+      // Fatturazione elettronica
+      sdi?: string                         // Codice univoco SDI
+      pec?: string                         // Email PEC
+    }
   }
   
   // Payment Status
@@ -312,6 +330,8 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
     setVolumeFormatSelection: (selection: VolumeFormatSelection) => dispatch({ type: 'SET_VOLUME_FORMAT_SELECTION', payload: selection }),
     setPackagingSelection: (selection: PackagingSelection) => dispatch({ type: 'SET_PACKAGING_SELECTION', payload: selection }),
     setContactForm: (formData: Partial<ConfiguratorState['contactForm']>) => dispatch({ type: 'SET_CONTACT_FORM', payload: formData }),
+    setBillingData: (billingData: ConfiguratorState['contactForm']['billingData']) => 
+      dispatch({ type: 'SET_CONTACT_FORM', payload: { billingData } }),
     setPaymentCompleted: (completed: boolean) => dispatch({ type: 'SET_PAYMENT_COMPLETED', payload: completed }),
     nextStep: () => dispatch({ type: 'SET_CURRENT_STEP', payload: state.currentStep + 1 }),
     resetState: () => dispatch({ type: 'RESET_STATE' })

@@ -13,6 +13,7 @@
     "test:ci": "jest --ci --coverage --passWithNoTests"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.2",
     "@stripe/stripe-js": "^8.1.0",
     "next": "15.5.5",

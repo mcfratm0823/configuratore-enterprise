@@ -3,6 +3,7 @@
 import { useConfigurator, ServiceSubType } from '@/context'
 import { useState } from 'react'
 import { stripeService, type OrderData } from '@/services/stripeService'
+import { BillingSection } from '@/components/forms/BillingSection'
 
 export function Step6ContactPrivateLabel() {
   const { state, actions } = useConfigurator()
@@ -378,6 +379,13 @@ export function Step6ContactPrivateLabel() {
             )}
           </div>
         </div>
+
+        {/* Sezione Fatturazione Facoltativi */}
+        <BillingSection
+          billingData={state.contactForm.billingData}
+          onBillingDataChange={(billingData) => actions.setContactForm({ billingData })}
+          disabled={isSubmitting || isPaymentProcessing}
+        />
 
         {/* Private Label Project Summary - Minimal */}
         <div className="pt-2 border-t border-gray-200">

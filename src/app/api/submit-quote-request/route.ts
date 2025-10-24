@@ -231,6 +231,25 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
         </ul>
       </div>
 
+      ${data.contactForm.billingData && Object.values(data.contactForm.billingData).some(value => value) ? `
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+          <h3 style="color: #333; margin-top: 0;">📄 Dati Fatturazione (Cliente li ha compilati):</h3>
+          <ul style="list-style: none; padding: 0;">
+            ${data.contactForm.billingData.vatNumber ? `<li><strong>Partita IVA:</strong> ${data.contactForm.billingData.vatNumber}</li>` : ''}
+            ${data.contactForm.billingData.fiscalCode ? `<li><strong>Codice Fiscale:</strong> ${data.contactForm.billingData.fiscalCode}</li>` : ''}
+            ${data.contactForm.billingData.legalName ? `<li><strong>Denominazione Sociale:</strong> ${data.contactForm.billingData.legalName}</li>` : ''}
+            ${data.contactForm.billingData.billingAddress ? `<li><strong>Indirizzo:</strong> ${data.contactForm.billingData.billingAddress}</li>` : ''}
+            ${data.contactForm.billingData.billingCity || data.contactForm.billingData.billingPostalCode || data.contactForm.billingData.billingProvince ? 
+              `<li><strong>Città:</strong> ${data.contactForm.billingData.billingCity || ''} ${data.contactForm.billingData.billingPostalCode || ''} (${data.contactForm.billingData.billingProvince || ''})</li>` : ''}
+            ${data.contactForm.billingData.sdi ? `<li><strong>Codice SDI:</strong> ${data.contactForm.billingData.sdi}</li>` : ''}
+            ${data.contactForm.billingData.pec ? `<li><strong>Email PEC:</strong> ${data.contactForm.billingData.pec}</li>` : ''}
+          </ul>
+          <p style="color: #856404; font-size: 14px; margin: 10px 0 0 0;">
+            <strong>⚠️ IMPORTANTE:</strong> Il cliente ha compilato i dati fatturazione. Usare questi dati per la fattura.
+          </p>
+        </div>
+      ` : ''}
+
       <p style="color: #666; font-size: 14px;">
         <em>Richiesta inviata il: ${new Date(data.submittedAt).toLocaleString('it-IT')}</em>
       </p>
@@ -332,6 +351,25 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
             </span>
           </div>
         </div>
+
+        ${data.contactForm.billingData && Object.values(data.contactForm.billingData).some(value => value) ? `
+          <div style="background: #fff9e6; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #ffc107;">
+            <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📄 Dati fatturazione confermati:</h3>
+            <div style="color: #333; font-size: 14px; line-height: 1.5;">
+              ${data.contactForm.billingData.legalName ? `<strong>Denominazione:</strong> ${data.contactForm.billingData.legalName}<br>` : ''}
+              ${data.contactForm.billingData.vatNumber ? `<strong>P.IVA:</strong> ${data.contactForm.billingData.vatNumber}<br>` : ''}
+              ${data.contactForm.billingData.fiscalCode ? `<strong>C.F.:</strong> ${data.contactForm.billingData.fiscalCode}<br>` : ''}
+              ${data.contactForm.billingData.billingAddress ? `<strong>Indirizzo:</strong> ${data.contactForm.billingData.billingAddress}<br>` : ''}
+              ${data.contactForm.billingData.billingCity || data.contactForm.billingData.billingPostalCode ? 
+                `<strong>Città:</strong> ${data.contactForm.billingData.billingCity || ''} ${data.contactForm.billingData.billingPostalCode || ''}<br>` : ''}
+              ${data.contactForm.billingData.sdi ? `<strong>SDI:</strong> ${data.contactForm.billingData.sdi}<br>` : ''}
+              ${data.contactForm.billingData.pec ? `<strong>PEC:</strong> ${data.contactForm.billingData.pec}<br>` : ''}
+            </div>
+            <p style="color: #856404; font-size: 12px; margin: 15px 0 0 0; font-style: italic;">
+              La fattura sarà emessa con questi dati specifici che hai fornito.
+            </p>
+          </div>
+        ` : ''}
         
         <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
           <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📞 Come ti contatteremo:</h3>
@@ -450,6 +488,25 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
             </span>
           </div>
         </div>
+
+        ${data.contactForm.billingData && Object.values(data.contactForm.billingData).some(value => value) ? `
+          <div style="background: #fff9e6; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #ffc107;">
+            <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📄 Billing information confirmed:</h3>
+            <div style="color: #333; font-size: 14px; line-height: 1.5;">
+              ${data.contactForm.billingData.legalName ? `<strong>Company Name:</strong> ${data.contactForm.billingData.legalName}<br>` : ''}
+              ${data.contactForm.billingData.vatNumber ? `<strong>VAT Number:</strong> ${data.contactForm.billingData.vatNumber}<br>` : ''}
+              ${data.contactForm.billingData.fiscalCode ? `<strong>Tax Code:</strong> ${data.contactForm.billingData.fiscalCode}<br>` : ''}
+              ${data.contactForm.billingData.billingAddress ? `<strong>Address:</strong> ${data.contactForm.billingData.billingAddress}<br>` : ''}
+              ${data.contactForm.billingData.billingCity || data.contactForm.billingData.billingPostalCode ? 
+                `<strong>City:</strong> ${data.contactForm.billingData.billingCity || ''} ${data.contactForm.billingData.billingPostalCode || ''}<br>` : ''}
+              ${data.contactForm.billingData.sdi ? `<strong>SDI Code:</strong> ${data.contactForm.billingData.sdi}<br>` : ''}
+              ${data.contactForm.billingData.pec ? `<strong>PEC Email:</strong> ${data.contactForm.billingData.pec}<br>` : ''}
+            </div>
+            <p style="color: #856404; font-size: 12px; margin: 15px 0 0 0; font-style: italic;">
+              The invoice will be issued with these specific data you provided.
+            </p>
+          </div>
+        ` : ''}
         
         <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
           <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📞 How we'll contact you:</h3>

@@ -1,6 +1,24 @@
 // Shared interfaces for API consistency between webhook and form submission
 // Ensures Private Label and White Label data is handled uniformly
 
+// Dati fatturazione facoltativi per conformità fiscale italiana
+export interface BillingData {
+  // Dati aziendali
+  vatNumber?: string                    // Partita IVA
+  fiscalCode?: string                   // Codice fiscale
+  legalName?: string                    // Denominazione sociale
+  
+  // Indirizzo fatturazione
+  billingAddress?: string               // Via/indirizzo
+  billingCity?: string                  // Città
+  billingPostalCode?: string           // CAP
+  billingProvince?: string             // Provincia
+  
+  // Fatturazione elettronica
+  sdi?: string                         // Codice univoco SDI
+  pec?: string                         // Email PEC
+}
+
 export interface ContactForm {
   firstName: string
   lastName: string
@@ -10,6 +28,9 @@ export interface ContactForm {
   canCall: boolean
   preferredCallTime: string
   emailOnly: boolean
+  
+  // Dati fatturazione facoltativi
+  billingData?: BillingData
 }
 
 // White Label specific data

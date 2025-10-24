@@ -3,6 +3,7 @@
 import { useConfigurator, ServiceSubType } from '@/context'
 import { useState } from 'react'
 import { stripeService, type OrderData } from '@/services/stripeService'
+import { BillingSection } from '@/components/forms/BillingSection'
 
 export function Step6Design() {
   const { state, actions } = useConfigurator()
@@ -364,6 +365,13 @@ export function Step6Design() {
             )}
           </div>
         </div>
+
+        {/* Sezione Fatturazione Facoltativi */}
+        <BillingSection
+          billingData={state.contactForm.billingData}
+          onBillingDataChange={(billingData) => actions.setContactForm({ billingData })}
+          disabled={isSubmitting || isPaymentProcessing}
+        />
 
         {/* Sample Request Info Enterprise */}
         {state.wantsSample && (
