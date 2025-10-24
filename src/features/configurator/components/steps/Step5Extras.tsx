@@ -48,8 +48,8 @@ export function Step5Extras() {
     setDownloadCompleted(false)
     
     try {
-      // Download ZIP template reale da /public/templates/
-      const response = await fetch('/templates/Testi_template.zip')
+      // Download ZIP template reale via API endpoint
+      const response = await fetch('/api/template-download')
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
