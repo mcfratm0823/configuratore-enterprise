@@ -30,21 +30,7 @@ export function Step6Design() {
     )
   }
 
-  // Prerequisite validation enterprise critica
-  if (!state.hasDownloadedTemplate) {
-    return (
-      <div className="space-y-6">
-        <div className="text-sm text-red-600 mb-6">
-          ⚠️ Devi prima scaricare il template nello Step 5
-        </div>
-        <div className="border border-red-200 bg-red-50 rounded-lg p-6 text-center">
-          <p className="text-red-700">
-            Completa il download del template per procedere con la richiesta
-          </p>
-        </div>
-      </div>
-    )
-  }
+  // Template download è ora opzionale - non blocca più la progressione
 
   // Validation form enterprise
   const isFormValid = (): boolean => {

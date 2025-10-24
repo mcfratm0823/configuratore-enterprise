@@ -57,7 +57,7 @@ export function ConfiguratorWizard() {
       title: state.serviceSubType === ServiceSubType.WHITELABEL ? "Template Download" : "Packaging",
       description: state.serviceSubType === ServiceSubType.WHITELABEL ? "Scarica i file di lavoro" : "Tipo di packaging",
       component: state.serviceSubType === ServiceSubType.WHITELABEL ? Step5Extras : Step5PackagingChoice,
-      isCompleted: state.serviceSubType === ServiceSubType.WHITELABEL ? state.hasDownloadedTemplate : !!state.packagingSelection,
+      isCompleted: state.serviceSubType === ServiceSubType.WHITELABEL ? true : !!state.packagingSelection,
       isAvailable: state.serviceSubType === ServiceSubType.WHITELABEL ? state.wantsToContinueQuote : !!state.volumeFormatSelection
     },
     {

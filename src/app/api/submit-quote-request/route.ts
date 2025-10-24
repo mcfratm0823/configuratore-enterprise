@@ -312,6 +312,26 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
   }
 }
 
+// Helper function per leggere e convertire ZIP in base64
+async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
+  try {
+    const fs = await import('fs')
+    const path = await import('path')
+    
+    const zipPath = path.join(process.cwd(), 'public', 'templates', 'Testi_template.zip')
+    const zipBuffer = fs.readFileSync(zipPath)
+    const base64Content = zipBuffer.toString('base64')
+    
+    return {
+      filename: 'white-label-templates.zip',
+      content: base64Content
+    }
+  } catch (error) {
+    console.error('❌ Error reading template ZIP:', error)
+    return null
+  }
+}
+
 // Italian customer confirmation - Unified per White Label + Private Label
 async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_API_KEY: string): Promise<void> {
   const isPrivateLabel = data.serviceType === 'private-label'
@@ -403,6 +423,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
             <li style="margin: 8px 0;">Ti invieremo un preventivo dettagliato personalizzato</li>
             <li style="margin: 8px 0;">Un nostro esperto ti contatterà per finalizzare i dettagli</li>
             ${data.wantsSample ? '<li style="margin: 8px 0;">Il campione verrà spedito dopo conferma pagamento</li>' : ''}
+            ${data.serviceType === 'white-label' ? '<li style="margin: 8px 0;"><strong>📎 Template allegati:</strong> Trovi i template ZIP in allegato per iniziare subito</li>' : ''}
           </ul>
         </div>
         
@@ -426,18 +447,31 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
     </div>
   `
 
+  // Prepara allegato ZIP solo per White Label
+  const attachment = data.serviceType === 'white-label' ? await getTemplateAttachment() : null
+  
+  const emailPayload: any = {
+    from: 'onboarding@resend.dev',
+    to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
+    subject: `${emailSubject} - Per: ${data.contactForm.email}`,
+    html: emailContent
+  }
+  
+  // Aggiungi allegato se disponibile e se è White Label
+  if (attachment && data.serviceType === 'white-label') {
+    emailPayload.attachments = [{
+      filename: attachment.filename,
+      content: attachment.content
+    }]
+  }
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${RESEND_API_KEY}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      from: 'onboarding@resend.dev',
-      to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
-      subject: `${emailSubject} - Per: ${data.contactForm.email}`,
-      html: emailContent
-    })
+    body: JSON.stringify(emailPayload)
   })
 
   if (!response.ok) {
@@ -540,6 +574,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
             <li style="margin: 8px 0;">You'll receive a detailed personalized quote</li>
             <li style="margin: 8px 0;">Our expert will contact you to finalize details</li>
             ${data.wantsSample ? '<li style="margin: 8px 0;">Sample will be shipped after payment confirmation</li>' : ''}
+            ${data.serviceType === 'white-label' ? '<li style="margin: 8px 0;"><strong>📎 Templates attached:</strong> Find the ZIP templates attached to get started immediately</li>' : ''}
           </ul>
         </div>
         
@@ -563,18 +598,31 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
     </div>
   `
 
+  // Prepara allegato ZIP solo per White Label
+  const attachment = data.serviceType === 'white-label' ? await getTemplateAttachment() : null
+  
+  const emailPayload: any = {
+    from: 'onboarding@resend.dev',
+    to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
+    subject: `${emailSubject} - For: ${data.contactForm.email}`,
+    html: emailContent
+  }
+  
+  // Aggiungi allegato se disponibile e se è White Label
+  if (attachment && data.serviceType === 'white-label') {
+    emailPayload.attachments = [{
+      filename: attachment.filename,
+      content: attachment.content
+    }]
+  }
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${RESEND_API_KEY}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      from: 'onboarding@resend.dev',
-      to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
-      subject: `${emailSubject} - For: ${data.contactForm.email}`,
-      html: emailContent
-    })
+    body: JSON.stringify(emailPayload)
   })
 
   if (!response.ok) {

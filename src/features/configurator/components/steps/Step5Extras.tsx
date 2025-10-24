@@ -43,20 +43,24 @@ export function Step5Extras() {
     )
   }
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadZIP = async () => {
     setIsDownloading(true)
     setDownloadCompleted(false)
     
     try {
-      // Simula download con fake PDF enterprise
-      // Genera un PDF fake con content specifico
-      const pdfContent = generateFakePDF()
-      const blob = new Blob([pdfContent], { type: 'application/pdf' })
+      // Download ZIP template reale da /public/templates/
+      const response = await fetch('/templates/Testi_template.zip')
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const blob = await response.blob()
       const url = URL.createObjectURL(blob)
       
       const link = document.createElement('a')
       link.href = url
-      link.download = 'template-etichetta-200ml-white-label.pdf'
+      link.download = 'white-label-templates.zip'
       link.style.display = 'none'
       
       document.body.appendChild(link)
@@ -66,109 +70,23 @@ export function Step5Extras() {
       // Cleanup URL object
       URL.revokeObjectURL(url)
       
-      // Simula delay enterprise per UX
+      // UX delay per feedback visivo
       setTimeout(() => {
         setIsDownloading(false)
         setDownloadCompleted(true)
         // Segna download completato nel context
         actions.setHasDownloadedTemplate(true)
-      }, 2000)
+      }, 1500)
       
     } catch (error: unknown) {
       setIsDownloading(false)
       // Enterprise error handling
       const errorMessage = error instanceof Error ? error.message : 'Download failed'
-      console.error('📥 PDF download error:', errorMessage)
+      console.error('📥 ZIP download error:', errorMessage)
       // TODO: Mostrare error message all'utente
     }
   }
 
-  // Genera fake PDF content enterprise
-  const generateFakePDF = () => {
-    return `%PDF-1.4
-1 0 obj
-<<
-/Type /Catalog
-/Pages 2 0 R
->>
-endobj
-
-2 0 obj
-<<
-/Type /Pages
-/Kids [3 0 R]
-/Count 1
->>
-endobj
-
-3 0 obj
-<<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 4 0 R
-/Resources <<
-/Font <<
-/F1 5 0 R
->>
->>
->>
-endobj
-
-4 0 obj
-<<
-/Length 200
->>
-stream
-BT
-/F1 12 Tf
-50 700 Td
-(TEMPLATE ETICHETTA WHITE LABEL - 200ml) Tj
-0 -20 Td
-(Dimensioni: 8.5cm x 11cm) Tj
-0 -20 Td
-(Risoluzione: 300 DPI) Tj
-0 -20 Td
-(Formato: PDF per stampa professionale) Tj
-0 -40 Td
-(Testi obbligatori:) Tj
-0 -20 Td
-(- Ingredienti: Da specificare) Tj
-0 -20 Td
-(- Informazioni nutrizionali: Da aggiungere) Tj
-0 -20 Td
-(- Codice a barre: Spazio riservato) Tj
-0 -40 Td
-(NOTE: Template enterprise generato automaticamente) Tj
-ET
-endstream
-endobj
-
-5 0 obj
-<<
-/Type /Font
-/Subtype /Type1
-/BaseFont /Helvetica
->>
-endobj
-
-xref
-0 6
-0000000000 65535 f 
-0000000010 00000 n 
-0000000079 00000 n 
-0000000173 00000 n 
-0000000301 00000 n 
-0000000380 00000 n 
-trailer
-<<
-/Size 6
-/Root 1 0 R
->>
-startxref
-456
-%%EOF`
-  }
 
   return (
     <div className="space-y-6">
@@ -191,18 +109,18 @@ startxref
           </div>
           
           <h3 className="text-xl font-medium text-gray-900 mb-2">
-            Template Etichetta 200ml
+            Template White Label
           </h3>
           
           <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
-            Scarica il file PDF con le dimensioni esatte dell&apos;etichetta e i testi obbligatori per la tua lattina da 200ml
+            Scarica il pacchetto ZIP con tutti i template PDF professionali per le tue etichette
           </p>
 
         </div>
 
         {/* Download Button Enterprise */}
         <button
-          onClick={handleDownloadPDF}
+          onClick={handleDownloadZIP}
           disabled={isDownloading || downloadCompleted}
           className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2d5a3d] ${
             downloadCompleted
@@ -232,7 +150,7 @@ startxref
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Scarica Template PDF
+              Scarica Template ZIP
             </>
           )}
         </button>
