@@ -215,16 +215,18 @@ export function Step4VolumeFormat() {
         <h4 className="text-xs text-gray-600 mb-3 uppercase tracking-wide">Volume di produzione</h4>
         <div className="flex flex-wrap gap-2">
           {volumeOptions.map((volume) => {
-            const isSelected = selectedVolume === volume.id
+            const isSelected = state.volumeFormatSelection?.isCustomVolume 
+              ? (volume.isCustom && state.volumeFormatSelection?.volumeLiters > 0)
+              : (state.volumeFormatSelection?.volumeLiters === volume.liters)
             
             return (
               <button
                 key={volume.id}
                 onClick={() => handleVolumeSelect(volume.id)}
-                className={`px-4 py-2 rounded-full transition-all text-sm font-medium ${
+                className={`px-4 py-2 rounded-full transition-all text-sm font-medium border ${
                   isSelected
-                    ? 'bg-[#ed6d23] text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'border-2 border-[#ed6d23] bg-white text-gray-900' 
+                    : 'border-gray-200 bg-gray-100 text-gray-700 hover:border-gray-400'
                 }`}
               >
                 {volume.label}
@@ -239,11 +241,11 @@ export function Step4VolumeFormat() {
         </div>
 
         {/* Custom volume input */}
-        {selectedVolume === 'volume-custom' && (
+        {state.volumeFormatSelection?.isCustomVolume && (
           <div className="mt-3">
             <input
               type="number"
-              value={customLiters}
+              value={state.volumeFormatSelection?.volumeLiters || ''}
               onChange={(e) => handleCustomLitersChange(e.target.value)}
               placeholder="Inserisci litri (min. 1000)"
               min="1000"
@@ -258,16 +260,16 @@ export function Step4VolumeFormat() {
         <h4 className="text-xs text-gray-600 mb-3 uppercase tracking-wide">Formato lattina</h4>
         <div className="flex flex-wrap gap-2">
           {formatOptions.map((format) => {
-            const isSelected = selectedFormat === format.id
+            const isSelected = state.volumeFormatSelection?.formatMl === format.ml
             
             return (
               <button
                 key={format.id}
                 onClick={() => handleFormatSelect(format.id)}
-                className={`px-4 py-2 rounded-full transition-all text-sm font-medium ${
+                className={`px-4 py-2 rounded-full transition-all text-sm font-medium border ${
                   isSelected
-                    ? 'bg-[#ed6d23] text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'border-2 border-[#ed6d23] bg-white text-gray-900' 
+                    : 'border-gray-200 bg-gray-100 text-gray-700 hover:border-gray-400'
                 }`}
               >
                 {format.label}

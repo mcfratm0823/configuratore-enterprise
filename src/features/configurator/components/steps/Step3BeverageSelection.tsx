@@ -85,29 +85,22 @@ export function Step3BeverageSelection() {
 
   // Handle beverage selection
   const handleBeverageSelect = (beverageId: string) => {
-    setSelectedBeverage(beverageId)
     setValidationError('')
-    
-    // Clear custom text if not R&D
-    if (beverageId !== 'rd-custom') {
-      setCustomBeverageText('')
-    }
     
     // Update context state
     actions.setBeverageSelection({
       selectedBeverage: beverageId,
-      customBeverageText: beverageId === 'rd-custom' ? customBeverageText : '',
+      customBeverageText: beverageId === 'rd-custom' ? (state.beverageSelection?.customBeverageText || '') : '',
       isCustom: beverageId === 'rd-custom'
     })
   }
 
   // Handle custom beverage text
   const handleCustomTextChange = (text: string) => {
-    setCustomBeverageText(text)
     setValidationError('')
     
     // Update context if R&D is selected
-    if (selectedBeverage === 'rd-custom') {
+    if (state.beverageSelection?.selectedBeverage === 'rd-custom') {
       actions.setBeverageSelection({
         selectedBeverage: 'rd-custom',
         customBeverageText: text,
@@ -128,7 +121,7 @@ export function Step3BeverageSelection() {
       {/* Grid 2x2 Enterprise Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {beverageOptions.map((beverage) => {
-          const isSelected = selectedBeverage === beverage.id
+          const isSelected = state.beverageSelection?.selectedBeverage === beverage.id
           
           return (
             <div
@@ -154,13 +147,13 @@ export function Step3BeverageSelection() {
       </div>
 
       {/* Custom beverage input */}
-      {selectedBeverage === 'rd-custom' && (
+      {state.beverageSelection?.selectedBeverage === 'rd-custom' && (
         <div className="border border-gray-200 rounded-lg p-4">
           <label className="block text-xs text-gray-600 mb-2">
             Descrivi la bevanda che vuoi creare *
           </label>
           <textarea
-            value={customBeverageText}
+            value={state.beverageSelection?.customBeverageText || ''}
             onChange={(e) => handleCustomTextChange(e.target.value)}
             placeholder="Es. Energy drink con estratti naturali, Kombucha ai frutti rossi, Bevanda isotonica bio..."
             className="w-full px-3 py-2 border-0 resize-none text-sm text-gray-900 placeholder-gray-400 focus:outline-none bg-transparent"
@@ -172,7 +165,7 @@ export function Step3BeverageSelection() {
               Sii più specifico possibile per un preventivo accurato
             </span>
             <span className="text-xs text-gray-300">
-              {customBeverageText.length}/500
+              {(state.beverageSelection?.customBeverageText || '').length}/500
             </span>
           </div>
         </div>

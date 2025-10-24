@@ -68,7 +68,7 @@ export function Step5PackagingChoice() {
       {/* Packaging Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {packagingOptions.map((packaging) => {
-          const isSelected = selectedPackaging === packaging.id
+          const isSelected = state.packagingSelection?.selectedPackaging === packaging.id
           
           return (
             <div
