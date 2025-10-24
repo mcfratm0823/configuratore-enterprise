@@ -450,7 +450,13 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   // Prepara allegato ZIP solo per White Label
   const attachment = data.serviceType === 'white-label' ? await getTemplateAttachment() : null
   
-  const emailPayload: any = {
+  const emailPayload: {
+    from: string
+    to: string
+    subject: string
+    html: string
+    attachments?: Array<{ filename: string; content: string }>
+  } = {
     from: 'onboarding@resend.dev',
     to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
     subject: `${emailSubject} - Per: ${data.contactForm.email}`,
@@ -601,7 +607,13 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   // Prepara allegato ZIP solo per White Label
   const attachment = data.serviceType === 'white-label' ? await getTemplateAttachment() : null
   
-  const emailPayload: any = {
+  const emailPayload: {
+    from: string
+    to: string
+    subject: string
+    html: string
+    attachments?: Array<{ filename: string; content: string }>
+  } = {
     from: 'onboarding@resend.dev',
     to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
     subject: `${emailSubject} - For: ${data.contactForm.email}`,
