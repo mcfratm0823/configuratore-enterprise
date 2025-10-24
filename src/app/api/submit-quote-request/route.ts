@@ -283,7 +283,7 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
     },
     body: JSON.stringify({
       from: 'onboarding@resend.dev',
-      to: 'a.guarnieri.portfolio@gmail.com',
+      to: ['a.guarnieri.portfolio@gmail.com', 'ivan.marchese@cafe124milan.com'],
       subject: emailSubject,
       html: emailContent
     })
@@ -475,7 +475,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
     attachments?: Array<{ filename: string; content: string; type?: string; disposition?: string }>
   } = {
     from: 'onboarding@resend.dev',
-    to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
+    to: ['a.guarnieri.portfolio@gmail.com', 'ivan.marchese@cafe124milan.com'], // Admin + Cliente per testing
     subject: `${emailSubject} - Per: ${data.contactForm.email}`,
     html: emailContent
   }
@@ -506,7 +506,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   }
 
   const result = await response.json()
-  console.log('✅ Italian customer confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+  console.log('✅ Italian customer confirmation sent to ADMINS (testing) for customer:', data.contactForm.email, '- ID:', result.id)
 }
 
 // English customer confirmation - Unified per White Label + Private Label
@@ -637,7 +637,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
     attachments?: Array<{ filename: string; content: string; type?: string; disposition?: string }>
   } = {
     from: 'onboarding@resend.dev',
-    to: 'a.guarnieri.portfolio@gmail.com', // TEMP: Solo email verificata per testing
+    to: ['a.guarnieri.portfolio@gmail.com', 'ivan.marchese@cafe124milan.com'], // Admin + Cliente per testing
     subject: `${emailSubject} - For: ${data.contactForm.email}`,
     html: emailContent
   }
@@ -668,5 +668,5 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   }
 
   const result = await response.json()
-  console.log('✅ English customer confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+  console.log('✅ English customer confirmation sent to ADMINS (testing) for customer:', data.contactForm.email, '- ID:', result.id)
 }

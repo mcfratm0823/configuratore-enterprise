@@ -240,7 +240,7 @@ async function sendAdminNotificationWithPayment(data: UnifiedQuoteData): Promise
     },
     body: JSON.stringify({
       from: 'onboarding@resend.dev',
-      to: 'a.guarnieri.portfolio@gmail.com',
+      to: ['a.guarnieri.portfolio@gmail.com', 'ivan.marchese@cafe124milan.com'],
       subject: emailSubject,
       html: emailContent
     })
@@ -377,7 +377,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
     },
     body: JSON.stringify({
       from: 'onboarding@resend.dev',
-      to: 'a.guarnieri.portfolio@gmail.com', // Temp: solo email verificata
+      to: ['a.guarnieri.portfolio@gmail.com', 'ivan.marchese@cafe124milan.com'], // Admin + Cliente per testing
       subject: `${emailSubject} - Per: ${data.contactForm.email}`,
       html: emailContent
     })
@@ -389,7 +389,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   }
 
   const result = await response.json()
-  console.log('✅ Italian customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+  console.log('✅ Italian customer payment confirmation sent to ADMINS (testing) for customer:', data.contactForm.email, '- ID:', result.id)
 }
 
 // English customer email using unified interface
@@ -499,7 +499,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
     },
     body: JSON.stringify({
       from: 'onboarding@resend.dev',
-      to: 'a.guarnieri.portfolio@gmail.com', // Temp: solo email verificata
+      to: ['a.guarnieri.portfolio@gmail.com', 'ivan.marchese@cafe124milan.com'], // Admin + Cliente per testing
       subject: `${emailSubject} - For: ${data.contactForm.email}`,
       html: emailContent
     })
@@ -511,5 +511,5 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   }
 
   const result = await response.json()
-  console.log('✅ English customer payment confirmation sent to:', data.contactForm.email, '- ID:', result.id)
+  console.log('✅ English customer payment confirmation sent to ADMINS (testing) for customer:', data.contactForm.email, '- ID:', result.id)
 }
