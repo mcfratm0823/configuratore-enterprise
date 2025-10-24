@@ -41,8 +41,6 @@ export function BillingSection({
     onBillingDataChange(updatedData)
   }
 
-  // Check if any billing data is filled
-  const hasBillingData = Object.values(billingData).some(value => value && value.trim() !== '')
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
@@ -58,11 +56,6 @@ export function BillingSection({
           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             Opzionali
           </span>
-          {hasBillingData && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-              ✓ Compilati
-            </span>
-          )}
         </div>
         {isExpanded ? (
           <ChevronUpIcon className="w-5 h-5 text-gray-500" />
