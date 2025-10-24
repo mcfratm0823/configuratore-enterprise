@@ -35,10 +35,10 @@ export function Step2Service() {
             <div
               key={service.subType}
               onClick={() => handleServiceSubTypeSelect(service.subType)}
-              className={`border rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
+              className={`border rounded-lg p-6 cursor-pointer transition-all ${
                 state.serviceSubType === service.subType 
                   ? 'border-[#ed6d23] border-2' 
-                  : 'border-gray-200'
+                  : 'border-gray-200 hover:border-gray-400'
               }`}
             >
               <div className="flex justify-between items-start">

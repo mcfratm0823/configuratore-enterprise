@@ -74,10 +74,10 @@ export function Step5PackagingChoice() {
             <div
               key={packaging.id}
               onClick={() => handlePackagingSelect(packaging.id)}
-              className={`rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
+              className={`rounded-lg p-6 cursor-pointer transition-all ${
                 isSelected
                   ? 'border-2 border-[#ed6d23] bg-white' 
-                  : 'border border-gray-200 bg-white'
+                  : 'border border-gray-200 bg-white hover:border-gray-400'
               }`}
             >
               <div>

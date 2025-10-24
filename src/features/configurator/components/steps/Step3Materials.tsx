@@ -70,10 +70,10 @@ export function Step3Materials() {
           <div
             key={option.quantity}
             onClick={() => handleCanSelection(option.quantity, option.cartonsCount, option.pricePerCan)}
-            className={`rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
+            className={`rounded-lg p-6 cursor-pointer transition-all ${
               state.canSelection?.quantity === option.quantity
                 ? 'border-2 border-[#ed6d23] bg-white' 
-                : 'border border-gray-200 bg-white'
+                : 'border border-gray-200 bg-white hover:border-gray-400'
             }`}
           >
             <div className="flex justify-between items-start">
