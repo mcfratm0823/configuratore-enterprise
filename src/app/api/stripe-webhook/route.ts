@@ -158,15 +158,15 @@ async function sendAdminNotificationWithPayment(data: UnifiedQuoteData): Promise
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="background: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+      <div style="background: #ed6d23; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
         <h2 style="margin: 0;">💳 PAGAMENTO CONFERMATO</h2>
         <p style="margin: 10px 0 0 0; font-size: 18px;">€${data.amountPaid} - Campione ${isPrivateLabel ? 'Private Label' : 'White Label'}</p>
       </div>
       
       <div style="padding: 30px; border: 1px solid #ddd; border-top: none;">
-        <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h3 style="color: #155724; margin-top: 0;">✅ Dettagli Pagamento:</h3>
-          <ul style="list-style: none; padding: 0; color: #155724;">
+        <div style="background: #fff3e6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="color: #d55a1a; margin-top: 0;">✅ Dettagli Pagamento:</h3>
+          <ul style="list-style: none; padding: 0; color: #d55a1a;">
             <li><strong>Importo:</strong> €${data.amountPaid}</li>
             <li><strong>Session ID:</strong> ${data.paymentSessionId}</li>
             <li><strong>Data:</strong> ${new Date(data.submittedAt).toLocaleString('it-IT')}</li>
@@ -185,7 +185,7 @@ async function sendAdminNotificationWithPayment(data: UnifiedQuoteData): Promise
           </ul>
         </div>
 
-        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <div style="background: #fff3e6; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #333; margin-top: 0;">📦 Dettagli Progetto:</h3>
           <ul style="list-style: none; padding: 0;">
             ${data.canSelection ? `
@@ -276,22 +276,22 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-      <div style="background: #28a745; color: white; padding: 30px; text-align: center;">
+      <div style="background: #ed6d23; color: white; padding: 30px; text-align: center;">
         <h1 style="margin: 0; font-size: 28px;">🎉 Pagamento Confermato!</h1>
         <p style="margin: 15px 0 0 0; font-size: 18px; opacity: 0.9;">Il tuo campione è in preparazione</p>
       </div>
       
       <div style="padding: 30px;">
-        <h2 style="color: #28a745; margin-top: 0;">Ciao ${data.contactForm.firstName}!</h2>
+        <h2 style="color: #ed6d23; margin-top: 0;">Ciao ${data.contactForm.firstName}!</h2>
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Fantastico! Il tuo pagamento di <strong>€${data.amountPaid}</strong> è stato confermato con successo. 
           Il nostro team sta già preparando il tuo campione ${isPrivateLabel ? 'Private Label' : 'White Label'} personalizzato.
         </p>
         
-        <div style="background: #d4edda; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #28a745;">
-          <h3 style="color: #155724; margin-top: 0; font-size: 18px;">✅ Stato del tuo ordine:</h3>
-          <ul style="color: #155724; margin: 0; padding-left: 20px;">
+        <div style="background: #fff3e6; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #ed6d23;">
+          <h3 style="color: #d55a1a; margin-top: 0; font-size: 18px;">✅ Stato del tuo ordine:</h3>
+          <ul style="color: #d55a1a; margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;"><strong>Pagamento:</strong> Confermato (€${data.amountPaid})</li>
             <li style="margin: 8px 0;"><strong>Campione:</strong> In preparazione</li>
             <li style="margin: 8px 0;"><strong>Spedizione:</strong> Entro 2-3 giorni lavorativi</li>
@@ -303,7 +303,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
           <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Riepilogo della tua richiesta:</h3>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Dati di contatto:</strong><br>
+            <strong style="color: #ed6d23;">Dati di contatto:</strong><br>
             <span style="color: #666;">
               ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
               ${data.contactForm.email}<br>
@@ -313,7 +313,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
           </div>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Dettagli progetto:</strong><br>
+            <strong style="color: #ed6d23;">Dettagli progetto:</strong><br>
             <span style="color: #666;">
               Paese: ${data.country}<br>
               ${data.canSelection ? `
@@ -332,8 +332,8 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
           </div>
         </div>
         
-        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
-          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Prossimi passi:</h3>
+        <div style="background: #fff3e6; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">🚀 Prossimi passi:</h3>
           <ul style="color: #333; margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;">Il nostro team preparerà il tuo campione personalizzato</li>
             <li style="margin: 8px 0;">Riceverai il codice tracking entro 2-3 giorni</li>
@@ -343,7 +343,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+          <div style="background: #ed6d23; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
             <strong>Hai domande? Scrivici a: info@configuratore-enterprise.com</strong>
           </div>
         </div>
@@ -398,22 +398,22 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-      <div style="background: #28a745; color: white; padding: 30px; text-align: center;">
+      <div style="background: #ed6d23; color: white; padding: 30px; text-align: center;">
         <h1 style="margin: 0; font-size: 28px;">🎉 Payment Confirmed!</h1>
         <p style="margin: 15px 0 0 0; font-size: 18px; opacity: 0.9;">Your sample is being prepared</p>
       </div>
       
       <div style="padding: 30px;">
-        <h2 style="color: #28a745; margin-top: 0;">Hello ${data.contactForm.firstName}!</h2>
+        <h2 style="color: #ed6d23; margin-top: 0;">Hello ${data.contactForm.firstName}!</h2>
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Fantastic! Your payment of <strong>€${data.amountPaid}</strong> has been successfully confirmed. 
           Our team is already preparing your personalized ${isPrivateLabel ? 'Private Label' : 'White Label'} sample.
         </p>
         
-        <div style="background: #d4edda; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #28a745;">
-          <h3 style="color: #155724; margin-top: 0; font-size: 18px;">✅ Your Order Status:</h3>
-          <ul style="color: #155724; margin: 0; padding-left: 20px;">
+        <div style="background: #fff3e6; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #ed6d23;">
+          <h3 style="color: #d55a1a; margin-top: 0; font-size: 18px;">✅ Your Order Status:</h3>
+          <ul style="color: #d55a1a; margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;"><strong>Payment:</strong> Confirmed (€${data.amountPaid})</li>
             <li style="margin: 8px 0;"><strong>Sample:</strong> Being prepared</li>
             <li style="margin: 8px 0;"><strong>Shipping:</strong> Within 2-3 business days</li>
@@ -425,7 +425,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
           <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Summary of Your Request:</h3>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Contact Details:</strong><br>
+            <strong style="color: #ed6d23;">Contact Details:</strong><br>
             <span style="color: #666;">
               ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
               ${data.contactForm.email}<br>
@@ -435,7 +435,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
           </div>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Project Details:</strong><br>
+            <strong style="color: #ed6d23;">Project Details:</strong><br>
             <span style="color: #666;">
               Country: ${data.country}<br>
               ${data.canSelection ? `
@@ -454,8 +454,8 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
           </div>
         </div>
         
-        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
-          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Next Steps:</h3>
+        <div style="background: #fff3e6; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">🚀 Next Steps:</h3>
           <ul style="color: #333; margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;">Our team will prepare your personalized sample</li>
             <li style="margin: 8px 0;">You'll receive the tracking code within 2-3 days</li>
@@ -465,7 +465,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+          <div style="background: #ed6d23; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
             <strong>Have questions? Contact us at: info@configuratore-enterprise.com</strong>
           </div>
         </div>

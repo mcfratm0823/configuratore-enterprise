@@ -229,7 +229,7 @@ export function Step4VolumeFormat() {
               >
                 {volume.label}
                 {volume.isCustom && (
-                  <span className={`ml-1 text-xs ${isSelected ? 'text-green-200' : 'text-gray-500'}`}>
+                  <span className={`ml-1 text-xs ${isSelected ? 'text-orange-200' : 'text-gray-500'}`}>
                     (min. 1000L)
                   </span>
                 )}

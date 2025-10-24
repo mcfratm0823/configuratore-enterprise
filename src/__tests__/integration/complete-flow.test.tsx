@@ -242,7 +242,7 @@ describe('Complete Flow Integration Tests', () => {
     })
 
     // Italy should still be selected
-    expect(screen.getByRole('button', { name: /italy/i })).toHaveClass('border-green-600')
+    expect(screen.getByRole('button', { name: /italy/i })).toHaveClass('border-orange-600')
   })
 
   test('handles email-only contact preference', async () => {

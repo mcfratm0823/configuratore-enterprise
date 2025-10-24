@@ -136,7 +136,7 @@ export function Step3BeverageSelection() {
               onClick={() => handleBeverageSelect(beverage.id)}
               className={`rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
                 isSelected
-                  ? 'border-2 border-[#ed6d23] bg-green-50' 
+                  ? 'border-2 border-[#ed6d23] bg-orange-50' 
                   : 'border border-gray-200 bg-white'
               }`}
             >

@@ -72,7 +72,7 @@ export function Step3Materials() {
             onClick={() => handleCanSelection(option.quantity, option.cartonsCount, option.pricePerCan)}
             className={`rounded-lg p-6 cursor-pointer transition-all hover:border-gray-400 ${
               state.canSelection?.quantity === option.quantity
-                ? 'border-2 border-[#ed6d23] bg-green-50' 
+                ? 'border-2 border-[#ed6d23] bg-orange-50' 
                 : 'border border-gray-200 bg-white'
             }`}
           >

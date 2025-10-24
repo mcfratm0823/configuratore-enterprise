@@ -204,7 +204,7 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #2d5a3d;">Nuova Richiesta di Preventivo ${isPrivateLabel ? 'Private Label' : 'White Label'}</h2>
+      <h2 style="color: #ed6d23;">Nuova Richiesta di Preventivo ${isPrivateLabel ? 'Private Label' : 'White Label'}</h2>
       
       <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Dati Cliente:</h3>
@@ -217,7 +217,7 @@ async function sendAdminNotification(data: UnifiedQuoteData): Promise<void> {
         </ul>
       </div>
 
-      <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <div style="background: #fff3e6; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Dettagli Progetto:</h3>
         <ul style="list-style: none; padding: 0;">
           ${data.canSelection ? `
@@ -354,13 +354,13 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-      <div style="background: #2d5a3d; color: white; padding: 30px; text-align: center;">
+      <div style="background: #ed6d23; color: white; padding: 30px; text-align: center;">
         <h1 style="margin: 0; font-size: 28px;">📦 Configuratore Enterprise</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Conferma richiesta preventivo</p>
       </div>
       
       <div style="padding: 30px;">
-        <h2 style="color: #2d5a3d; margin-top: 0;">Ciao ${data.contactForm.firstName}!</h2>
+        <h2 style="color: #ed6d23; margin-top: 0;">Ciao ${data.contactForm.firstName}!</h2>
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Grazie per aver utilizzato il nostro configuratore enterprise. Abbiamo ricevuto la tua richiesta di preventivo 
@@ -371,7 +371,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
           <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Riepilogo della tua richiesta:</h3>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Dati di contatto:</strong><br>
+            <strong style="color: #ed6d23;">Dati di contatto:</strong><br>
             <span style="color: #666;">
               ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
               ${data.contactForm.email}<br>
@@ -381,7 +381,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
           </div>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Dettagli progetto:</strong><br>
+            <strong style="color: #ed6d23;">Dettagli progetto:</strong><br>
             <span style="color: #666;">
               Paese: ${data.country}<br>
               ${data.canSelection ? `
@@ -402,7 +402,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
 
         ${data.contactForm.billingData && Object.values(data.contactForm.billingData).some(value => value) ? `
           <div style="background: #fff9e6; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #ffc107;">
-            <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📄 Dati fatturazione confermati:</h3>
+            <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">📄 Dati fatturazione confermati:</h3>
             <div style="color: #333; font-size: 14px; line-height: 1.5;">
               ${data.contactForm.billingData.legalName ? `<strong>Denominazione:</strong> ${data.contactForm.billingData.legalName}<br>` : ''}
               ${data.contactForm.billingData.vatNumber ? `<strong>P.IVA:</strong> ${data.contactForm.billingData.vatNumber}<br>` : ''}
@@ -420,19 +420,19 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
         ` : ''}
         
         <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
-          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📞 Come ti contatteremo:</h3>
+          <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">📞 Come ti contatteremo:</h3>
           <div style="color: #333; margin: 10px 0;">
             ${data.contactForm.emailOnly 
-              ? '<strong style="color: #2d5a3d;">📧 Ti contatteremo esclusivamente via email</strong> come da tua richiesta.' 
+              ? '<strong style="color: #ed6d23;">📧 Ti contatteremo esclusivamente via email</strong> come da tua richiesta.' 
               : data.contactForm.canCall 
-                ? `<strong style="color: #2d5a3d;">📞 Ti contatteremo telefonicamente</strong> ${data.contactForm.preferredCallTime ? `preferibilmente ${data.contactForm.preferredCallTime.toLowerCase()}` : ''} oppure via email.`
-                : '<strong style="color: #2d5a3d;">📧 Ti contatteremo via email</strong> (non hai dato consenso alle chiamate).'
+                ? `<strong style="color: #ed6d23;">📞 Ti contatteremo telefonicamente</strong> ${data.contactForm.preferredCallTime ? `preferibilmente ${data.contactForm.preferredCallTime.toLowerCase()}` : ''} oppure via email.`
+                : '<strong style="color: #ed6d23;">📧 Ti contatteremo via email</strong> (non hai dato consenso alle chiamate).'
             }
           </div>
         </div>
         
-        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
-          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Prossimi passi:</h3>
+        <div style="background: #fff3e6; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">🚀 Prossimi passi:</h3>
           <ul style="color: #333; margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;">Analizzeremo la tua richiesta entro 24 ore</li>
             <li style="margin: 8px 0;">Ti invieremo un preventivo dettagliato personalizzato</li>
@@ -443,7 +443,7 @@ async function sendCustomerConfirmationItalian(data: UnifiedQuoteData, RESEND_AP
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+          <div style="background: #ed6d23; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
             <strong>Hai domande? Scrivici a: info@configuratore-enterprise.com</strong>
           </div>
         </div>
@@ -516,13 +516,13 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
   
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-      <div style="background: #2d5a3d; color: white; padding: 30px; text-align: center;">
+      <div style="background: #ed6d23; color: white; padding: 30px; text-align: center;">
         <h1 style="margin: 0; font-size: 28px;">📦 Enterprise Configurator</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Quote request confirmation</p>
       </div>
       
       <div style="padding: 30px;">
-        <h2 style="color: #2d5a3d; margin-top: 0;">Hello ${data.contactForm.firstName}!</h2>
+        <h2 style="color: #ed6d23; margin-top: 0;">Hello ${data.contactForm.firstName}!</h2>
         
         <p style="color: #333; line-height: 1.6; margin-bottom: 25px;">
           Thank you for using our enterprise configurator. We have received your quote request 
@@ -533,7 +533,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
           <h3 style="color: #333; margin-top: 0; font-size: 18px;">📋 Summary of your request:</h3>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Contact details:</strong><br>
+            <strong style="color: #ed6d23;">Contact details:</strong><br>
             <span style="color: #666;">
               ${data.contactForm.firstName} ${data.contactForm.lastName}<br>
               ${data.contactForm.email}<br>
@@ -543,7 +543,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
           </div>
           
           <div style="margin: 15px 0;">
-            <strong style="color: #2d5a3d;">Project details:</strong><br>
+            <strong style="color: #ed6d23;">Project details:</strong><br>
             <span style="color: #666;">
               Country: ${data.country}<br>
               ${data.canSelection ? `
@@ -564,7 +564,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
 
         ${data.contactForm.billingData && Object.values(data.contactForm.billingData).some(value => value) ? `
           <div style="background: #fff9e6; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #ffc107;">
-            <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📄 Billing information confirmed:</h3>
+            <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">📄 Billing information confirmed:</h3>
             <div style="color: #333; font-size: 14px; line-height: 1.5;">
               ${data.contactForm.billingData.legalName ? `<strong>Company Name:</strong> ${data.contactForm.billingData.legalName}<br>` : ''}
               ${data.contactForm.billingData.vatNumber ? `<strong>VAT Number:</strong> ${data.contactForm.billingData.vatNumber}<br>` : ''}
@@ -582,19 +582,19 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
         ` : ''}
         
         <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
-          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">📞 How we'll contact you:</h3>
+          <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">📞 How we'll contact you:</h3>
           <div style="color: #333; margin: 10px 0;">
             ${data.contactForm.emailOnly 
-              ? '<strong style="color: #2d5a3d;">📧 We will contact you exclusively via email</strong> as requested.' 
+              ? '<strong style="color: #ed6d23;">📧 We will contact you exclusively via email</strong> as requested.' 
               : data.contactForm.canCall 
-                ? `<strong style="color: #2d5a3d;">📞 We will contact you by phone</strong> ${data.contactForm.preferredCallTime ? `preferably in the ${data.contactForm.preferredCallTime.toLowerCase()}` : ''} or via email.`
-                : '<strong style="color: #2d5a3d;">📧 We will contact you via email</strong> (you did not consent to phone calls).'
+                ? `<strong style="color: #ed6d23;">📞 We will contact you by phone</strong> ${data.contactForm.preferredCallTime ? `preferably in the ${data.contactForm.preferredCallTime.toLowerCase()}` : ''} or via email.`
+                : '<strong style="color: #ed6d23;">📧 We will contact you via email</strong> (you did not consent to phone calls).'
             }
           </div>
         </div>
         
-        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
-          <h3 style="color: #2d5a3d; margin-top: 0; font-size: 16px;">🚀 Next steps:</h3>
+        <div style="background: #fff3e6; padding: 20px; border-radius: 10px; margin: 25px 0;">
+          <h3 style="color: #ed6d23; margin-top: 0; font-size: 16px;">🚀 Next steps:</h3>
           <ul style="color: #333; margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;">We'll analyze your request within 24 hours</li>
             <li style="margin: 8px 0;">You'll receive a detailed personalized quote</li>
@@ -605,7 +605,7 @@ async function sendCustomerConfirmationEnglish(data: UnifiedQuoteData, RESEND_AP
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <div style="background: #2d5a3d; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
+          <div style="background: #ed6d23; color: white; padding: 15px 30px; border-radius: 25px; display: inline-block;">
             <strong>Have questions? Contact us at: info@configuratore-enterprise.com</strong>
           </div>
         </div>

@@ -41,7 +41,7 @@ describe('Step1Country', () => {
     const italyCard = screen.getByText(/Italia/i).closest('div[class*="cursor-pointer"]') || screen.getByText(/Italia/i).parentElement
     await user.click(italyCard!)
     
-    expect(italyCard).toHaveClass('border-green-600')
+    expect(italyCard).toHaveClass('border-orange-600')
   })
 
   test('other countries selection works', async () => {
@@ -51,7 +51,7 @@ describe('Step1Country', () => {
     const otherCard = screen.getByText(/Altri Paesi/i).closest('div[class*="cursor-pointer"]') || screen.getByText(/Altri Paesi/i).parentElement
     await user.click(otherCard!)
     
-    expect(otherCard).toHaveClass('border-green-600')
+    expect(otherCard).toHaveClass('border-orange-600')
   })
 
   test('sample toggle functionality', async () => {
@@ -117,7 +117,7 @@ describe('Step1Country', () => {
     // Click to select (keyboard navigation would need tabIndex on the card)
     await user.click(italyCard!)
     
-    expect(italyCard).toHaveClass('border-green-600')
+    expect(italyCard).toHaveClass('border-orange-600')
   })
 
   test('country selection is mutually exclusive', async () => {
@@ -129,11 +129,11 @@ describe('Step1Country', () => {
     
     // Select Italy
     await user.click(italyCard!)
-    expect(italyCard).toHaveClass('border-green-600')
+    expect(italyCard).toHaveClass('border-orange-600')
     
     // Select Other - Italy should be deselected
     await user.click(otherCard!)
-    expect(otherCard).toHaveClass('border-green-600')
-    expect(italyCard).not.toHaveClass('border-green-600')
+    expect(otherCard).toHaveClass('border-orange-600')
+    expect(italyCard).not.toHaveClass('border-orange-600')
   })
 })
