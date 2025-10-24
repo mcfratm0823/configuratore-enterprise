@@ -312,32 +312,29 @@ async function sendCustomerConfirmation(data: UnifiedQuoteData): Promise<void> {
   }
 }
 
-// Helper function per leggere ZIP via API endpoint e convertire in base64
+// Helper function per leggere ZIP direttamente dal filesystem
 async function getTemplateAttachment(): Promise<{ filename: string; content: string } | null> {
   try {
-    // Fetch dal nostro endpoint API dedicato
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NODE_ENV === 'production'
-        ? 'https://configuratore-nextjs.vercel.app'
-        : 'http://localhost:3000'
+    // Import filesystem modules
+    const fs = await import('fs')
+    const path = await import('path')
     
-    console.log('🔍 Fetching template from API endpoint:', `${baseUrl}/api/template-download`)
+    // Path diretto al file ZIP
+    const zipPath = path.join(process.cwd(), 'public', 'templates', 'Testi_template.zip')
+    console.log('🔍 Reading template from filesystem:', zipPath)
     
-    const response = await fetch(`${baseUrl}/api/template-download`)
-    
-    if (!response.ok) {
-      console.error('❌ Template API endpoint failed:', response.status, response.statusText)
+    // Verifica esistenza file
+    if (!fs.existsSync(zipPath)) {
+      console.error('❌ Template ZIP not found at path:', zipPath)
       return null
     }
     
-    // Converti in ArrayBuffer
-    const arrayBuffer = await response.arrayBuffer()
-    console.log('📦 ZIP fetched successfully, size:', arrayBuffer.byteLength, 'bytes')
+    // Leggi file direttamente
+    const fileBuffer = fs.readFileSync(zipPath)
+    console.log('📦 ZIP read successfully, size:', fileBuffer.length, 'bytes')
     
     // Converti in base64 per allegato email
-    const buffer = Buffer.from(arrayBuffer)
-    const base64Content = buffer.toString('base64')
+    const base64Content = fileBuffer.toString('base64')
     console.log('✅ Base64 conversion completed, length:', base64Content.length)
     
     return {
@@ -346,7 +343,7 @@ async function getTemplateAttachment(): Promise<{ filename: string; content: str
     }
     
   } catch (error) {
-    console.error('❌ Error fetching template via API:', error)
+    console.error('❌ Error reading template from filesystem:', error)
     return null
   }
 }
