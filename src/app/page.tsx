@@ -10,9 +10,11 @@ function LandingPageContent() {
       {/* Header */}
       <header className="flex justify-between items-center px-8 py-6">
         <div className="flex items-center">
-          <div className="text-2xl font-bold text-black">
-            📦 packago
-          </div>
+          <img 
+            src="/logo-124.svg" 
+            alt="124 Logo" 
+            className="h-12 w-12"
+          />
         </div>
         <nav className="flex items-center space-x-8">
           <a href="#" className="text-gray-700 hover:text-black transition-colors">Work</a>
