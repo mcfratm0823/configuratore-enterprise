@@ -187,7 +187,7 @@ export function ConfiguratorWizard() {
       <header className="flex justify-between items-center px-8 py-6 bg-white border-b border-gray-200">
         <div className="flex items-center">
           <img 
-            src="/logo-124.svg" 
+            src="/logo-124.png" 
             alt="124 Logo" 
             className="h-12 w-12"
           />
