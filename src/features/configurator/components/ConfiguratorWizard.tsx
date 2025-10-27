@@ -179,9 +179,9 @@ export function ConfiguratorWizard() {
         </div>
       </header>
       
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 py-8">
+      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 py-4">
         {/* Step Title - Outside box */}
-        <div className="mt-2">
+        <div className="mt-0">
           {renderStepTitle()}
         </div>
 
