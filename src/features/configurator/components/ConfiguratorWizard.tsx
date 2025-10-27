@@ -183,21 +183,15 @@ export function ConfiguratorWizard() {
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
-      {/* Header with Logo */}
-      <header className="flex justify-between items-center px-8 py-6 bg-white border-b border-gray-200">
-        <div className="flex items-center">
+      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 py-8">
+        {/* Logo positioned absolutely in top-left */}
+        <div className="absolute top-8 left-8">
           <img 
             src="/logo-124.png" 
             alt="124 Logo" 
             className="h-12 w-12"
           />
         </div>
-        <div className="text-sm text-gray-600">
-          Step {state.currentStep} di {steps.length}
-        </div>
-      </header>
-      
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 py-8">
         {/* Step Title - Outside box */}
         <div className="mt-2">
           {renderStepTitle()}
