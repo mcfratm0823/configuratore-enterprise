@@ -158,28 +158,10 @@ export function ConfiguratorWizard() {
         <div className="flex-1 overflow-y-auto px-2">
           <StepComponent />
         </div>
-        
-        {/* Progress Bar inside container */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          {renderBottomProgress()}
-        </div>
       </div>
     )
   }
 
-  const renderBottomProgress = () => {
-    // Progress basato su step corrente
-    const stepProgressPercentage = (currentStepIndex + 1) / steps.length * 100
-    
-    return (
-      <div className="w-full bg-gray-100 rounded-full h-1">
-        <div 
-          className="h-1 rounded-full transition-all duration-700 ease-out bg-[#ed6d23]"
-          style={{ width: `${stepProgressPercentage}%` }}
-        />
-      </div>
-    )
-  }
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
