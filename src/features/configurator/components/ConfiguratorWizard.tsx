@@ -106,7 +106,7 @@ export function ConfiguratorWizard() {
   const renderStepContent = () => {
     const StepComponent = currentStep.component
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8 h-[550px] flex flex-col">
+      <div className="bg-white rounded-lg shadow-sm p-8 h-[520px] flex flex-col">
         <div className="mb-4 flex justify-between items-center">
           {/* Step mini description - Left side */}
           <div className="flex-1">
