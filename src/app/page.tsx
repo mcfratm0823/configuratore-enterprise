@@ -60,7 +60,7 @@ function LandingPageContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* Sticky Navbar */}
-      <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 shadow-2xl backdrop-saturate-150">
+      <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-4" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <img 
             src="/logo-124.png" 
@@ -99,7 +99,7 @@ function LandingPageContent() {
             {/* Right Column - Headline */}
             <div className="col-span-6 pt-4">
               <h2 className="text-black" style={{fontSize: '34px', fontWeight: '400', lineHeight: '36px'}}>
-                Configuratore enterprise per <span className="text-blue-500 font-medium">packaging</span> White Label e Private Label.
+                Configuratore enterprise per <span className="text-[#ed6d23] font-medium">packaging</span> White Label e Private Label.
               </h2>
             </div>
           </div>
@@ -143,7 +143,7 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
-                className="px-8 py-4 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                className="px-8 py-4 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
               >
                 Start Configurator →
               </button>
@@ -159,7 +159,7 @@ function LandingPageContent() {
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             {/* Title row with number */}
             <div className="flex justify-between items-center mb-40">
-              <h2 className="text-6xl font-bold text-blue-500">Cliente A</h2>
+              <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente A</h2>
               <span className="text-6xl font-black text-black">01</span>
             </div>
             
@@ -185,7 +185,7 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="px-8 py-3 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                  className="px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
                 >
                   Configura il tuo →
                 </button>
@@ -213,7 +213,7 @@ function LandingPageContent() {
         <div ref={setCardRef(1)} className="sticky top-0 h-screen bg-white flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
-              <h2 className="text-6xl font-bold text-blue-500">Cliente B</h2>
+              <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente B</h2>
               <span className="text-6xl font-black text-black">02</span>
             </div>
             
@@ -238,7 +238,7 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="px-8 py-3 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                  className="px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
                 >
                   Scala il business →
                 </button>
@@ -265,7 +265,7 @@ function LandingPageContent() {
         <div ref={setCardRef(2)} className="sticky top-0 h-screen bg-white flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
-              <h2 className="text-6xl font-bold text-blue-500">Cliente C</h2>
+              <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente C</h2>
               <span className="text-6xl font-black text-black">03</span>
             </div>
             
@@ -290,7 +290,7 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="px-8 py-3 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                  className="px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
                 >
                   Valida l&apos;idea →
                 </button>
@@ -317,7 +317,7 @@ function LandingPageContent() {
         <div ref={setCardRef(3)} className="sticky top-0 h-screen bg-white flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
-              <h2 className="text-6xl font-bold text-blue-500">Cliente D</h2>
+              <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente D</h2>
               <span className="text-6xl font-black text-black">04</span>
             </div>
             
@@ -342,7 +342,7 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="px-8 py-3 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                  className="px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
                 >
                   Soluzioni eco →
                 </button>
@@ -389,7 +389,7 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
-                className="px-8 py-4 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                className="px-8 py-4 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
               >
                 Configurazione Premium →
               </button>
@@ -408,7 +408,7 @@ function LandingPageContent() {
             
             <div className="flex items-center gap-4">
               <span className="text-2xl font-medium text-black">Configuratore</span>
-              <span className="text-2xl font-medium text-blue-500">Enterprise</span>
+              <span className="text-2xl font-medium text-[#ed6d23]">Enterprise</span>
             </div>
           </div>
           
@@ -428,7 +428,7 @@ function LandingPageContent() {
                 <h3 className="text-2xl font-bold text-black">
                   Brand Beverage Co.
                 </h3>
-                <span className="text-blue-500 text-sm font-medium">
+                <span className="text-[#ed6d23] text-sm font-medium">
                   (White Label Premium)
                 </span>
               </div>
@@ -453,7 +453,7 @@ function LandingPageContent() {
                 <h3 className="text-2xl font-bold text-black">
                   Enterprise Drinks Ltd.
                 </h3>
-                <span className="text-blue-500 text-sm font-medium">
+                <span className="text-[#ed6d23] text-sm font-medium">
                   (Private Label Custom)
                 </span>
               </div>
@@ -478,7 +478,7 @@ function LandingPageContent() {
                 <h3 className="text-2xl font-bold text-black">
                   Startup Energy
                 </h3>
-                <span className="text-blue-500 text-sm font-medium">
+                <span className="text-[#ed6d23] text-sm font-medium">
                   (Market Validation)
                 </span>
               </div>
@@ -503,7 +503,7 @@ function LandingPageContent() {
                 <h3 className="text-2xl font-bold text-black">
                   Premium Beverages Corp.
                 </h3>
-                <span className="text-blue-500 text-sm font-medium">
+                <span className="text-[#ed6d23] text-sm font-medium">
                   (Volume Enterprise)
                 </span>
               </div>
