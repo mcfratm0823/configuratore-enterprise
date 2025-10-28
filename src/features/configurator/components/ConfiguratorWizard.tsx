@@ -166,12 +166,13 @@ export function ConfiguratorWizard() {
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header with Logo */}
-      <header className="flex justify-between items-center py-3 bg-white">
-        <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
+      <header className="flex justify-between items-center py-4 bg-white">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <img 
             src="/logo-124.png" 
             alt="124 Logo" 
-            className="h-12 w-12"
+            className="h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => window.location.href = '/'}
           />
           <div className="text-sm text-gray-600">
             Step {state.currentStep} di {steps.length}

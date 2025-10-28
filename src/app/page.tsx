@@ -1,39 +1,91 @@
 'use client'
 
 import { ConfiguratorProvider, useConfigurator } from '@/context'
+import { useEffect, useRef, useState } from 'react'
 
 function LandingPageContent() {
   const { actions } = useConfigurator()
+  
+  // Sticky cards overlay effect
+  const [overlayOpacities, setOverlayOpacities] = useState([0, 0, 0, 0])
+  const cardsRefs = useRef<(HTMLDivElement | null)[]>([])
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const newOpacities = [0, 0, 0, 0]
+      
+      cardsRefs.current.forEach((card, index) => {
+        if (!card) return
+        
+        const rect = card.getBoundingClientRect()
+        const nextCard = cardsRefs.current[index + 1]
+        
+        if (nextCard) {
+          const nextRect = nextCard.getBoundingClientRect()
+          
+          // Se la card corrente è sticky (top <= 0) e la successiva sta entrando in viewport
+          if (rect.top <= 0 && nextRect.top < window.innerHeight * 1.2) {
+            // Inizia l'effetto quando la card successiva è ancora più lontana (1.2x viewport)
+            const triggerDistance = window.innerHeight * 1.2
+            const overlapPercentage = Math.max(0, (triggerDistance - nextRect.top) / triggerDistance)
+            // Overlay più scuro (fino a 0.6) e più graduale
+            newOpacities[index] = Math.min(0.6, overlapPercentage * 0.6)
+          }
+        }
+      })
+      
+      setOverlayOpacities(newOpacities)
+    }
+    
+    // Throttled scroll per performance
+    let ticking = false
+    const scrollListener = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+    
+    window.addEventListener('scroll', scrollListener, { passive: true })
+    return () => window.removeEventListener('scroll', scrollListener)
+  }, [])
+  
+  const setCardRef = (index: number) => (el: HTMLDivElement | null) => {
+    cardsRefs.current[index] = el
+  }
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="flex justify-between items-center py-6 bg-white">
-        <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
+      {/* Sticky Navbar */}
+      <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 shadow-2xl backdrop-saturate-150">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-4" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <img 
             src="/logo-124.png" 
             alt="124 Logo" 
             className="h-12 w-12"
           />
           <nav className="flex items-center space-x-8">
-            <a href="#" className="text-gray-700 hover:text-black transition-colors">Work</a>
-            <a href="#" className="text-gray-700 hover:text-black transition-colors">Over ons</a>
+            <a href="#work" className="text-gray-700 hover:text-black transition-colors font-medium">Work</a>
+            <a href="#about" className="text-gray-700 hover:text-black transition-colors font-medium">About</a>
             <button 
               onClick={actions.startConfigurator}
-              className="text-blue-500 font-medium hover:text-blue-600 transition-colors"
+              className="bg-[#ed6d23] text-white px-6 py-2 rounded-full font-medium hover:bg-[#d55a1a] transition-colors"
             >
               Configurator
             </button>
-            <a href="#" className="text-gray-700 hover:text-black transition-colors">Contact</a>
+            <a href="#contact" className="text-gray-700 hover:text-black transition-colors font-medium">Contact</a>
           </nav>
         </div>
       </header>
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           {/* Text Section */}
-          <div className="grid grid-cols-12 gap-16 items-start mb-8">
+          <div className="grid grid-cols-12 gap-16 items-start mb-16">
             {/* Left Column - Main Title */}
             <div className="col-span-4">
               <h1 className="text-black leading-tight" style={{fontSize: '80px', fontWeight: '400', lineHeight: '83px'}}>
@@ -67,7 +119,7 @@ function LandingPageContent() {
 
       {/* What We Do Section - White Label */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="grid grid-cols-12 gap-16 items-start">
             {/* Left Column - Small title */}
             <div className="col-span-4">
@@ -103,8 +155,8 @@ function LandingPageContent() {
       {/* Sticky Cards Section - Portfolio Clienti */}
       <section className="relative">
         {/* Card 1 - Cliente A */}
-        <div className="sticky top-0 h-screen bg-white flex items-center">
-          <div className="max-w-7xl mx-auto px-8 w-full">
+        <div ref={setCardRef(0)} className="sticky top-0 h-screen bg-white flex items-center relative">
+          <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             {/* Title row with number */}
             <div className="flex justify-between items-center mb-40">
               <h2 className="text-6xl font-bold text-blue-500">Cliente A</h2>
@@ -150,11 +202,16 @@ function LandingPageContent() {
               </div>
             </div>
           </div>
+          {/* Overlay grigio */}
+          <div 
+            className="absolute inset-0 bg-gray-900 pointer-events-none transition-opacity duration-500 ease-out"
+            style={{ opacity: overlayOpacities[0] }}
+          />
         </div>
 
         {/* Card 2 - Cliente B */}
-        <div className="sticky top-0 h-screen bg-white flex items-center">
-          <div className="max-w-7xl mx-auto px-8 w-full">
+        <div ref={setCardRef(1)} className="sticky top-0 h-screen bg-white flex items-center relative">
+          <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
               <h2 className="text-6xl font-bold text-blue-500">Cliente B</h2>
               <span className="text-6xl font-black text-black">02</span>
@@ -197,11 +254,16 @@ function LandingPageContent() {
               </div>
             </div>
           </div>
+          {/* Overlay grigio */}
+          <div 
+            className="absolute inset-0 bg-gray-900 pointer-events-none transition-opacity duration-500 ease-out"
+            style={{ opacity: overlayOpacities[1] }}
+          />
         </div>
 
         {/* Card 3 - Cliente C */}
-        <div className="sticky top-0 h-screen bg-white flex items-center">
-          <div className="max-w-7xl mx-auto px-8 w-full">
+        <div ref={setCardRef(2)} className="sticky top-0 h-screen bg-white flex items-center relative">
+          <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
               <h2 className="text-6xl font-bold text-blue-500">Cliente C</h2>
               <span className="text-6xl font-black text-black">03</span>
@@ -244,12 +306,69 @@ function LandingPageContent() {
               </div>
             </div>
           </div>
+          {/* Overlay grigio */}
+          <div 
+            className="absolute inset-0 bg-gray-900 pointer-events-none transition-opacity duration-500 ease-out"
+            style={{ opacity: overlayOpacities[2] }}
+          />
+        </div>
+
+        {/* Card 4 - Cliente D */}
+        <div ref={setCardRef(3)} className="sticky top-0 h-screen bg-white flex items-center relative">
+          <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
+            <div className="flex justify-between items-center mb-40">
+              <h2 className="text-6xl font-bold text-blue-500">Cliente D</h2>
+              <span className="text-6xl font-black text-black">04</span>
+            </div>
+            
+            <div className="grid grid-cols-12 gap-16">
+              <div className="col-span-6">
+                <h3 className="text-3xl font-bold text-black leading-tight mb-8">
+                  Soluzione innovativa con packaging eco-sostenibile per brand attenti all'ambiente.
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <p className="text-black mb-2">Materiali eco-friendly</p>
+                    <p className="text-black mb-2">€0.75 per lattina</p>
+                    <p className="text-black">Certificazioni green</p>
+                  </div>
+                  <div>
+                    <p className="text-black mb-2">Design sostenibile</p>
+                    <p className="text-black mb-2">Packaging riciclabile</p>
+                    <p className="text-black">Delivery carbon neutral</p>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={actions.startConfigurator}
+                  className="px-8 py-3 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors"
+                >
+                  Soluzioni eco →
+                </button>
+              </div>
+
+              <div className="col-span-6">
+                <div className="w-full h-80 bg-gray-200 rounded-2xl flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="text-6xl mb-4">🌱</div>
+                    <div className="text-xl font-medium">Eco Packaging</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Overlay grigio */}
+          <div 
+            className="absolute inset-0 bg-gray-900 pointer-events-none transition-opacity duration-500 ease-out"
+            style={{ opacity: overlayOpacities[3] }}
+          />
         </div>
       </section>
 
       {/* Private Label Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="grid grid-cols-12 gap-16 items-start">
             <div className="col-span-4">
               <p className="text-base text-black">→ Private Label</p>
@@ -281,7 +400,7 @@ function LandingPageContent() {
 
       {/* Recent Work Gallery Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="flex justify-between items-center mb-16">
             <h2 className="text-5xl font-bold text-black">
               Portfolio Progetti
