@@ -8,35 +8,35 @@ function LandingPageContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="flex justify-between items-center px-8 py-3 bg-white border-b border-gray-200">
-        <div className="flex items-center">
+      <header className="flex justify-between items-center py-6 bg-white">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
           <img 
             src="/logo-124.png" 
             alt="124 Logo" 
             className="h-12 w-12"
           />
+          <nav className="flex items-center space-x-8">
+            <a href="#" className="text-gray-700 hover:text-black transition-colors">Work</a>
+            <a href="#" className="text-gray-700 hover:text-black transition-colors">Over ons</a>
+            <button 
+              onClick={actions.startConfigurator}
+              className="text-blue-500 font-medium hover:text-blue-600 transition-colors"
+            >
+              Configurator
+            </button>
+            <a href="#" className="text-gray-700 hover:text-black transition-colors">Contact</a>
+          </nav>
         </div>
-        <nav className="flex items-center space-x-8">
-          <a href="#" className="text-gray-700 hover:text-black transition-colors">Work</a>
-          <a href="#" className="text-gray-700 hover:text-black transition-colors">Over ons</a>
-          <button 
-            onClick={actions.startConfigurator}
-            className="text-blue-500 font-medium hover:text-blue-600 transition-colors"
-          >
-            Configurator
-          </button>
-          <a href="#" className="text-gray-700 hover:text-black transition-colors">Contact</a>
-        </nav>
       </header>
 
       {/* Hero Section */}
-      <section className="relative px-8 py-16">
+      <section className="relative pt-24 pb-8">
         <div className="max-w-7xl mx-auto">
           {/* Text Section */}
-          <div className="grid grid-cols-12 gap-16 items-start mb-24">
+          <div className="grid grid-cols-12 gap-16 items-start mb-8">
             {/* Left Column - Main Title */}
             <div className="col-span-4">
-              <h1 className="text-8xl font-black text-black leading-none">
+              <h1 className="text-black leading-tight" style={{fontSize: '80px', fontWeight: '400', lineHeight: '83px'}}>
                 Packaging
               </h1>
             </div>
@@ -46,11 +46,8 @@ function LandingPageContent() {
 
             {/* Right Column - Headline */}
             <div className="col-span-6 pt-4">
-              <h2 className="text-4xl font-light text-black leading-tight">
-                Configuratore enterprise per{' '}
-                <span className="text-blue-500 font-medium">packaging</span>
-                <br />
-                personalizzato White Label e Private Label.
+              <h2 className="text-black" style={{fontSize: '34px', fontWeight: '400', lineHeight: '36px'}}>
+                Configuratore enterprise per <span className="text-blue-500 font-medium">packaging</span> White Label e Private Label.
               </h2>
             </div>
           </div>
@@ -69,7 +66,7 @@ function LandingPageContent() {
       </section>
 
       {/* What We Do Section - White Label */}
-      <section className="px-8 py-16">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-12 gap-16 items-start">
             {/* Left Column - Small title */}
@@ -251,7 +248,7 @@ function LandingPageContent() {
       </section>
 
       {/* Private Label Section */}
-      <section className="px-8 py-16 bg-white">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-12 gap-16 items-start">
             <div className="col-span-4">
@@ -284,7 +281,7 @@ function LandingPageContent() {
 
       {/* Recent Work Gallery Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-8">
+        <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-16">
             <h2 className="text-5xl font-bold text-black">
               Portfolio Progetti
