@@ -2,6 +2,7 @@
 
 import { ConfiguratorProvider, useConfigurator } from '@/context'
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 function LandingPageContent() {
   const { actions } = useConfigurator()
@@ -62,9 +63,11 @@ function LandingPageContent() {
       {/* Sticky Navbar */}
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-4" style={{paddingLeft: '0px', paddingRight: '0px'}}>
-          <img 
+          <Image 
             src="/logo-124.png" 
             alt="124 Logo" 
+            width={48}
+            height={48}
             className="h-12 w-12"
           />
           <nav className="flex items-center space-x-8">
@@ -324,7 +327,7 @@ function LandingPageContent() {
             <div className="grid grid-cols-12 gap-16">
               <div className="col-span-6">
                 <h3 className="text-3xl font-bold text-black leading-tight mb-8">
-                  Soluzione innovativa con packaging eco-sostenibile per brand attenti all'ambiente.
+                  Soluzione innovativa con packaging eco-sostenibile per brand attenti all&apos;ambiente.
                 </h3>
                 
                 <div className="grid grid-cols-2 gap-8 mb-8">

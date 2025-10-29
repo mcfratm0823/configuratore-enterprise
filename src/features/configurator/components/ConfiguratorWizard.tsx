@@ -4,6 +4,7 @@
 // Interface step-by-step con progress indicator e navigation
 
 import { useConfigurator, ServiceSubType } from '@/context'
+import Image from 'next/image'
 import { Step1Country } from './steps/Step1Country'
 import { Step2Service } from './steps/Step2Service'
 import { Step3Materials } from './steps/Step3Materials'
@@ -168,9 +169,11 @@ export function ConfiguratorWizard() {
       {/* Header with Logo */}
       <header className="flex justify-between items-center py-4 bg-white">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center" style={{paddingLeft: '0px', paddingRight: '0px'}}>
-          <img 
+          <Image 
             src="/logo-124.png" 
             alt="124 Logo" 
+            width={48}
+            height={48}
             className="h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => window.location.href = '/'}
           />
