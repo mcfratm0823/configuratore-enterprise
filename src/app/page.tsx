@@ -8,12 +8,12 @@ function LandingPageContent() {
   const { actions } = useConfigurator()
   
   // Sticky cards overlay effect
-  const [overlayOpacities, setOverlayOpacities] = useState([0, 0, 0, 0])
+  const [overlayOpacities, setOverlayOpacities] = useState([0, 0, 0, 0, 0])
   const cardsRefs = useRef<(HTMLDivElement | null)[]>([])
   
   useEffect(() => {
     const handleScroll = () => {
-      const newOpacities = [0, 0, 0, 0]
+      const newOpacities = [0, 0, 0, 0, 0]
       
       cardsRefs.current.forEach((card, index) => {
         if (!card) return
@@ -71,15 +71,15 @@ function LandingPageContent() {
             className="h-12 w-12"
           />
           <nav className="flex items-center space-x-8">
-            <a href="#work" className="text-gray-700 hover:text-black transition-colors font-medium">Work</a>
-            <a href="#about" className="text-gray-700 hover:text-black transition-colors font-medium">About</a>
+            <a href="https://drink124.com/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium">Home</a>
+            <a href="https://drink124.com/pages/chi-siamo-cafe-124" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium">Chi siamo</a>
             <button 
               onClick={actions.startConfigurator}
-              className="bg-[#ed6d23] text-white px-6 py-2 rounded-full font-medium hover:bg-[#d55a1a] transition-colors"
+              className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium cursor-pointer"
             >
-              Configurator
+              Configuratore
             </button>
-            <a href="#contact" className="text-gray-700 hover:text-black transition-colors font-medium">Contact</a>
+            <a href="/contact" className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium">Contatti</a>
           </nav>
         </div>
       </header>
@@ -91,7 +91,7 @@ function LandingPageContent() {
           <div className="grid grid-cols-12 gap-16 items-start mb-16">
             {/* Left Column - Main Title */}
             <div className="col-span-4">
-              <h1 className="text-black leading-tight" style={{fontSize: '80px', fontWeight: '400', lineHeight: '83px'}}>
+              <h1 className="text-[#171717] leading-tight" style={{fontSize: '80px', fontWeight: '400', lineHeight: '83px'}}>
                 Packaging
               </h1>
             </div>
@@ -101,7 +101,7 @@ function LandingPageContent() {
 
             {/* Right Column - Headline */}
             <div className="col-span-6 pt-4">
-              <h2 className="text-black" style={{fontSize: '34px', fontWeight: '400', lineHeight: '36px'}}>
+              <h2 className="text-[#171717]" style={{fontSize: '34px', fontWeight: '400', lineHeight: '36px'}}>
                 Configuratore enterprise per <span className="text-[#ed6d23] font-medium">packaging</span> White Label e Private Label.
               </h2>
             </div>
@@ -126,7 +126,7 @@ function LandingPageContent() {
           <div className="grid grid-cols-12 gap-16 items-start">
             {/* Left Column - Small title */}
             <div className="col-span-4">
-              <p className="text-base text-black">→ White Label</p>
+              <p className="text-base text-[#171717]">→ White Label</p>
             </div>
 
             {/* Empty space */}
@@ -134,7 +134,7 @@ function LandingPageContent() {
 
             {/* Right Column - Main content */}
             <div className="col-span-6">
-              <h2 className="text-4xl font-bold text-black leading-tight mb-6">
+              <h2 className="text-4xl font-bold text-[#171717] leading-tight mb-6">
                 Lattine preconfezionate da 200ml con etichette personalizzate per il tuo brand.
               </h2>
               
@@ -161,28 +161,28 @@ function LandingPageContent() {
         <div ref={setCardRef(0)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             {/* Title row with number */}
-            <div className="flex justify-between items-center mb-40">
+            <div className="flex justify-between items-center mb-20">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente A</h2>
-              <span className="text-6xl font-black text-black">01</span>
+              <span className="text-6xl font-black text-[#171717]">01</span>
             </div>
             
             <div className="grid grid-cols-12 gap-16">
               {/* Left Column - Content */}
               <div className="col-span-6">
-                <h3 className="text-3xl font-bold text-black leading-tight mb-8">
+                <h3 className="text-3xl font-bold text-[#171717] leading-tight mb-8">
                   Lattine personalizzate 200ml con design premium e etichette White Label di alta qualità.
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-2 gap-8 mb-16">
                   <div>
-                    <p className="text-black mb-2">Quantità: 2520 lattine</p>
-                    <p className="text-black mb-2">Prezzo: €0.70 cad.</p>
-                    <p className="text-black">Template scaricato</p>
+                    <p className="text-[#171717] mb-2">Quantità: 2520 lattine</p>
+                    <p className="text-[#171717] mb-2">Prezzo: €0.70 cad.</p>
+                    <p className="text-[#171717]">Template scaricato</p>
                   </div>
                   <div>
-                    <p className="text-black mb-2">Campione richiesto</p>
-                    <p className="text-black mb-2">Pagamento Stripe</p>
-                    <p className="text-black">Delivery 15 giorni</p>
+                    <p className="text-[#171717] mb-2">Campione richiesto</p>
+                    <p className="text-[#171717] mb-2">Pagamento Stripe</p>
+                    <p className="text-[#171717]">Delivery 15 giorni</p>
                   </div>
                 </div>
                 
@@ -215,27 +215,27 @@ function LandingPageContent() {
         {/* Card 2 - Cliente B */}
         <div ref={setCardRef(1)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
-            <div className="flex justify-between items-center mb-40">
+            <div className="flex justify-between items-center mb-20">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente B</h2>
-              <span className="text-6xl font-black text-black">02</span>
+              <span className="text-6xl font-black text-[#171717]">02</span>
             </div>
             
             <div className="grid grid-cols-12 gap-16">
               <div className="col-span-6">
-                <h3 className="text-3xl font-bold text-black leading-tight mb-8">
+                <h3 className="text-3xl font-bold text-[#171717] leading-tight mb-8">
                   Configurazione enterprise con 5000 lattine, pricing ottimizzato e sistema di gestione ordini.
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-2 gap-8 mb-16">
                   <div>
-                    <p className="text-black mb-2">Volume enterprise</p>
-                    <p className="text-black mb-2">€0.65 per lattina</p>
-                    <p className="text-black">Sconto quantità</p>
+                    <p className="text-[#171717] mb-2">Volume enterprise</p>
+                    <p className="text-[#171717] mb-2">€0.65 per lattina</p>
+                    <p className="text-[#171717]">Sconto quantità</p>
                   </div>
                   <div>
-                    <p className="text-black mb-2">Gestione completa</p>
-                    <p className="text-black mb-2">Support dedicato</p>
-                    <p className="text-black">Delivery veloce</p>
+                    <p className="text-[#171717] mb-2">Gestione completa</p>
+                    <p className="text-[#171717] mb-2">Support dedicato</p>
+                    <p className="text-[#171717]">Delivery veloce</p>
                   </div>
                 </div>
                 
@@ -267,27 +267,27 @@ function LandingPageContent() {
         {/* Card 3 - Cliente C */}
         <div ref={setCardRef(2)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
-            <div className="flex justify-between items-center mb-40">
+            <div className="flex justify-between items-center mb-20">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente C</h2>
-              <span className="text-6xl font-black text-black">03</span>
+              <span className="text-6xl font-black text-[#171717]">03</span>
             </div>
             
             <div className="grid grid-cols-12 gap-16">
               <div className="col-span-6">
-                <h3 className="text-3xl font-bold text-black leading-tight mb-8">
+                <h3 className="text-3xl font-bold text-[#171717] leading-tight mb-8">
                   Soluzione startup con 600 lattine per test di mercato e validazione prodotto.
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-2 gap-8 mb-16">
                   <div>
-                    <p className="text-black mb-2">Startup friendly</p>
-                    <p className="text-black mb-2">Test marketing</p>
-                    <p className="text-black">Investimento minimo</p>
+                    <p className="text-[#171717] mb-2">Startup friendly</p>
+                    <p className="text-[#171717] mb-2">Test marketing</p>
+                    <p className="text-[#171717]">Investimento minimo</p>
                   </div>
                   <div>
-                    <p className="text-black mb-2">Validation veloce</p>
-                    <p className="text-black mb-2">Supporto consulenza</p>
-                    <p className="text-black">Scale-up ready</p>
+                    <p className="text-[#171717] mb-2">Validation veloce</p>
+                    <p className="text-[#171717] mb-2">Supporto consulenza</p>
+                    <p className="text-[#171717]">Scale-up ready</p>
                   </div>
                 </div>
                 
@@ -319,27 +319,27 @@ function LandingPageContent() {
         {/* Card 4 - Cliente D */}
         <div ref={setCardRef(3)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
-            <div className="flex justify-between items-center mb-40">
+            <div className="flex justify-between items-center mb-20">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente D</h2>
-              <span className="text-6xl font-black text-black">04</span>
+              <span className="text-6xl font-black text-[#171717]">04</span>
             </div>
             
             <div className="grid grid-cols-12 gap-16">
               <div className="col-span-6">
-                <h3 className="text-3xl font-bold text-black leading-tight mb-8">
+                <h3 className="text-3xl font-bold text-[#171717] leading-tight mb-8">
                   Soluzione innovativa con packaging eco-sostenibile per brand attenti all&apos;ambiente.
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-2 gap-8 mb-16">
                   <div>
-                    <p className="text-black mb-2">Materiali eco-friendly</p>
-                    <p className="text-black mb-2">€0.75 per lattina</p>
-                    <p className="text-black">Certificazioni green</p>
+                    <p className="text-[#171717] mb-2">Materiali eco-friendly</p>
+                    <p className="text-[#171717] mb-2">€0.75 per lattina</p>
+                    <p className="text-[#171717]">Certificazioni green</p>
                   </div>
                   <div>
-                    <p className="text-black mb-2">Design sostenibile</p>
-                    <p className="text-black mb-2">Packaging riciclabile</p>
-                    <p className="text-black">Delivery carbon neutral</p>
+                    <p className="text-[#171717] mb-2">Design sostenibile</p>
+                    <p className="text-[#171717] mb-2">Packaging riciclabile</p>
+                    <p className="text-[#171717]">Delivery carbon neutral</p>
                   </div>
                 </div>
                 
@@ -367,6 +367,58 @@ function LandingPageContent() {
             style={{ opacity: overlayOpacities[3] }}
           />
         </div>
+
+        {/* Card 5 - Cliente E */}
+        <div ref={setCardRef(4)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
+          <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
+            <div className="flex justify-between items-center mb-20">
+              <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente E</h2>
+              <span className="text-6xl font-black text-[#171717]">05</span>
+            </div>
+            
+            <div className="grid grid-cols-12 gap-16">
+              <div className="col-span-6">
+                <h3 className="text-3xl font-bold text-[#171717] leading-tight mb-8">
+                  Soluzione premium con packaging personalizzato e gestione completa per brand internazionali.
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-8 mb-16">
+                  <div>
+                    <p className="text-[#171717] mb-2">Volume internazionale</p>
+                    <p className="text-[#171717] mb-2">€0.60 per lattina</p>
+                    <p className="text-[#171717]">Pricing enterprise</p>
+                  </div>
+                  <div>
+                    <p className="text-[#171717] mb-2">Gestione globale</p>
+                    <p className="text-[#171717] mb-2">Multi-country shipping</p>
+                    <p className="text-[#171717]">Support H24</p>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={actions.startConfigurator}
+                  className="px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                >
+                  Scala globalmente →
+                </button>
+              </div>
+
+              <div className="col-span-6">
+                <div className="w-full h-80 bg-gray-200 rounded-2xl flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="text-6xl mb-4">🌍</div>
+                    <div className="text-xl font-medium">Global Enterprise</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Overlay grigio */}
+          <div 
+            className="absolute inset-0 bg-gray-900 pointer-events-none transition-opacity duration-500 ease-out"
+            style={{ opacity: overlayOpacities[4] }}
+          />
+        </div>
       </section>
 
       {/* Private Label Section */}
@@ -374,13 +426,13 @@ function LandingPageContent() {
         <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="grid grid-cols-12 gap-16 items-start">
             <div className="col-span-4">
-              <p className="text-base text-black">→ Private Label</p>
+              <p className="text-base text-[#171717]">→ Private Label</p>
             </div>
 
             <div className="col-span-2"></div>
 
             <div className="col-span-6">
-              <h2 className="text-4xl font-bold text-black leading-tight mb-6">
+              <h2 className="text-4xl font-bold text-[#171717] leading-tight mb-6">
                 Packaging completamente personalizzato da zero per il tuo brand enterprise.
               </h2>
               
@@ -405,12 +457,12 @@ function LandingPageContent() {
       <section className="py-20 bg-gray-100">
         <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="flex justify-between items-center mb-16">
-            <h2 className="text-5xl font-bold text-black">
+            <h2 className="text-5xl font-bold text-[#171717]">
               Portfolio Progetti
             </h2>
             
             <div className="flex items-center gap-4">
-              <span className="text-2xl font-medium text-black">Configuratore</span>
+              <span className="text-2xl font-medium text-[#171717]">Configuratore</span>
               <span className="text-2xl font-medium text-[#ed6d23]">Enterprise</span>
             </div>
           </div>
@@ -428,7 +480,7 @@ function LandingPageContent() {
               </div>
               
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-2xl font-bold text-black">
+                <h3 className="text-2xl font-bold text-[#171717]">
                   Brand Beverage Co.
                 </h3>
                 <span className="text-[#ed6d23] text-sm font-medium">
@@ -453,7 +505,7 @@ function LandingPageContent() {
               </div>
               
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-2xl font-bold text-black">
+                <h3 className="text-2xl font-bold text-[#171717]">
                   Enterprise Drinks Ltd.
                 </h3>
                 <span className="text-[#ed6d23] text-sm font-medium">
@@ -478,7 +530,7 @@ function LandingPageContent() {
               </div>
               
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-2xl font-bold text-black">
+                <h3 className="text-2xl font-bold text-[#171717]">
                   Startup Energy
                 </h3>
                 <span className="text-[#ed6d23] text-sm font-medium">
@@ -503,7 +555,7 @@ function LandingPageContent() {
               </div>
               
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-2xl font-bold text-black">
+                <h3 className="text-2xl font-bold text-[#171717]">
                   Premium Beverages Corp.
                 </h3>
                 <span className="text-[#ed6d23] text-sm font-medium">
@@ -518,6 +570,57 @@ function LandingPageContent() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-300 bg-gray-100 py-16">
+        <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-12 gap-16 mb-16">
+            <div className="col-span-6">
+              <div className="space-y-4">
+                <h4 className="text-2xl font-bold text-[#ed6d23]">Café 124</h4>
+                <div className="text-sm text-gray-500 leading-relaxed space-y-1">
+                  <p>P. Iva 11298940963</p>
+                  <p>Via Pasquale Sottocorno 17</p>
+                  <p>Milano, Italy</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="col-span-3">
+              <div className="space-y-4">
+                <p className="text-sm text-gray-500">Contact</p>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <p>info@drink124.com</p>
+                  <p>+39 022 110 2413</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="col-span-3">
+              <div className="space-y-4">
+                <p className="text-sm text-gray-500">Legale</p>
+                <div className="text-sm space-y-2">
+                  <a href="https://drink124.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Privacy Policy</a>
+                  <a href="https://drink124.com/policies/refund-policy" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Refund Policy</a>
+                  <a href="https://drink124.com/policies/terms-of-service" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Condizioni di utilizzo</a>
+                  <a href="https://drink124.com/policies/contact-information" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Export</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bottom Line */}
+          <div className="border-t border-gray-200 pt-6 pb-2 flex justify-between items-center">
+            <p className="text-xs text-gray-400 font-light">
+              © {new Date().getFullYear()} Café 124
+            </p>
+            <p className="text-xs text-gray-400 font-light">
+              Designed by <a href="https://zero823.com/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#ed6d23] transition-colors duration-200">zero823</a>
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
