@@ -94,11 +94,11 @@ export function ConfiguratorWizard() {
   // const completedSteps = steps.filter(step => step.isCompleted).length // Future use
 
   const renderStepTitle = () => (
-    <div className="mb-8">
-      <h3 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="mb-6 md:mb-8">
+      <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
         {currentStep.title}
       </h3>
-      <p className="text-gray-600 text-base">
+      <p className="text-gray-600 text-sm md:text-base">
         {currentStep.description}
       </p>
     </div>
@@ -107,11 +107,11 @@ export function ConfiguratorWizard() {
   const renderStepContent = () => {
     const StepComponent = currentStep.component
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8 h-[520px] flex flex-col">
-        <div className="mb-4 flex justify-between items-center">
+      <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 lg:p-8 min-h-[400px] md:min-h-[520px] flex flex-col">
+        <div className="mb-4 space-y-4 md:flex md:justify-between md:items-center md:space-y-0">
           {/* Step mini description - Left side */}
-          <div className="flex-1">
-            <p className="text-sm text-gray-600">
+          <div className="md:flex-1">
+            <p className="text-xs md:text-sm text-gray-600">
               {/* Step-specific descriptions will be shown here */}
               {currentStepIndex === 0 && "Seleziona il paese di destinazione"}
               {currentStepIndex === 1 && "Scegli il tipo di servizio che meglio si adatta alle tue esigenze"}
@@ -126,7 +126,7 @@ export function ConfiguratorWizard() {
           </div>
           
           {/* Navigation CTA - Right side */}
-          <div className="flex gap-2 ml-4">
+          <div className="flex flex-col sm:flex-row gap-2 md:ml-4">
             <button
               onClick={goPrevious}
               disabled={currentStepIndex === 0}
@@ -168,22 +168,22 @@ export function ConfiguratorWizard() {
     <div className="h-screen bg-gray-100 flex flex-col">
       {/* Header with Logo */}
       <header className="flex justify-between items-center py-4 bg-white">
-        <div className="max-w-7xl mx-auto w-full flex justify-between items-center" style={{paddingLeft: '0px', paddingRight: '0px'}}>
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center px-4 lg:px-0">
           <Image 
             src="/logo-124.png" 
             alt="124 Logo" 
             width={48}
             height={48}
-            className="h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
+            className="h-10 w-10 md:h-12 md:w-12 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => window.location.href = '/'}
           />
-          <div className="text-sm text-gray-600">
+          <div className="text-xs md:text-sm text-gray-600">
             Step {state.currentStep} di {steps.length}
           </div>
         </div>
       </header>
       
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 py-4">
+      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full px-4 py-4">
         {/* Step Title - Outside box */}
         <div className="mt-0">
           {renderStepTitle()}

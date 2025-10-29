@@ -29,13 +29,13 @@ export function Step2Service() {
   }
 
   return (
-    <div className="space-y-6">
-        <div className="grid gap-4">
+    <div className="space-y-4 md:space-y-6">
+        <div className="space-y-4 lg:grid lg:grid-cols-1 lg:gap-4 lg:space-y-0">
           {serviceSubTypes.map((service) => (
             <div
               key={service.subType}
               onClick={() => handleServiceSubTypeSelect(service.subType)}
-              className={`border rounded-lg p-6 cursor-pointer transition-all ${
+              className={`border rounded-lg p-4 md:p-6 cursor-pointer transition-all ${
                 state.serviceSubType === service.subType 
                   ? 'border-[#ed6d23] border-2' 
                   : 'border-gray-200 hover:border-gray-400'
@@ -43,15 +43,15 @@ export function Step2Service() {
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">
                     {service.name}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm md:text-base mb-4">
                     {service.description}
                   </p>
                   <ul className="space-y-1">
                     {service.features.map((feature, index) => (
-                      <li key={index} className="text-sm text-gray-500 flex items-center">
+                      <li key={index} className="text-xs md:text-sm text-gray-500 flex items-center">
                         <span className="w-1 h-1 bg-gray-400 rounded-full mr-3"></span>
                         {feature}
                       </li>

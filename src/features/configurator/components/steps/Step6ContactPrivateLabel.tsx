@@ -220,30 +220,30 @@ export function Step6ContactPrivateLabel() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
 
       {/* Error Message */}
       {submitError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4">
           <div className="flex items-center">
             <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-red-700">{submitError}</p>
+            <p className="text-xs md:text-sm text-red-700">{submitError}</p>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
         {/* Dati Personali Enterprise */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 shadow-sm">
+          <h3 className="text-base md:text-lg font-medium text-gray-900 mb-4">
             Dati di Contatto
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Nome *
               </label>
               <input
@@ -251,13 +251,13 @@ export function Step6ContactPrivateLabel() {
                 required
                 value={state.contactForm.firstName}
                 onChange={(e) => actions.setContactForm({ firstName: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="Il tuo nome"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Cognome *
               </label>
               <input
@@ -265,13 +265,13 @@ export function Step6ContactPrivateLabel() {
                 required
                 value={state.contactForm.lastName}
                 onChange={(e) => actions.setContactForm({ lastName: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="Il tuo cognome"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Email *
               </label>
               <input
@@ -292,7 +292,7 @@ export function Step6ContactPrivateLabel() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Numero di Telefono *
               </label>
               <input
@@ -300,13 +300,13 @@ export function Step6ContactPrivateLabel() {
                 required
                 value={state.contactForm.phone}
                 onChange={(e) => actions.setContactForm({ phone: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="+39 123 456 7890"
               />
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Azienda *
               </label>
               <input
@@ -314,7 +314,7 @@ export function Step6ContactPrivateLabel() {
                 required
                 value={state.contactForm.company}
                 onChange={(e) => actions.setContactForm({ company: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                 placeholder="Nome della tua azienda"
               />
             </div>
@@ -322,8 +322,8 @@ export function Step6ContactPrivateLabel() {
         </div>
 
         {/* Preferenze Contatto Enterprise */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 shadow-sm">
+          <h3 className="text-base md:text-lg font-medium text-gray-900 mb-4">
             Preferenze di Contatto
           </h3>
           
@@ -340,7 +340,7 @@ export function Step6ContactPrivateLabel() {
                 })}
                 className="w-4 h-4 text-[#ed6d23] bg-gray-100 border-gray-300 rounded focus:ring-[#ed6d23] focus:ring-2"
               />
-              <label htmlFor="emailOnly" className="text-sm text-gray-700">
+              <label htmlFor="emailOnly" className="text-xs md:text-sm text-gray-700">
                 Voglio essere contattato esclusivamente via email
               </label>
             </div>
@@ -354,20 +354,20 @@ export function Step6ContactPrivateLabel() {
                 onChange={(e) => actions.setContactForm({ canCall: e.target.checked })}
                 className="w-4 h-4 text-[#ed6d23] bg-gray-100 border-gray-300 rounded focus:ring-[#ed6d23] focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <label htmlFor="canCall" className={`text-sm ${state.contactForm.emailOnly ? 'text-gray-400' : 'text-gray-700'}`}>
+              <label htmlFor="canCall" className={`text-xs md:text-sm ${state.contactForm.emailOnly ? 'text-gray-400' : 'text-gray-700'}`}>
                 Acconsento a essere contattato telefonicamente
               </label>
             </div>
             
             {state.contactForm.canCall && !state.contactForm.emailOnly && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                   Quando preferisci essere contattato?
                 </label>
                 <select
                   value={state.contactForm.preferredCallTime}
                   onChange={(e) => actions.setContactForm({ preferredCallTime: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent text-gray-900"
                 >
                   <option value="">Seleziona un orario</option>
                   <option value="mattina">Mattina (9:00 - 12:00)</option>
@@ -389,7 +389,7 @@ export function Step6ContactPrivateLabel() {
 
         {/* Private Label Project Summary - Minimal */}
         <div className="pt-2 border-t border-gray-200">
-          <div className="text-sm text-gray-700 space-y-1">
+          <div className="text-xs md:text-sm text-gray-700 space-y-1">
             {state.beverageSelection && (
               <div className="flex justify-between items-center">
                 <span>Bevanda: {state.beverageSelection.selectedBeverage === 'rd-custom' ? 
@@ -415,7 +415,7 @@ export function Step6ContactPrivateLabel() {
           <button
             type="submit"
             disabled={!isFormValid() || isSubmitting || isPaymentProcessing}
-            className={`px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed6d23] ${
+            className={`px-6 md:px-8 py-3 border border-transparent text-sm md:text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed6d23] ${
               !isFormValid() || isSubmitting || isPaymentProcessing
                 ? 'bg-gray-400 cursor-not-allowed' 
                 : 'bg-[#ed6d23] hover:bg-[#d55a1a]'

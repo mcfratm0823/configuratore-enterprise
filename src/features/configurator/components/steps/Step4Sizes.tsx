@@ -48,10 +48,10 @@ export function Step4Sizes() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Preventivo Summary Enterprise */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+      <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 shadow-sm">
+        <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-4">
           Riepilogo Preventivo
         </h3>
         
@@ -59,14 +59,14 @@ export function Step4Sizes() {
           {/* Can Selection Detail */}
           <div className="flex justify-between items-center">
             <div className="flex-1">
-              <span className="text-gray-600">
+              <span className="text-sm md:text-base text-gray-600">
                 {state.canSelection.quantity.toLocaleString()} lattine da 200ml
               </span>
               <div className="text-xs text-gray-500">
                 {state.canSelection.cartonsCount} cartoni da 24 lattine
               </div>
             </div>
-            <span className="font-medium text-gray-900">
+            <span className="text-sm md:text-base font-medium text-gray-900">
               €{canSelectionTotal.toLocaleString('it-IT', { 
                 minimumFractionDigits: 2, 
                 maximumFractionDigits: 2 
@@ -79,23 +79,23 @@ export function Step4Sizes() {
 
           {/* Total */}
           <div className="flex justify-between items-center">
-            <span className="text-lg font-medium text-gray-900">
+            <span className="text-base md:text-lg font-medium text-gray-900">
               Totale preventivo
             </span>
             <div className="text-right">
-              <span className="text-xl font-bold text-[#ed6d23]">
+              <span className="text-lg md:text-xl font-bold text-[#ed6d23]">
                 €{canSelectionTotal.toLocaleString('it-IT', { 
                   minimumFractionDigits: 2, 
                   maximumFractionDigits: 2 
                 })}
               </span>
-              <span className="text-sm text-gray-600 ml-2">
+              <span className="text-xs md:text-sm text-gray-600 ml-2">
                 + €18 a pallet
               </span>
             </div>
           </div>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-xs md:text-sm text-gray-500 mt-2">
             * Escluse le spese di spedizione
           </p>
           
@@ -110,10 +110,10 @@ export function Step4Sizes() {
         <div className="pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h4 className="font-medium text-gray-900 mb-1">
+              <h4 className="text-sm md:text-base font-medium text-gray-900 mb-1">
                 Vuoi continuare?
               </h4>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs md:text-sm text-gray-600">
                 Procedi per scaricare il template e richiedere un preventivo personalizzato
               </p>
             </div>

@@ -63,14 +63,14 @@ export function Step3Materials() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Grid 2x2 Enterprise Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
         {canOptions.map((option) => (
           <div
             key={option.quantity}
             onClick={() => handleCanSelection(option.quantity, option.cartonsCount, option.pricePerCan)}
-            className={`rounded-lg p-6 cursor-pointer transition-all ${
+            className={`rounded-lg p-4 md:p-6 cursor-pointer transition-all ${
               state.canSelection?.quantity === option.quantity
                 ? 'border-2 border-[#ed6d23] bg-white' 
                 : 'border border-gray-200 bg-white hover:border-gray-400'
@@ -78,24 +78,24 @@ export function Step3Materials() {
           >
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-lg md:text-xl font-medium text-gray-900">
                   {option.quantity.toLocaleString()} lattine
                 </h3>
-                <span className="text-sm text-gray-500">
+                <span className="text-xs md:text-sm text-gray-500">
                   (200ml ciascuna)
                 </span>
-                <p className="text-gray-600 text-sm mt-2">
+                <p className="text-gray-600 text-xs md:text-sm mt-2">
                   {option.description}
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-gray-900">
+                <div className="text-lg md:text-xl font-bold text-gray-900">
                   €{(option.quantity * option.pricePerCan).toLocaleString('it-IT', { 
                     minimumFractionDigits: 2, 
                     maximumFractionDigits: 2 
                   })}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-xs md:text-sm text-gray-500">
                   €{option.pricePerCan.toFixed(2)}/lattina
                 </div>
               </div>
@@ -107,7 +107,7 @@ export function Step3Materials() {
       {/* Selected Can Info - Integrated */}
       {state.canSelection && (
         <div className="pt-2 border-t border-gray-200">
-          <div className="text-sm text-gray-700 space-y-1">
+          <div className="text-xs md:text-sm text-gray-700 space-y-1">
             <div className="flex justify-between items-center">
               <span>{state.canSelection.quantity.toLocaleString()} lattine × €{(state.canSelection.totalPrice / state.canSelection.quantity).toFixed(2)}</span>
               <span className="font-medium">€{state.canSelection.totalPrice.toFixed(2)}</span>

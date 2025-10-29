@@ -89,10 +89,10 @@ export function Step5Extras() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
 
       {/* Template Download Card Enterprise */}
-      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-lg p-6 md:p-8 text-center shadow-sm">
         <div className="mb-6">
           <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors ${
             downloadCompleted ? 'bg-orange-600' : 'bg-[#ed6d23]'
@@ -108,11 +108,11 @@ export function Step5Extras() {
             )}
           </div>
           
-          <h3 className="text-xl font-medium text-gray-900 mb-2">
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">
             Template White Label
           </h3>
           
-          <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
+          <p className="text-gray-600 text-sm md:text-base mb-6 max-w-md mx-auto">
             Scarica il pacchetto ZIP con tutti i template PDF professionali per le tue etichette
           </p>
 
@@ -122,7 +122,7 @@ export function Step5Extras() {
         <button
           onClick={handleDownloadZIP}
           disabled={isDownloading || downloadCompleted}
-          className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed6d23] ${
+          className={`inline-flex items-center px-4 md:px-6 py-3 border border-transparent text-sm md:text-base font-medium rounded-lg text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed6d23] ${
             downloadCompleted
               ? 'bg-orange-600 cursor-default'
               : isDownloading 
@@ -157,7 +157,7 @@ export function Step5Extras() {
 
         {/* Message Enterprise */}
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-xs md:text-sm">
             Preparati a creare la tua etichetta, verrai contattato a breve
           </p>
         </div>
