@@ -165,7 +165,7 @@ export function ConfiguratorWizard() {
 
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-100 flex flex-col">
       {/* Header with Logo */}
       <header className="flex justify-between items-center py-4 bg-white">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center" style={{paddingLeft: '0px', paddingRight: '0px'}}>

@@ -59,7 +59,7 @@ function LandingPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-100">
       {/* Sticky Navbar */}
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-4" style={{paddingLeft: '0px', paddingRight: '0px'}}>
@@ -158,7 +158,7 @@ function LandingPageContent() {
       {/* Sticky Cards Section - Portfolio Clienti */}
       <section className="relative">
         {/* Card 1 - Cliente A */}
-        <div ref={setCardRef(0)} className="sticky top-0 h-screen bg-white flex items-center relative">
+        <div ref={setCardRef(0)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             {/* Title row with number */}
             <div className="flex justify-between items-center mb-40">
@@ -213,7 +213,7 @@ function LandingPageContent() {
         </div>
 
         {/* Card 2 - Cliente B */}
-        <div ref={setCardRef(1)} className="sticky top-0 h-screen bg-white flex items-center relative">
+        <div ref={setCardRef(1)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente B</h2>
@@ -265,7 +265,7 @@ function LandingPageContent() {
         </div>
 
         {/* Card 3 - Cliente C */}
-        <div ref={setCardRef(2)} className="sticky top-0 h-screen bg-white flex items-center relative">
+        <div ref={setCardRef(2)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente C</h2>
@@ -317,7 +317,7 @@ function LandingPageContent() {
         </div>
 
         {/* Card 4 - Cliente D */}
-        <div ref={setCardRef(3)} className="sticky top-0 h-screen bg-white flex items-center relative">
+        <div ref={setCardRef(3)} className="sticky top-0 h-screen bg-gray-100 flex items-center relative">
           <div className="max-w-7xl mx-auto w-full" style={{paddingLeft: '0px', paddingRight: '0px'}}>
             <div className="flex justify-between items-center mb-40">
               <h2 className="text-6xl font-bold text-[#ed6d23]">Cliente D</h2>
@@ -370,7 +370,7 @@ function LandingPageContent() {
       </section>
 
       {/* Private Label Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="grid grid-cols-12 gap-16 items-start">
             <div className="col-span-4">
@@ -402,7 +402,7 @@ function LandingPageContent() {
       </section>
 
       {/* Recent Work Gallery Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-100">
         <div className="max-w-7xl mx-auto" style={{paddingLeft: '0px', paddingRight: '0px'}}>
           <div className="flex justify-between items-center mb-16">
             <h2 className="text-5xl font-bold text-black">
