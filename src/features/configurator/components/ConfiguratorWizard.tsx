@@ -107,7 +107,7 @@ export function ConfiguratorWizard() {
   const renderStepContent = () => {
     const StepComponent = currentStep.component
     return (
-      <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 lg:p-8 min-h-[400px] md:min-h-[520px] flex flex-col">
+      <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 lg:p-8 flex flex-col">
         <div className="mb-4 space-y-4 md:flex md:justify-between md:items-center md:space-y-0">
           {/* Step mini description - Left side */}
           <div className="md:flex-1">
@@ -156,7 +156,7 @@ export function ConfiguratorWizard() {
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto px-2">
+        <div className="px-2">
           <StepComponent />
         </div>
       </div>
@@ -165,7 +165,7 @@ export function ConfiguratorWizard() {
 
 
   return (
-    <div className="h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header with Logo */}
       <header className="flex justify-between items-center py-4 bg-white">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center px-4 lg:px-0">
@@ -183,20 +183,16 @@ export function ConfiguratorWizard() {
         </div>
       </header>
       
-      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full px-4 py-4">
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 py-4">
         {/* Step Title - Outside box */}
-        <div className="mt-0">
+        <div className="mb-6 md:mb-8">
           {renderStepTitle()}
         </div>
 
-        {/* Step Content - Fixed size */}
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-full">
-            {renderStepContent()}
-          </div>
+        {/* Step Content - Auto height */}
+        <div className="w-full">
+          {renderStepContent()}
         </div>
-
-
       </div>
     </div>
   )
