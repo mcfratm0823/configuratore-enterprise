@@ -1,8 +1,10 @@
 'use client'
 
 import Image from 'next/image'
+import { useState } from 'react'
 
 export default function ContactPage() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -24,12 +26,56 @@ export default function ContactPage() {
           </nav>
           
           {/* Mobile Menu Button */}
-          <button className="md:hidden p-2">
-            <div className="w-6 h-0.5 bg-[#171717] mb-1"></div>
-            <div className="w-6 h-0.5 bg-[#171717] mb-1"></div>
-            <div className="w-6 h-0.5 bg-[#171717]"></div>
+          <button 
+            className="md:hidden p-2 relative z-50"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5 bg-[#ed6d23]' : ''}`}></div>
+            <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
+            <div className={`w-6 h-0.5 bg-[#171717] transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5 bg-[#ed6d23]' : ''}`}></div>
           </button>
         </div>
+        
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 bg-white z-40 pt-20">
+            <nav className="flex flex-col space-y-8 px-4 py-8">
+              <a 
+                href="https://drink124.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a 
+                href="https://drink124.com/pages/chi-siamo-cafe-124" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Chi siamo
+              </a>
+              <a 
+                href="/configurator" 
+                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Configuratore
+              </a>
+              <a 
+                href="/contact" 
+                className="text-[#ed6d23] font-medium text-xl py-4 border-b border-gray-200 flex items-center gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contatti
+                <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+              </a>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
@@ -62,7 +108,6 @@ export default function ContactPage() {
           <div className="space-y-8 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0">
             {/* Left Column - Section title */}
             <div className="lg:col-span-4">
-              <p className="text-base text-[#171717]">→ Informazioni</p>
             </div>
 
             {/* Empty space */}

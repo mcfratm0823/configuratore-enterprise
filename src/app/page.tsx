@@ -7,6 +7,9 @@ import Image from 'next/image'
 function LandingPageContent() {
   const { actions } = useConfigurator()
   
+  // Mobile menu state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
   // Sticky cards overlay effect
   const [overlayOpacities, setOverlayOpacities] = useState([0, 0, 0, 0, 0])
   const cardsRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -83,12 +86,60 @@ function LandingPageContent() {
           </nav>
           
           {/* Mobile Menu Button */}
-          <button className="md:hidden p-2">
-            <div className="w-6 h-0.5 bg-[#171717] mb-1"></div>
-            <div className="w-6 h-0.5 bg-[#171717] mb-1"></div>
-            <div className="w-6 h-0.5 bg-[#171717]"></div>
+          <button 
+            className="md:hidden p-2 relative z-50"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5 bg-[#ed6d23]' : ''}`}></div>
+            <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
+            <div className={`w-6 h-0.5 bg-[#171717] transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5 bg-[#ed6d23]' : ''}`}></div>
           </button>
         </div>
+        
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 bg-white z-40 pt-20">
+            <nav className="flex flex-col space-y-8 px-4 py-8">
+              <a 
+                href="https://drink124.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a 
+                href="https://drink124.com/pages/chi-siamo-cafe-124" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Chi siamo
+              </a>
+              <button 
+                onClick={() => {
+                  actions.startConfigurator()
+                  setIsMobileMenuOpen(false)
+                }}
+                className="text-[#ed6d23] font-medium text-xl py-4 border-b border-gray-200 text-left relative group"
+              >
+                <span className="flex items-center gap-2">
+                  Configuratore
+                  <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                </span>
+              </button>
+              <a 
+                href="/contact" 
+                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contatti
+              </a>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
@@ -153,12 +204,12 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
-                className="text-[#171717] font-medium cursor-pointer relative group"
+                className="text-[#ed6d23] font-medium cursor-pointer relative group"
               >
                 <span className="relative flex items-center gap-2">
                   Start Configurator
-                  <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                  <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                 </span>
               </button>
             </div>
@@ -199,12 +250,12 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="text-[#171717] font-medium cursor-pointer relative group"
+                  className="text-[#ed6d23] font-medium cursor-pointer relative group"
                 >
                   <span className="relative flex items-center gap-2">
                     Configura il tuo
-                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                    <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                   </span>
                 </button>
               </div>
@@ -256,12 +307,12 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="text-[#171717] font-medium cursor-pointer relative group"
+                  className="text-[#ed6d23] font-medium cursor-pointer relative group"
                 >
                   <span className="relative flex items-center gap-2">
                     Scala il business
-                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                    <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                   </span>
                 </button>
               </div>
@@ -312,12 +363,12 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="text-[#171717] font-medium cursor-pointer relative group"
+                  className="text-[#ed6d23] font-medium cursor-pointer relative group"
                 >
                   <span className="relative flex items-center gap-2">
                     Valida l&apos;idea
-                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                    <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                   </span>
                 </button>
               </div>
@@ -368,12 +419,12 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="text-[#171717] font-medium cursor-pointer relative group"
+                  className="text-[#ed6d23] font-medium cursor-pointer relative group"
                 >
                   <span className="relative flex items-center gap-2">
                     Soluzioni eco
-                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                    <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                   </span>
                 </button>
               </div>
@@ -424,12 +475,12 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="text-[#171717] font-medium cursor-pointer relative group"
+                  className="text-[#ed6d23] font-medium cursor-pointer relative group"
                 >
                   <span className="relative flex items-center gap-2">
                     Scala globalmente
-                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                    <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                   </span>
                 </button>
               </div>
@@ -475,12 +526,12 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
-                className="text-[#171717] font-medium cursor-pointer relative group"
+                className="text-[#ed6d23] font-medium cursor-pointer relative group"
               >
                 <span className="relative flex items-center gap-2">
                   Configurazione Premium
-                  <img src="/arrow.svg" alt="→" className="w-4 h-4" />
-                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                  <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-[#ed6d23]"></span>
                 </span>
               </button>
             </div>
