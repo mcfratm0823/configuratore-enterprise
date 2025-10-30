@@ -108,8 +108,8 @@ export function ConfiguratorWizard() {
     const StepComponent = currentStep.component
     return (
       <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 lg:p-8 flex flex-col">
-        <div className="mb-4 space-y-4 md:flex md:justify-between md:items-center md:space-y-0">
-          {/* Step mini description - Left side */}
+        {/* Step description - Mobile top, Desktop with navigation */}
+        <div className="mb-4 md:flex md:justify-between md:items-center">
           <div className="md:flex-1">
             <p className="text-xs md:text-sm text-gray-600">
               {/* Step-specific descriptions will be shown here */}
@@ -125,8 +125,8 @@ export function ConfiguratorWizard() {
             </p>
           </div>
           
-          {/* Navigation CTA - Right side */}
-          <div className="flex flex-col sm:flex-row gap-2 md:ml-4">
+          {/* Navigation CTA - Desktop only */}
+          <div className="hidden md:flex flex-col sm:flex-row gap-2 md:ml-4">
             <button
               onClick={goPrevious}
               disabled={currentStepIndex === 0}
@@ -156,8 +156,41 @@ export function ConfiguratorWizard() {
           </div>
         </div>
         
-        <div className="px-2">
+        {/* Step Content */}
+        <div className="px-2 flex-1">
           <StepComponent />
+        </div>
+
+        {/* Mobile Navigation - Bottom */}
+        <div className="md:hidden mt-6 pt-4 border-t border-gray-200">
+          <div className="flex gap-3">
+            <button
+              onClick={goPrevious}
+              disabled={currentStepIndex === 0}
+              className={`flex-1 py-3 rounded-lg font-medium transition-all text-sm ${
+                currentStepIndex === 0
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              ← Indietro
+            </button>
+
+            {/* Avanti solo se NON siamo all'ultimo step */}
+            {currentStepIndex < steps.length - 1 && (
+              <button
+                onClick={goNext}
+                disabled={!currentStep.isCompleted}
+                className={`flex-1 py-3 rounded-lg font-medium transition-all text-sm ${
+                  !currentStep.isCompleted
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-[#ed6d23] text-white hover:bg-[#d55a1a]'
+                }`}
+              >
+                Avanti →
+              </button>
+            )}
+          </div>
         </div>
       </div>
     )
