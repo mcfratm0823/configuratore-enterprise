@@ -7,13 +7,13 @@ export default function ContactPage() {
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
-        <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-4 px-4 lg:px-0">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-2 md:py-4 px-4 lg:px-0">
           <Image 
             src="/logo-124.png" 
             alt="124 Logo" 
             width={48}
             height={48}
-            className="h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
+            className="h-10 w-10 md:h-12 md:w-12 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => window.location.href = '/'}
           />
           <nav className="hidden md:flex items-center space-x-8">

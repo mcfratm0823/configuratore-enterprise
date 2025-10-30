@@ -62,13 +62,13 @@ function LandingPageContent() {
     <div className="min-h-screen bg-gray-100">
       {/* Sticky Navbar */}
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
-        <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-4 px-4 lg:px-0">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-2 md:py-4 px-4 lg:px-0">
           <Image 
             src="/logo-124.png" 
             alt="124 Logo" 
             width={48}
             height={48}
-            className="h-12 w-12"
+            className="h-10 w-10 md:h-12 md:w-12"
           />
           <nav className="hidden md:flex items-center space-x-8">
             <a href="https://drink124.com/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium">Home</a>
@@ -184,7 +184,7 @@ function LandingPageContent() {
                   Lattine personalizzate 200ml con design premium e etichette White Label di alta qualità.
                 </h3>
                 
-                <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 lg:gap-8 md:space-y-0 mb-8 lg:mb-16">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 lg:mb-16">
                   <div className="space-y-2">
                     <p className="text-[#171717] text-sm md:text-base">Quantità: 2520 lattine</p>
                     <p className="text-[#171717] text-sm md:text-base">Prezzo: €0.70 cad.</p>
@@ -241,7 +241,7 @@ function LandingPageContent() {
                   Configurazione enterprise con 5000 lattine, pricing ottimizzato e sistema di gestione ordini.
                 </h3>
                 
-                <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 lg:gap-8 md:space-y-0 mb-8 lg:mb-16">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 lg:mb-16">
                   <div className="space-y-2">
                     <p className="text-[#171717] text-sm md:text-base">Volume enterprise</p>
                     <p className="text-[#171717] text-sm md:text-base">€0.65 per lattina</p>
@@ -297,7 +297,7 @@ function LandingPageContent() {
                   Soluzione startup con 600 lattine per test di mercato e validazione prodotto.
                 </h3>
                 
-                <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 lg:gap-8 md:space-y-0 mb-8 lg:mb-16">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 lg:mb-16">
                   <div className="space-y-2">
                     <p className="text-[#171717] text-sm md:text-base">Startup friendly</p>
                     <p className="text-[#171717] text-sm md:text-base">Test marketing</p>
@@ -353,7 +353,7 @@ function LandingPageContent() {
                   Soluzione innovativa con packaging eco-sostenibile per brand attenti all&apos;ambiente.
                 </h3>
                 
-                <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 lg:gap-8 md:space-y-0 mb-8 lg:mb-16">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 lg:mb-16">
                   <div className="space-y-2">
                     <p className="text-[#171717] text-sm md:text-base">Materiali eco-friendly</p>
                     <p className="text-[#171717] text-sm md:text-base">€0.75 per lattina</p>
@@ -409,7 +409,7 @@ function LandingPageContent() {
                   Soluzione premium con packaging personalizzato e gestione completa per brand internazionali.
                 </h3>
                 
-                <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 lg:gap-8 md:space-y-0 mb-8 lg:mb-16">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 lg:mb-16">
                   <div className="space-y-2">
                     <p className="text-[#171717] text-sm md:text-base">Volume internazionale</p>
                     <p className="text-[#171717] text-sm md:text-base">€0.60 per lattina</p>
