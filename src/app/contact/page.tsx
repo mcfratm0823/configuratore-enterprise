@@ -149,6 +149,57 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-300 bg-gray-100 py-8 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 lg:px-0">
+          {/* Main Footer Content */}
+          <div className="space-y-8 lg:grid lg:grid-cols-12 lg:gap-16 lg:space-y-0 mb-8 lg:mb-12">
+            <div className="lg:col-span-6">
+              <div className="space-y-3 md:space-y-4">
+                <h4 className="text-lg md:text-xl font-bold text-[#ed6d23]">Café 124</h4>
+                <div className="text-xs md:text-sm text-gray-500 leading-relaxed space-y-1">
+                  <p>P. Iva 11298940963</p>
+                  <p>Via Pasquale Sottocorno 17</p>
+                  <p>Milano, Italy</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lg:col-span-3">
+              <div className="space-y-3 md:space-y-4">
+                <p className="text-xs md:text-sm text-gray-500">Contact</p>
+                <div className="text-xs md:text-sm text-gray-700 space-y-2">
+                  <p>info@drink124.com</p>
+                  <p>+39 022 110 2413</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lg:col-span-3">
+              <div className="space-y-3 md:space-y-4">
+                <p className="text-xs md:text-sm text-gray-500">Legale</p>
+                <div className="text-xs md:text-sm space-y-2">
+                  <a href="https://drink124.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Privacy Policy</a>
+                  <a href="https://drink124.com/policies/refund-policy" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Refund Policy</a>
+                  <a href="https://drink124.com/policies/terms-of-service" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Condizioni di utilizzo</a>
+                  <a href="https://drink124.com/policies/contact-information" target="_blank" rel="noopener noreferrer" className="block text-gray-700 hover:text-[#ed6d23] transition-colors duration-200">Export</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bottom Line */}
+          <div className="border-t border-gray-200 pt-4 md:pt-6 pb-2 space-y-2 md:flex md:justify-between md:items-center md:space-y-0">
+            <p className="text-xs text-gray-400 font-light">
+              © {new Date().getFullYear()} Café 124
+            </p>
+            <p className="text-xs text-gray-400 font-light">
+              Designed by <a href="https://zero823.com/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#ed6d23] transition-colors duration-200">zero823</a>
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
