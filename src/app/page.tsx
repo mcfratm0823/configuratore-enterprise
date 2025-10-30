@@ -98,46 +98,48 @@ function LandingPageContent() {
         
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 bg-white z-40 pt-20">
-            <nav className="flex flex-col space-y-8 px-4 py-8">
-              <a 
-                href="https://drink124.com/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </a>
-              <a 
-                href="https://drink124.com/pages/chi-siamo-cafe-124" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Chi siamo
-              </a>
-              <button 
-                onClick={() => {
-                  actions.startConfigurator()
-                  setIsMobileMenuOpen(false)
-                }}
-                className="text-[#ed6d23] font-medium text-xl py-4 border-b border-gray-200 text-left relative group"
-              >
-                <span className="flex items-center gap-2">
-                  Configuratore
-                  <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
-                </span>
-              </button>
-              <a 
-                href="/contact" 
-                className="text-[#171717] font-medium text-xl py-4 border-b border-gray-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contatti
-              </a>
-            </nav>
+          <div className="md:hidden fixed inset-0 top-0 left-0 w-full h-full bg-white z-40 overflow-hidden">
+            <div className="pt-20 px-4 h-full">
+              <nav className="flex flex-col space-y-0 h-full">
+                <a 
+                  href="https://drink124.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Home
+                </a>
+                <a 
+                  href="https://drink124.com/pages/chi-siamo-cafe-124" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Chi siamo
+                </a>
+                <button 
+                  onClick={() => {
+                    actions.startConfigurator()
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="text-[#ed6d23] font-medium text-xl py-6 border-b border-gray-200 text-left w-full block"
+                >
+                  <span className="flex items-center gap-2">
+                    Configuratore
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                  </span>
+                </button>
+                <a 
+                  href="/contact" 
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contatti
+                </a>
+              </nav>
+            </div>
           </div>
         )}
       </header>
