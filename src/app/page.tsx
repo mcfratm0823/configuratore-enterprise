@@ -124,12 +124,9 @@ function LandingPageContent() {
                     actions.startConfigurator()
                     setIsMobileMenuOpen(false)
                   }}
-                  className="text-[#ed6d23] font-medium text-xl py-6 border-b border-gray-200 text-left w-full block"
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 text-left w-full block"
                 >
-                  <span className="flex items-center gap-2">
-                    Configuratore
-                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
-                  </span>
+                  Configuratore
                 </button>
                 <a 
                   href="/contact" 
