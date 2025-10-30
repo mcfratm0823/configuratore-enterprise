@@ -5,8 +5,9 @@ import { useState } from 'react'
 
 export default function ContactPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-screen bg-gray-100 overflow-hidden flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-2 md:py-4 px-4 lg:px-0">
@@ -80,36 +81,18 @@ export default function ContactPage() {
         )}
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-8">
-        <div className="max-w-7xl mx-auto px-4 lg:px-0">
-          <div className="space-y-8 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0 mb-16">
+      {/* Main Content - Centered in viewport */}
+      <main className="flex-1 flex items-center justify-center px-4 lg:px-0">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="space-y-12 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-center lg:space-y-0">
             {/* Left Column - Main Title */}
-            <div className="lg:col-span-4">
-              <h1 className="text-[#171717] leading-tight text-4xl md:text-5xl lg:text-6xl font-normal">
+            <div className="lg:col-span-4 text-center lg:text-left">
+              <h1 className="text-[#171717] leading-tight text-4xl md:text-5xl lg:text-6xl font-normal mb-4 lg:mb-6">
                 Contatti
               </h1>
-            </div>
-
-            {/* Empty space */}
-            <div className="lg:col-span-2"></div>
-
-            {/* Right Column - Headline */}
-            <div className="lg:col-span-6 pt-4">
-              <h2 className="text-[#171717] text-lg md:text-xl lg:text-2xl font-normal leading-relaxed">
+              <h2 className="text-[#171717] text-base md:text-lg lg:text-xl font-normal leading-relaxed">
                 Lorem ipsum dolor sit amet, <span className="text-[#ed6d23] font-medium">consectetur</span> adipiscing elit sed do eiusmod tempor.
               </h2>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Info Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 lg:px-0">
-          <div className="space-y-8 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0">
-            {/* Left Column - Section title */}
-            <div className="lg:col-span-4">
             </div>
 
             {/* Empty space */}
@@ -117,18 +100,18 @@ export default function ContactPage() {
 
             {/* Right Column - Contact details */}
             <div className="lg:col-span-6">
-              <div className="space-y-8 md:grid md:grid-cols-2 md:gap-8 lg:gap-16 md:space-y-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12 text-center lg:text-left">
                 <div className="space-y-8">
                   <div>
                     <h3 className="text-xl font-medium text-[#171717] mb-3">Email</h3>
-                    <a href="mailto:info@drink124.com" className="text-gray-600 hover:text-[#ed6d23] transition-colors">
+                    <a href="mailto:info@drink124.com" className="text-[#171717] hover:text-[#ed6d23] transition-colors">
                       info@drink124.com
                     </a>
                   </div>
                   
                   <div>
                     <h3 className="text-xl font-medium text-[#171717] mb-3">Telefono</h3>
-                    <a href="tel:+390221102413" className="text-gray-600 hover:text-[#ed6d23] transition-colors">
+                    <a href="tel:+390221102413" className="text-[#171717] hover:text-[#ed6d23] transition-colors">
                       +39 022 110 2413
                     </a>
                   </div>
@@ -137,18 +120,22 @@ export default function ContactPage() {
                 <div className="space-y-8">
                   <div>
                     <h3 className="text-xl font-medium text-[#171717] mb-3">Sede</h3>
-                    <div className="text-gray-600 space-y-1">
+                    <div className="text-[#171717] space-y-1">
                       <p>Via Pasquale Sottocorno 17</p>
                       <p>Milano, Italy</p>
                     </div>
                   </div>
                   
+                  <div>
+                    <h3 className="text-xl font-medium text-[#171717] mb-3">P. IVA</h3>
+                    <p className="text-[#171717]">11298940963</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </main>
     </div>
   )
 }
