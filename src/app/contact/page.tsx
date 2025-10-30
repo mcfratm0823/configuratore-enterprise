@@ -38,9 +38,9 @@ export default function ContactPage() {
         
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-0 left-0 w-full h-full bg-white z-40 overflow-hidden">
-            <div className="pt-20 px-4 h-full">
-              <nav className="flex flex-col space-y-0 h-full">
+          <div className="fixed inset-0 w-screen h-screen bg-white z-40 block md:hidden">
+            <div className="pt-20 px-4">
+              <nav className="flex flex-col">
                 <a 
                   href="https://drink124.com/" 
                   target="_blank" 
