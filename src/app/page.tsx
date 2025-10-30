@@ -133,7 +133,7 @@ function LandingPageContent() {
           <div className="space-y-8 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0">
             {/* Left Column - Small title */}
             <div className="lg:col-span-4">
-              <p className="text-base text-[#171717]">→ White Label</p>
+              <p className="text-base text-[#171717]">White Label</p>
             </div>
 
             {/* Empty space */}
@@ -145,7 +145,7 @@ function LandingPageContent() {
                 Lattine preconfezionate da 200ml con etichette personalizzate per il tuo brand.
               </h2>
               
-              <p className="text-gray-600 leading-relaxed mb-8">
+              <p className="text-[#171717] leading-relaxed mb-8">
                 Soluzione rapida e professionale per lanciare il tuo prodotto. Configuratore enterprise con pricing dinamico, 
                 template download, integrazione Stripe per campioni e sistema di preventivi automatizzato. 
                 Perfetto per startup e brand che vogliono entrare velocemente nel mercato delle bevande.
@@ -153,9 +153,13 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
-                className="w-full md:w-auto px-8 py-4 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                className="text-[#171717] font-medium cursor-pointer relative group"
               >
-                Start Configurator →
+                <span className="relative flex items-center gap-2">
+                  Start Configurator
+                  <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                </span>
               </button>
             </div>
           </div>
@@ -195,9 +199,13 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="w-full md:w-auto px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                  className="text-[#171717] font-medium cursor-pointer relative group"
                 >
-                  Configura il tuo →
+                  <span className="relative flex items-center gap-2">
+                    Configura il tuo
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  </span>
                 </button>
               </div>
 
@@ -248,9 +256,13 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="w-full md:w-auto px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                  className="text-[#171717] font-medium cursor-pointer relative group"
                 >
-                  Scala il business →
+                  <span className="relative flex items-center gap-2">
+                    Scala il business
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  </span>
                 </button>
               </div>
 
@@ -300,9 +312,13 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="w-full md:w-auto px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                  className="text-[#171717] font-medium cursor-pointer relative group"
                 >
-                  Valida l&apos;idea →
+                  <span className="relative flex items-center gap-2">
+                    Valida l&apos;idea
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  </span>
                 </button>
               </div>
 
@@ -352,9 +368,13 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="w-full md:w-auto px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                  className="text-[#171717] font-medium cursor-pointer relative group"
                 >
-                  Soluzioni eco →
+                  <span className="relative flex items-center gap-2">
+                    Soluzioni eco
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  </span>
                 </button>
               </div>
 
@@ -404,9 +424,13 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
-                  className="w-full md:w-auto px-8 py-3 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                  className="text-[#171717] font-medium cursor-pointer relative group"
                 >
-                  Scala globalmente →
+                  <span className="relative flex items-center gap-2">
+                    Scala globalmente
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                  </span>
                 </button>
               </div>
 
@@ -433,7 +457,7 @@ function LandingPageContent() {
         <div className="max-w-7xl mx-auto px-4 lg:px-0">
           <div className="space-y-8 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0">
             <div className="lg:col-span-4">
-              <p className="text-base text-[#171717]">→ Private Label</p>
+              <p className="text-base text-[#171717]">Private Label</p>
             </div>
 
             <div className="hidden lg:block lg:col-span-2"></div>
@@ -443,7 +467,7 @@ function LandingPageContent() {
                 Packaging completamente personalizzato da zero per il tuo brand enterprise.
               </h2>
               
-              <p className="text-gray-600 leading-relaxed mb-8 max-w-3xl">
+              <p className="text-[#171717] leading-relaxed mb-8 max-w-3xl">
                 Soluzione premium per brand affermati che vogliono packaging unico. Design custom, dimensioni personalizzate, 
                 materiali premium e gestione completa della produzione. Include consulenza design, prototipazione 
                 e supporto tecnico dedicato per progetti enterprise.
@@ -451,9 +475,13 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
-                className="w-full md:w-auto px-8 py-4 bg-[#ed6d23] text-white font-medium rounded-full hover:bg-[#d55a1a] transition-colors"
+                className="text-[#171717] font-medium cursor-pointer relative group"
               >
-                Configurazione Premium →
+                <span className="relative flex items-center gap-2">
+                  Configurazione Premium
+                  <img src="/arrow.svg" alt="→" className="w-4 h-4" />
+                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#ed6d23] transition-all duration-300 group-hover:w-full"></span>
+                </span>
               </button>
             </div>
           </div>
