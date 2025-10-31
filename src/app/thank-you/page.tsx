@@ -71,11 +71,6 @@ function ThankYouContent() {
           <div className="space-y-6 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0">
             {/* Left Column - Title */}
             <div className="lg:col-span-4">
-              <div className="w-16 h-16 bg-[#ed6d23] bg-opacity-10 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-[#ed6d23]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <h1 className="text-[#171717] leading-tight text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal mb-4">
                 Grazie per la tua richiesta
               </h1>
