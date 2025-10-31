@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useConfigurator } from '@/context'
-import { useAutoFocus, focusVisibleClasses } from '@/utils/focusManagement'
-import { validateSearchTerm, sanitizeInput } from '@/utils/security'
+import { validateSearchTerm } from '@/utils/security'
 import { useMemoizedCountrySearch, useDebounce } from '@/utils/performance'
 
 export function Step1Country() {

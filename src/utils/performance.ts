@@ -1,7 +1,7 @@
 // Performance Optimization Utilities
 // Production-grade optimizations for React components
 
-import { useMemo, useCallback, useRef, useEffect } from 'react'
+import React, { useMemo, useCallback, useRef, useEffect, useState } from 'react'
 
 /**
  * Debounced value hook for expensive operations
@@ -27,7 +27,7 @@ export function useDebounce<T>(value: T, delay: number): T {
  * Throttled callback hook for scroll and resize events
  * Limits function execution frequency for better performance
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
 ): T {
@@ -146,7 +146,7 @@ export function useOptimizedValidation<T>(
  * Memoized country search
  * Optimizes country filtering performance
  */
-export function useMemoizedCountrySearch(countries: any[], searchTerm: string) {
+export function useMemoizedCountrySearch(countries: Array<{id: string, label: string, flag: string}>, searchTerm: string) {
   return useMemo(() => {
     if (!searchTerm.trim()) return countries
     
@@ -178,11 +178,8 @@ export function useOptimizedScroll(callback: () => void, delay = 16) {
 export function useMemoizedCalculation<T, R>(
   input: T,
   calculator: (input: T) => R,
-  dependencies: any[] = []
+  dependencies: unknown[] = []
 ): R {
-  return useMemo(() => calculator(input), [input, ...dependencies])
+  return useMemo(() => calculator(input), [input, calculator, ...dependencies])
 }
 
-// Import useState for useDebounce
-import { useState } from 'react'
-import React from 'react'

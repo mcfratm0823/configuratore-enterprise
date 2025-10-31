@@ -48,6 +48,7 @@ export function BillingSection({
   const [isExpanded, setIsExpanded] = useState(false)
   const [validationManager] = useState(() => new ValidationStateManager())
   const [fieldValidationState, setFieldValidationState] = useState<Record<string, { isValid: boolean; errors: string[] }>>({})
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formValidation, setFormValidation] = useState<BillingDataValidation | null>(null)
 
   // Real-time validation handler

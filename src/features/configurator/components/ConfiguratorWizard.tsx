@@ -5,9 +5,8 @@
 
 import { useConfigurator, ServiceSubType } from '@/context'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useMemo } from 'react'
-import { useStepFocusManagement, focusVisibleClasses, createKeyboardActivator } from '@/utils/focusManagement'
-import { memo } from '@/utils/performance'
+import { useMemo } from 'react'
+import { useStepFocusManagement } from '@/utils/focusManagement'
 import Image from 'next/image'
 import { Step1Country } from './steps/Step1Country'
 import { Step2Service } from './steps/Step2Service'
@@ -77,7 +76,7 @@ export function ConfiguratorWizard() {
       isCompleted: state.paymentCompleted,
       isAvailable: state.serviceSubType === ServiceSubType.WHITELABEL ? state.wantsToContinueQuote : !!state.packagingSelection
     }
-  ], [state.country, state.serviceSubType, state.canSelection, state.beverageSelection, state.volumeFormatSelection, state.packagingSelection, state.wantsToContinueQuote, state.hasDownloadedTemplate])
+  ], [state.country, state.serviceSubType, state.canSelection, state.beverageSelection, state.volumeFormatSelection, state.packagingSelection, state.wantsToContinueQuote, state.hasDownloadedTemplate, state.paymentCompleted])
 
   const currentStepIndex = state.currentStep - 1
   const currentStep = steps[currentStepIndex] || steps[0]

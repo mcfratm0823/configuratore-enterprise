@@ -2,7 +2,7 @@
 
 import { useConfigurator, ServiceSubType } from '@/context'
 import { useState, useCallback } from 'react'
-import { validateCustomVolume, sanitizeInput } from '@/utils/security'
+import { validateCustomVolume } from '@/utils/security'
 
 // Enterprise volume and format configuration types
 interface VolumeOption {
@@ -69,6 +69,53 @@ export function Step4VolumeFormat() {
   const [customLiters, setCustomLiters] = useState<string>('')
   const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [validationError, setValidationError] = useState<string>('')
+
+  // Helper function to save to context
+  const saveToContext = useCallback((volumeId: string, formatId: string) => {
+    const volumeOption = volumeOptions.find(v => v.id === volumeId)
+    const formatOption = formatOptions.find(f => f.id === formatId)
+    
+    if (volumeOption && formatOption) {
+      let totalLiters = volumeOption.liters
+      if (volumeOption.isCustom && customLiters) {
+        totalLiters = parseInt(customLiters)
+      }
+      
+      if (totalLiters > 0) {
+        const totalPieces = Math.floor((totalLiters * 1000) / formatOption.ml)
+        const cartonsCount = Math.ceil(totalPieces / 24)
+        
+        actions.setVolumeFormatSelection({
+          volumeLiters: totalLiters,
+          formatMl: formatOption.ml,
+          totalPieces,
+          cartonsCount,
+          isCustomVolume: volumeOption.isCustom
+        })
+      }
+    }
+  }, [customLiters, actions])
+
+  // Handle custom liters change with validation
+  const handleCustomLitersChange = useCallback((value: string) => {
+    setValidationError('')
+    
+    // Validate the custom volume input
+    const validation = validateCustomVolume(value)
+    
+    if (!validation.isValid) {
+      setValidationError(validation.errors[0] || 'Volume non valido')
+      setCustomLiters(value) // Still show the input value for user feedback
+      return
+    }
+    
+    setCustomLiters(validation.value.toString())
+    
+    // Save to context only if format is also selected and value is valid
+    if (selectedFormat && validation.isValid) {
+      saveToContext(selectedVolume, selectedFormat)
+    }
+  }, [selectedFormat, selectedVolume, saveToContext])
 
   // Solo per Private Label
   if (state.serviceSubType !== ServiceSubType.PRIVATELABEL) {
@@ -144,31 +191,6 @@ export function Step4VolumeFormat() {
     }
   }
   
-  // Helper function to save to context
-  const saveToContext = (volumeId: string, formatId: string) => {
-    const volumeOption = volumeOptions.find(v => v.id === volumeId)
-    const formatOption = formatOptions.find(f => f.id === formatId)
-    
-    if (volumeOption && formatOption) {
-      let totalLiters = volumeOption.liters
-      if (volumeOption.isCustom && customLiters) {
-        totalLiters = parseInt(customLiters)
-      }
-      
-      if (totalLiters > 0) {
-        const totalPieces = Math.floor((totalLiters * 1000) / formatOption.ml)
-        const cartonsCount = Math.ceil(totalPieces / 24)
-        
-        actions.setVolumeFormatSelection({
-          volumeLiters: totalLiters,
-          formatMl: formatOption.ml,
-          totalPieces,
-          cartonsCount,
-          isCustomVolume: volumeOption.isCustom
-        })
-      }
-    }
-  }
 
   // Handle format selection
   const handleFormatSelect = (formatId: string) => {
@@ -181,26 +203,6 @@ export function Step4VolumeFormat() {
     }
   }
 
-  // Handle custom liters change with validation
-  const handleCustomLitersChange = useCallback((value: string) => {
-    setValidationError('')
-    
-    // Validate the custom volume input
-    const validation = validateCustomVolume(value)
-    
-    if (!validation.isValid) {
-      setValidationError(validation.errors[0] || 'Volume non valido')
-      setCustomLiters(value) // Still show the input value for user feedback
-      return
-    }
-    
-    setCustomLiters(validation.value.toString())
-    
-    // Save to context only if format is also selected and value is valid
-    if (selectedFormat && validation.isValid) {
-      saveToContext(selectedVolume, selectedFormat)
-    }
-  }, [selectedFormat, selectedVolume])
 
   const productionData = calculateProduction()
 

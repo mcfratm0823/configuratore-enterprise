@@ -7,19 +7,19 @@ import type { Stripe } from '@stripe/stripe-js'
 
 export interface OrderData {
   // Customer info
-  customerEmail: string
-  customerName: string
+  email: string
+  firstName: string
+  lastName: string
+  phone: string
+  company: string
   
   // Order details
-  quantity: number
-  totalPrice: number
+  amount: number
+  currency: string
+  description: string
   
   // Meta
-  sessionId: string
-  createdAt: Date
-  
-  // Full customer data for webhook
-  customerData?: unknown
+  metadata: Record<string, string>
 }
 
 export interface CheckoutSession {

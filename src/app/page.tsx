@@ -2,7 +2,7 @@
 
 import { ConfiguratorProvider, useConfigurator } from '@/context'
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useFocusTrap, focusVisibleClasses, createKeyboardActivator } from '@/utils/focusManagement'
+import { useFocusTrap } from '@/utils/focusManagement'
 import { useOptimizedScroll, useThrottle } from '@/utils/performance'
 import Image from 'next/image'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
@@ -16,6 +16,7 @@ function LandingPageContent() {
   // Focus management for mobile menu
   const mobileMenuRef = useFocusTrap(isMobileMenuOpen)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
+  const firstMenuItemRef = useRef<HTMLAnchorElement>(null)
   
   // Sticky cards overlay effect
   const [overlayOpacities, setOverlayOpacities] = useState([0, 0, 0, 0, 0])
@@ -63,7 +64,7 @@ function LandingPageContent() {
         firstMenuItemRef.current.focus()
       }
     }, 100)
-  }, [])
+  }, [mobileMenuRef])
   
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false)

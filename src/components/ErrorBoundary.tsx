@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Qualcosa è andato storto</h3>
             <p className="text-gray-600 text-sm mb-4">
-              Si è verificato un errore in questa sezione, ma il resto dell'app continua a funzionare.
+              Si è verificato un errore in questa sezione, ma il resto dell&apos;app continua a funzionare.
             </p>
             <button 
               onClick={() => window.location.reload()}

@@ -2,7 +2,7 @@
 
 import { useConfigurator, ServiceSubType } from '@/context'
 import { useState, useCallback } from 'react'
-import { validateTextArea, sanitizeInput } from '@/utils/security'
+import { validateTextArea } from '@/utils/security'
 
 // Enterprise beverage configuration types
 interface BeverageOption {
@@ -47,6 +47,28 @@ const beverageOptions: BeverageOption[] = [
 export function Step3BeverageSelection() {
   const { state, actions } = useConfigurator()
   const [validationError, setValidationError] = useState<string>('')
+
+  // Handle custom beverage text with validation
+  const handleCustomTextChange = useCallback((text: string) => {
+    setValidationError('')
+    
+    // Validate the text area input
+    const validation = validateTextArea(text, 500)
+    
+    if (!validation.isValid) {
+      setValidationError(validation.errors[0] || 'Testo non valido')
+      return
+    }
+    
+    // Update context if R&D is selected
+    if (state.beverageSelection?.selectedBeverage === 'rd-custom') {
+      actions.setBeverageSelection({
+        selectedBeverage: 'rd-custom',
+        customBeverageText: validation.sanitized,
+        isCustom: true
+      })
+    }
+  }, [state.beverageSelection?.selectedBeverage, actions])
 
   // Solo per Private Label
   if (state.serviceSubType !== ServiceSubType.PRIVATELABEL) {
@@ -93,35 +115,6 @@ export function Step3BeverageSelection() {
       isCustom: beverageId === 'rd-custom'
     })
   }
-
-  // Handle custom beverage text with validation
-  const handleCustomTextChange = useCallback((text: string) => {
-    setValidationError('')
-    
-    // Validate the text area input
-    const validation = validateTextArea(text, 500)
-    
-    if (!validation.isValid) {
-      setValidationError(validation.errors[0] || 'Testo non valido')
-      return
-    }
-    
-    // Update context if R&D is selected
-    if (state.beverageSelection?.selectedBeverage === 'rd-custom') {
-      actions.setBeverageSelection({
-        selectedBeverage: 'rd-custom',
-        customBeverageText: validation.sanitized,
-        isCustom: true
-      })
-    }
-  }, [state.beverageSelection?.selectedBeverage, actions])
-
-  // Handle continue to next step - Future implementation
-  // const handleContinue = () => {
-  //   if (validateSelection()) {
-  //     actions.nextStep()
-  //   }
-  // }
 
   return (
     <div className="space-y-6">
