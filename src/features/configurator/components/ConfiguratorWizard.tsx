@@ -76,7 +76,7 @@ export function ConfiguratorWizard() {
       isCompleted: state.paymentCompleted,
       isAvailable: state.serviceSubType === ServiceSubType.WHITELABEL ? state.wantsToContinueQuote : !!state.packagingSelection
     }
-  ], [state.country, state.serviceSubType, state.canSelection, state.beverageSelection, state.volumeFormatSelection, state.packagingSelection, state.wantsToContinueQuote, state.hasDownloadedTemplate, state.paymentCompleted])
+  ], [state.country, state.serviceSubType, state.canSelection, state.beverageSelection, state.volumeFormatSelection, state.packagingSelection, state.wantsToContinueQuote, state.paymentCompleted])
 
   const currentStepIndex = state.currentStep - 1
   const currentStep = steps[currentStepIndex] || steps[0]

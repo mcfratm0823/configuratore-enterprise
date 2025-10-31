@@ -359,7 +359,10 @@ export function Step6Design() {
         </div>
 
         {/* Billing Section */}
-        <BillingSection />
+        <BillingSection 
+          billingData={state.contactForm.billingData}
+          onBillingDataChange={(data) => actions.setContactForm({ billingData: data })}
+        />
 
         {/* Submit Button */}
         <div className="border-t border-gray-200 pt-6">

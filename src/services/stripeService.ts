@@ -22,9 +22,10 @@ export interface OrderData {
   metadata: Record<string, string>
 }
 
-export interface CheckoutSession {
-  id: string
-  url: string
+export interface StripeResponse {
+  success: boolean
+  url?: string
+  error?: string
 }
 
 class StripeService {
@@ -53,16 +54,15 @@ class StripeService {
    * 🎯 CREA CHECKOUT SESSION ENTERPRISE
    * Chiamata all'API Next.js per creare sessione Stripe
    */
-  async createCheckoutSession(orderData: OrderData): Promise<CheckoutSession | null> {
+  async createCheckoutSession(orderData: OrderData): Promise<StripeResponse> {
     try {
-
       // Validation semplice
-      if (!orderData.customerEmail || !orderData.customerName) {
-        throw new Error('Customer data required')
+      if (!orderData.email || !orderData.firstName || !orderData.lastName) {
+        return { success: false, error: 'Customer data required' }
       }
 
-      if (orderData.totalPrice !== 50) {
-        throw new Error('Sample price must be €50')
+      if (orderData.amount !== 50) {
+        return { success: false, error: 'Sample price must be €50' }
       }
 
       // Chiamata all'API endpoint Next.js
@@ -72,34 +72,33 @@ class StripeService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          customerEmail: orderData.customerEmail,
-          customerName: orderData.customerName,
-          amount: 5000, // €50 in centesimi
-          sessionId: orderData.sessionId,
-          customerData: orderData.customerData // Dati completi per webhook
+          customerEmail: orderData.email,
+          customerName: `${orderData.firstName} ${orderData.lastName}`,
+          amount: orderData.amount * 100, // Convert to centesimi
+          metadata: orderData.metadata
         })
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        return { success: false, error: errorData.error || `HTTP error! status: ${response.status}` }
       }
 
       const data = await response.json()
       
       if (!data.success) {
-        throw new Error(data.error || 'Checkout session creation failed')
+        return { success: false, error: data.error || 'Checkout session creation failed' }
       }
 
       return {
-        id: data.sessionId,
+        success: true,
         url: data.url
       }
       
     } catch (error: unknown) {
       // Enterprise error logging
       console.error('💳 Checkout session creation failed:', error instanceof Error ? error.message : 'Unknown error')
-      return null
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
     }
   }
 

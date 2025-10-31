@@ -109,7 +109,7 @@ function LandingPageContent() {
         }
       }
     }
-  }, [isMobileMenuOpen, closeMobileMenu])
+  }, [isMobileMenuOpen])
   
   // Close menu on escape key
   useEffect(() => {
@@ -121,7 +121,7 @@ function LandingPageContent() {
     
     document.addEventListener('keydown', handleEscapeKey)
     return () => document.removeEventListener('keydown', handleEscapeKey)
-  }, [isMobileMenuOpen, closeMobileMenu])
+  }, [isMobileMenuOpen])
   
   // Prevent body scroll when menu is open
   useEffect(() => {

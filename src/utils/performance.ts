@@ -180,6 +180,7 @@ export function useMemoizedCalculation<T, R>(
   calculator: (input: T) => R,
   dependencies: unknown[] = []
 ): R {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => calculator(input), [input, calculator, ...dependencies])
 }
 
