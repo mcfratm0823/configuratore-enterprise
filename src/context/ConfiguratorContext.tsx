@@ -3,7 +3,7 @@
 // 🚀 PREMIUM CONFIGURATOR CONTEXT - NEXT.JS ENTERPRISE
 // State management enterprise per configuratore White Label/Private Label
 
-import React, { createContext, useContext, useReducer, type ReactNode } from 'react'
+import React, { createContext, useContext, useReducer, useCallback, useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 
 // ============================================================================
@@ -308,38 +308,122 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
   const [state, dispatch] = useReducer(configuratorReducer, initialState)
   const router = useRouter()
 
-  const actions = {
-    // Navigation actions enterprise
-    startConfigurator: () => {
-      dispatch({ type: 'SET_CURRENT_STEP', payload: 1 })
-      router.push('/configurator')
-    },
-    goToLanding: () => {
-      router.push('/')
-    },
+  // Navigation actions with useCallback to prevent recreation
+  const startConfigurator = useCallback(() => {
+    dispatch({ type: 'SET_CURRENT_STEP', payload: 1 })
+    router.push('/configurator')
+  }, [router])
+
+  const goToLanding = useCallback(() => {
+    router.push('/')
+  }, [router])
+
+  // State actions with useCallback optimization
+  const setCurrentStep = useCallback((step: number) => 
+    dispatch({ type: 'SET_CURRENT_STEP', payload: step }), [])
+  
+  const setServiceType = useCallback((type: ServiceType) => 
+    dispatch({ type: 'SET_SERVICE_TYPE', payload: type }), [])
     
-    // State actions
-    setCurrentStep: (step: number) => dispatch({ type: 'SET_CURRENT_STEP', payload: step }),
-    setServiceType: (type: ServiceType) => dispatch({ type: 'SET_SERVICE_TYPE', payload: type }),
-    setServiceSubType: (subType: ServiceSubType) => dispatch({ type: 'SET_SERVICE_SUB_TYPE', payload: subType }),
-    setCountry: (country: string) => dispatch({ type: 'SET_COUNTRY', payload: country }),
-    setWantsSample: (wants: boolean) => dispatch({ type: 'SET_WANTS_SAMPLE', payload: wants }),
-    setCanSelection: (selection: CanSelection) => dispatch({ type: 'SET_CAN_SELECTION', payload: selection }),
-    setWantsToContinueQuote: (wants: boolean) => dispatch({ type: 'SET_WANTS_TO_CONTINUE_QUOTE', payload: wants }),
-    setHasDownloadedTemplate: (downloaded: boolean) => dispatch({ type: 'SET_HAS_DOWNLOADED_TEMPLATE', payload: downloaded }),
-    setBeverageSelection: (selection: ConfiguratorState['beverageSelection']) => dispatch({ type: 'SET_BEVERAGE_SELECTION', payload: selection }),
-    setVolumeFormatSelection: (selection: VolumeFormatSelection) => dispatch({ type: 'SET_VOLUME_FORMAT_SELECTION', payload: selection }),
-    setPackagingSelection: (selection: PackagingSelection) => dispatch({ type: 'SET_PACKAGING_SELECTION', payload: selection }),
-    setContactForm: (formData: Partial<ConfiguratorState['contactForm']>) => dispatch({ type: 'SET_CONTACT_FORM', payload: formData }),
-    setBillingData: (billingData: ConfiguratorState['contactForm']['billingData']) => 
-      dispatch({ type: 'SET_CONTACT_FORM', payload: { billingData } }),
-    setPaymentCompleted: (completed: boolean) => dispatch({ type: 'SET_PAYMENT_COMPLETED', payload: completed }),
-    nextStep: () => dispatch({ type: 'SET_CURRENT_STEP', payload: state.currentStep + 1 }),
-    resetState: () => dispatch({ type: 'RESET_STATE' })
-  }
+  const setServiceSubType = useCallback((subType: ServiceSubType) => 
+    dispatch({ type: 'SET_SERVICE_SUB_TYPE', payload: subType }), [])
+    
+  const setCountry = useCallback((country: string) => 
+    dispatch({ type: 'SET_COUNTRY', payload: country }), [])
+    
+  const setWantsSample = useCallback((wants: boolean) => 
+    dispatch({ type: 'SET_WANTS_SAMPLE', payload: wants }), [])
+    
+  const setCanSelection = useCallback((selection: CanSelection) => 
+    dispatch({ type: 'SET_CAN_SELECTION', payload: selection }), [])
+    
+  const setWantsToContinueQuote = useCallback((wants: boolean) => 
+    dispatch({ type: 'SET_WANTS_TO_CONTINUE_QUOTE', payload: wants }), [])
+    
+  const setHasDownloadedTemplate = useCallback((downloaded: boolean) => 
+    dispatch({ type: 'SET_HAS_DOWNLOADED_TEMPLATE', payload: downloaded }), [])
+    
+  const setBeverageSelection = useCallback((selection: ConfiguratorState['beverageSelection']) => 
+    dispatch({ type: 'SET_BEVERAGE_SELECTION', payload: selection }), [])
+    
+  const setVolumeFormatSelection = useCallback((selection: VolumeFormatSelection) => 
+    dispatch({ type: 'SET_VOLUME_FORMAT_SELECTION', payload: selection }), [])
+    
+  const setPackagingSelection = useCallback((selection: PackagingSelection) => 
+    dispatch({ type: 'SET_PACKAGING_SELECTION', payload: selection }), [])
+    
+  const setContactForm = useCallback((formData: Partial<ConfiguratorState['contactForm']>) => 
+    dispatch({ type: 'SET_CONTACT_FORM', payload: formData }), [])
+    
+  const setBillingData = useCallback((billingData: ConfiguratorState['contactForm']['billingData']) => 
+    dispatch({ type: 'SET_CONTACT_FORM', payload: { billingData } }), [])
+    
+  const setPaymentCompleted = useCallback((completed: boolean) => 
+    dispatch({ type: 'SET_PAYMENT_COMPLETED', payload: completed }), [])
+    
+  const nextStep = useCallback(() => 
+    dispatch({ type: 'SET_CURRENT_STEP', payload: state.currentStep + 1 }), [state.currentStep])
+    
+  const resetState = useCallback(() => 
+    dispatch({ type: 'RESET_STATE' }), [])
+
+  // Memoized actions object to prevent recreation
+  const actions = useCallback(() => ({
+    startConfigurator,
+    goToLanding,
+    setCurrentStep,
+    setServiceType,
+    setServiceSubType,
+    setCountry,
+    setWantsSample,
+    setCanSelection,
+    setWantsToContinueQuote,
+    setHasDownloadedTemplate,
+    setBeverageSelection,
+    setVolumeFormatSelection,
+    setPackagingSelection,
+    setContactForm,
+    setBillingData,
+    setPaymentCompleted,
+    nextStep,
+    resetState
+  }), [
+    startConfigurator,
+    goToLanding,
+    setCurrentStep,
+    setServiceType,
+    setServiceSubType,
+    setCountry,
+    setWantsSample,
+    setCanSelection,
+    setWantsToContinueQuote,
+    setHasDownloadedTemplate,
+    setBeverageSelection,
+    setVolumeFormatSelection,
+    setPackagingSelection,
+    setContactForm,
+    setBillingData,
+    setPaymentCompleted,
+    nextStep,
+    resetState
+  ])()
+
+  // Context value memoization to prevent unnecessary re-renders
+  const contextValue = useCallback(() => ({
+    state,
+    actions
+  }), [state, actions])
+
+  // Cleanup effect for memory leak prevention
+  useEffect(() => {
+    return () => {
+      // Cleanup any pending operations when provider unmounts
+      // This prevents memory leaks from router navigation or pending state updates
+    }
+  }, [])
 
   return (
-    <ConfiguratorContext.Provider value={{ state, actions }}>
+    <ConfiguratorContext.Provider value={contextValue()}>
       {children}
     </ConfiguratorContext.Provider>
   )

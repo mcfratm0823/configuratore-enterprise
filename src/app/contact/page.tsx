@@ -1,12 +1,102 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default function ContactPage() {
+  const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
+  // Focus management refs for mobile menu
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
+  const firstMenuItemRef = useRef<HTMLAnchorElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  
+  // Mobile menu focus management
+  const openMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(true)
+    // Focus on first menu item after menu opens
+    setTimeout(() => {
+      if (firstMenuItemRef.current) {
+        firstMenuItemRef.current.focus()
+      }
+    }, 100)
+  }, [])
+  
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false)
+    // Return focus to hamburger button
+    setTimeout(() => {
+      if (mobileMenuButtonRef.current) {
+        mobileMenuButtonRef.current.focus()
+      }
+    }, 100)
+  }, [])
+  
+  // Focus trap for mobile menu
+  const handleMenuKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!isMobileMenuOpen) return
+    
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      closeMobileMenu()
+    }
+    
+    if (e.key === 'Tab') {
+      const menuElement = mobileMenuRef.current
+      if (!menuElement) return
+      
+      const focusableElements = menuElement.querySelectorAll(
+        'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
+      )
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement.focus()
+        }
+      }
+    }
+  }, [isMobileMenuOpen, closeMobileMenu])
+  
+  // Close menu on escape key
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu()
+      }
+    }
+    
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => document.removeEventListener('keydown', handleEscapeKey)
+  }, [isMobileMenuOpen, closeMobileMenu])
+  
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen])
   return (
-    <div className="min-h-screen bg-gray-100">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white/40 via-white/30 to-white/40 backdrop-blur-3xl border-b border-white/40 backdrop-saturate-150">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center py-2 md:py-4 px-4 lg:px-0">
@@ -16,9 +106,18 @@ export default function ContactPage() {
             width={48}
             height={48}
             className="h-10 w-10 md:h-12 md:w-12 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push('/')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                router.push('/')
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label="Torna alla homepage"
           />
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav id="navigation" className="hidden md:flex items-center space-x-8">
             <a href="https://drink124.com/" target="_blank" rel="noopener noreferrer" className="text-[#171717] hover:text-[#ed6d23] transition-colors font-medium">Home</a>
             <a href="https://drink124.com/pages/chi-siamo-cafe-124" target="_blank" rel="noopener noreferrer" className="text-[#171717] hover:text-[#ed6d23] transition-colors font-medium">Chi siamo</a>
             <a href="/configurator" className="text-[#171717] hover:text-[#ed6d23] transition-colors font-medium">Configuratore</a>
@@ -27,8 +126,19 @@ export default function ContactPage() {
           
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden p-2 relative z-50"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            ref={mobileMenuButtonRef}
+            className="md:hidden p-2 relative z-50 focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 rounded-lg"
+            onClick={() => isMobileMenuOpen ? closeMobileMenu() : openMobileMenu()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                isMobileMenuOpen ? closeMobileMenu() : openMobileMenu()
+              }
+            }}
+            aria-label={isMobileMenuOpen ? 'Chiudi menu di navigazione' : 'Apri menu di navigazione'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation-menu"
+            aria-haspopup="true"
           >
             <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5 bg-[#ed6d23]' : ''}`}></div>
             <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
@@ -38,15 +148,20 @@ export default function ContactPage() {
         
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 w-screen h-screen bg-white z-40 block md:hidden">
+          <div 
+            ref={mobileMenuRef}
+            className="fixed inset-0 w-screen h-screen bg-white z-40 block md:hidden"
+            onKeyDown={handleMenuKeyDown}
+          >
             <div className="pt-20 px-4">
-              <nav className="flex flex-col">
+              <nav id="mobile-navigation-menu" className="flex flex-col" role="navigation" aria-label="Menu di navigazione mobile">
                 <a 
+                  ref={firstMenuItemRef}
                   href="https://drink124.com/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Home
                 </a>
@@ -54,22 +169,22 @@ export default function ContactPage() {
                   href="https://drink124.com/pages/chi-siamo-cafe-124" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Chi siamo
                 </a>
                 <a 
                   href="/configurator" 
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Configuratore
                 </a>
                 <a 
                   href="/contact" 
-                  className="text-[#ed6d23] font-medium text-xl py-6 border-b border-gray-200 flex items-center gap-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#ed6d23] font-medium text-xl py-6 border-b border-gray-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Contatti
                   <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
@@ -81,6 +196,7 @@ export default function ContactPage() {
       </header>
 
       {/* Hero Section */}
+      <main id="main-content">
       <section className="pt-12 md:pt-24 pb-4 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 lg:px-0">
           <div className="space-y-6 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:space-y-0 mb-8 md:mb-16">
@@ -200,6 +316,8 @@ export default function ContactPage() {
           </div>
         </div>
       </footer>
+      </main>
     </div>
+    </ErrorBoundary>
   )
 }

@@ -1,7 +1,8 @@
 'use client'
 
 import { useConfigurator, ServiceSubType } from '@/context'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { validateCustomVolume, sanitizeInput } from '@/utils/security'
 
 // Enterprise volume and format configuration types
 interface VolumeOption {
@@ -180,16 +181,26 @@ export function Step4VolumeFormat() {
     }
   }
 
-  // Handle custom liters change
-  const handleCustomLitersChange = (value: string) => {
-    setCustomLiters(value)
+  // Handle custom liters change with validation
+  const handleCustomLitersChange = useCallback((value: string) => {
     setValidationError('')
     
+    // Validate the custom volume input
+    const validation = validateCustomVolume(value)
+    
+    if (!validation.isValid) {
+      setValidationError(validation.errors[0] || 'Volume non valido')
+      setCustomLiters(value) // Still show the input value for user feedback
+      return
+    }
+    
+    setCustomLiters(validation.value.toString())
+    
     // Save to context only if format is also selected and value is valid
-    if (selectedFormat && value) {
+    if (selectedFormat && validation.isValid) {
       saveToContext(selectedVolume, selectedFormat)
     }
-  }
+  }, [selectedFormat, selectedVolume])
 
   const productionData = calculateProduction()
 
@@ -232,8 +243,21 @@ export function Step4VolumeFormat() {
               onChange={(e) => handleCustomLitersChange(e.target.value)}
               placeholder="Inserisci litri (min. 1000)"
               min="1000"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:border-[#ed6d23] focus:outline-none"
+              max="100000"
+              step="1"
+              className={`w-full px-3 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none ${
+                validationError && customLiters 
+                  ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                  : 'border-gray-200 focus:border-[#ed6d23]'
+              }`}
+              aria-invalid={!!validationError}
+              aria-describedby={validationError ? 'volume-error' : undefined}
             />
+            {validationError && customLiters && (
+              <p id="volume-error" className="text-xs text-red-600 mt-1" role="alert">
+                {validationError}
+              </p>
+            )}
           </div>
         )}
       </div>

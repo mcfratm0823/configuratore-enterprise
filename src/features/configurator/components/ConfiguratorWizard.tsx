@@ -4,6 +4,10 @@
 // Interface step-by-step con progress indicator e navigation
 
 import { useConfigurator, ServiceSubType } from '@/context'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useMemo } from 'react'
+import { useStepFocusManagement, focusVisibleClasses, createKeyboardActivator } from '@/utils/focusManagement'
+import { memo } from '@/utils/performance'
 import Image from 'next/image'
 import { Step1Country } from './steps/Step1Country'
 import { Step2Service } from './steps/Step2Service'
@@ -18,9 +22,13 @@ import { Step6ContactPrivateLabel } from './steps/Step6ContactPrivateLabel'
 
 export function ConfiguratorWizard() {
   const { state, actions } = useConfigurator()
+  const router = useRouter()
+  
+  // Focus management
+  const stepHeadingRef = useStepFocusManagement(state.currentStep)
 
-  // Step configuration enterprise
-  const steps = [
+  // Memoized step configuration for performance
+  const steps = useMemo(() => [
     {
       id: 1,
       title: "Seleziona il tuo Paese",
@@ -69,10 +77,11 @@ export function ConfiguratorWizard() {
       isCompleted: state.paymentCompleted,
       isAvailable: state.serviceSubType === ServiceSubType.WHITELABEL ? state.wantsToContinueQuote : !!state.packagingSelection
     }
-  ]
+  ], [state.country, state.serviceSubType, state.canSelection, state.beverageSelection, state.volumeFormatSelection, state.packagingSelection, state.wantsToContinueQuote, state.hasDownloadedTemplate])
 
   const currentStepIndex = state.currentStep - 1
   const currentStep = steps[currentStepIndex] || steps[0]
+  
 
   // Navigation functions - SOLO tramite CTA
   const goNext = () => {
@@ -95,7 +104,13 @@ export function ConfiguratorWizard() {
 
   const renderStepTitle = () => (
     <div className="mb-6 md:mb-8">
-      <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+      <h3 
+        ref={stepHeadingRef}
+        className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 focus:outline-none"
+        tabIndex={-1}
+        aria-live="polite"
+        aria-label={`Passaggio ${state.currentStep} di ${steps.length}: ${currentStep.title}`}
+      >
         {currentStep.title}
       </h3>
       <p className="text-gray-600 text-sm md:text-base">
@@ -135,6 +150,8 @@ export function ConfiguratorWizard() {
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
+              aria-label={`Torna al passaggio precedente: ${currentStepIndex > 0 ? steps[currentStepIndex - 1]?.title : ''}`}
+              type="button"
             >
               ← Indietro
             </button>
@@ -149,6 +166,8 @@ export function ConfiguratorWizard() {
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-[#ed6d23] text-white hover:bg-[#d55a1a]'
                 }`}
+                aria-label={`Procedi al passaggio successivo: ${currentStepIndex < steps.length - 1 ? steps[currentStepIndex + 1]?.title : ''}`}
+                type="button"
               >
                 Avanti →
               </button>
@@ -172,6 +191,8 @@ export function ConfiguratorWizard() {
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
+              aria-label={`Torna al passaggio precedente: ${currentStepIndex > 0 ? steps[currentStepIndex - 1]?.title : ''}`}
+              type="button"
             >
               ← Indietro
             </button>
@@ -186,6 +207,8 @@ export function ConfiguratorWizard() {
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-[#ed6d23] text-white hover:bg-[#d55a1a]'
                 }`}
+                aria-label={`Procedi al passaggio successivo: ${currentStepIndex < steps.length - 1 ? steps[currentStepIndex + 1]?.title : ''}`}
+                type="button"
               >
                 Avanti →
               </button>
@@ -208,7 +231,16 @@ export function ConfiguratorWizard() {
             width={48}
             height={48}
             className="h-10 w-10 md:h-12 md:w-12 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push('/')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                router.push('/')
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label="Torna alla homepage"
           />
           <div className="text-xs md:text-sm text-gray-600">
             Step {state.currentStep} di {steps.length}

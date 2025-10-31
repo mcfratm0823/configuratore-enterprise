@@ -1,7 +1,8 @@
 'use client'
 
 import { useConfigurator, ServiceSubType } from '@/context'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { validateTextArea, sanitizeInput } from '@/utils/security'
 
 // Enterprise beverage configuration types
 interface BeverageOption {
@@ -93,19 +94,27 @@ export function Step3BeverageSelection() {
     })
   }
 
-  // Handle custom beverage text
-  const handleCustomTextChange = (text: string) => {
+  // Handle custom beverage text with validation
+  const handleCustomTextChange = useCallback((text: string) => {
     setValidationError('')
+    
+    // Validate the text area input
+    const validation = validateTextArea(text, 500)
+    
+    if (!validation.isValid) {
+      setValidationError(validation.errors[0] || 'Testo non valido')
+      return
+    }
     
     // Update context if R&D is selected
     if (state.beverageSelection?.selectedBeverage === 'rd-custom') {
       actions.setBeverageSelection({
         selectedBeverage: 'rd-custom',
-        customBeverageText: text,
+        customBeverageText: validation.sanitized,
         isCustom: true
       })
     }
-  }
+  }, [state.beverageSelection?.selectedBeverage, actions])
 
   // Handle continue to next step - Future implementation
   // const handleContinue = () => {
@@ -117,7 +126,8 @@ export function Step3BeverageSelection() {
   return (
     <div className="space-y-6">
       {/* Grid 2x2 Enterprise Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="radiogroup" aria-labelledby="beverage-selection-heading">
+        <div id="beverage-selection-heading" className="sr-only">Seleziona il tipo di bevanda</div>
         {beverageOptions.map((beverage) => {
           const isSelected = state.beverageSelection?.selectedBeverage === beverage.id
           
@@ -125,6 +135,17 @@ export function Step3BeverageSelection() {
             <div
               key={beverage.id}
               onClick={() => handleBeverageSelect(beverage.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleBeverageSelect(beverage.id)
+                }
+              }}
+              tabIndex={0}
+              role="radio"
+              aria-checked={isSelected}
+              aria-labelledby={`beverage-${beverage.id}-title`}
+              aria-describedby={`beverage-${beverage.id}-description`}
               className={`rounded-lg p-6 cursor-pointer transition-all ${
                 isSelected
                   ? 'border-2 border-[#ed6d23] bg-white' 
@@ -132,10 +153,10 @@ export function Step3BeverageSelection() {
               }`}
             >
               <div>
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 id={`beverage-${beverage.id}-title`} className="text-lg font-medium text-gray-900">
                   {beverage.name}
                 </h3>
-                <p className="text-gray-600 text-sm mt-2">
+                <p id={`beverage-${beverage.id}-description`} className="text-gray-600 text-sm mt-2">
                   {beverage.description}
                 </p>
               </div>
@@ -147,23 +168,35 @@ export function Step3BeverageSelection() {
       {/* Custom beverage input */}
       {state.beverageSelection?.selectedBeverage === 'rd-custom' && (
         <div className="border border-gray-200 rounded-lg p-4">
-          <label className="block text-xs text-gray-600 mb-2">
+          <label htmlFor="custom-beverage-description" className="block text-xs text-gray-600 mb-2">
             Descrivi la bevanda che vuoi creare *
           </label>
           <textarea
+            id="custom-beverage-description"
             value={state.beverageSelection?.customBeverageText || ''}
             onChange={(e) => handleCustomTextChange(e.target.value)}
             placeholder="Es. Energy drink con estratti naturali, Kombucha ai frutti rossi, Bevanda isotonica bio..."
-            className="w-full px-3 py-2 border-0 resize-none text-sm text-gray-900 placeholder-gray-400 focus:outline-none bg-transparent"
+            className={`w-full px-3 py-2 border-0 resize-none text-sm text-gray-900 placeholder-gray-400 focus:outline-none bg-transparent ${
+              validationError ? 'border-l-4 border-red-500 bg-red-50' : ''
+            }`}
             rows={2}
             maxLength={500}
+            required
+            aria-required="true"
+            aria-invalid={!!validationError}
+            aria-describedby="custom-beverage-help custom-beverage-count custom-beverage-error"
           />
+          {validationError && (
+            <p id="custom-beverage-error" className="text-xs text-red-600 mt-1" role="alert">
+              {validationError}
+            </p>
+          )}
           <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-gray-400">
+            <span id="custom-beverage-help" className="text-xs text-gray-400">
               Sii più specifico possibile per un preventivo accurato
             </span>
-            <span className="text-xs text-gray-300">
-              {(state.beverageSelection?.customBeverageText || '').length}/500
+            <span id="custom-beverage-count" className="text-xs text-gray-300" aria-live="polite">
+              {(state.beverageSelection?.customBeverageText || '').length}/500 caratteri
             </span>
           </div>
         </div>

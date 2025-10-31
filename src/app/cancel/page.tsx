@@ -1,6 +1,9 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
 export default function CancelPage() {
+  const router = useRouter()
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full text-center">
@@ -25,14 +28,14 @@ export default function CancelPage() {
         
         <div className="space-y-3">
           <button
-            onClick={() => window.location.href = '/configurator'}
+            onClick={() => router.push('/configurator')}
             className="w-full bg-[#ed6d23] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#d55a1a] transition-colors"
           >
             Torna al Configuratore
           </button>
           
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push('/')}
             className="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-300 transition-colors"
           >
             Torna alla Home

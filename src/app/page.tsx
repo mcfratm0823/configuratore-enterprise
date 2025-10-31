@@ -1,8 +1,11 @@
 'use client'
 
 import { ConfiguratorProvider, useConfigurator } from '@/context'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { useFocusTrap, focusVisibleClasses, createKeyboardActivator } from '@/utils/focusManagement'
+import { useOptimizedScroll, useThrottle } from '@/utils/performance'
 import Image from 'next/image'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 function LandingPageContent() {
   const { actions } = useConfigurator()
@@ -10,56 +13,127 @@ function LandingPageContent() {
   // Mobile menu state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
+  // Focus management for mobile menu
+  const mobileMenuRef = useFocusTrap(isMobileMenuOpen)
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
+  
   // Sticky cards overlay effect
   const [overlayOpacities, setOverlayOpacities] = useState([0, 0, 0, 0, 0])
   const cardsRefs = useRef<(HTMLDivElement | null)[]>([])
   
-  useEffect(() => {
-    const handleScroll = () => {
-      const newOpacities = [0, 0, 0, 0, 0]
+  // Optimized scroll handler with throttling
+  const handleScroll = useThrottle(() => {
+    const newOpacities = [0, 0, 0, 0, 0]
+    
+    cardsRefs.current.forEach((card, index) => {
+      if (!card) return
       
-      cardsRefs.current.forEach((card, index) => {
-        if (!card) return
+      const rect = card.getBoundingClientRect()
+      const nextCard = cardsRefs.current[index + 1]
+      
+      if (nextCard) {
+        const nextRect = nextCard.getBoundingClientRect()
         
-        const rect = card.getBoundingClientRect()
-        const nextCard = cardsRefs.current[index + 1]
-        
-        if (nextCard) {
-          const nextRect = nextCard.getBoundingClientRect()
-          
-          // Se la card corrente è sticky (top <= 0) e la successiva sta entrando in viewport
-          if (rect.top <= 0 && nextRect.top < window.innerHeight * 1.2) {
-            // Inizia l'effetto quando la card successiva è ancora più lontana (1.2x viewport)
-            const triggerDistance = window.innerHeight * 1.2
-            const overlapPercentage = Math.max(0, (triggerDistance - nextRect.top) / triggerDistance)
-            // Overlay più scuro (fino a 0.6) e più graduale
-            newOpacities[index] = Math.min(0.6, overlapPercentage * 0.6)
-          }
+        // Se la card corrente è sticky (top <= 0) e la successiva sta entrando in viewport
+        if (rect.top <= 0 && nextRect.top < window.innerHeight * 1.2) {
+          // Inizia l'effetto quando la card successiva è ancora più lontana (1.2x viewport)
+          const triggerDistance = window.innerHeight * 1.2
+          const overlapPercentage = Math.max(0, (triggerDistance - nextRect.top) / triggerDistance)
+          // Overlay più scuro (fino a 0.6) e più graduale
+          newOpacities[index] = Math.min(0.6, overlapPercentage * 0.6)
         }
-      })
-      
-      setOverlayOpacities(newOpacities)
-    }
-    
-    // Throttled scroll per performance
-    let ticking = false
-    const scrollListener = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll()
-          ticking = false
-        })
-        ticking = true
       }
-    }
+    })
     
-    window.addEventListener('scroll', scrollListener, { passive: true })
-    return () => window.removeEventListener('scroll', scrollListener)
-  }, [])
+    setOverlayOpacities(newOpacities)
+  }, 16) // 60fps throttling
+
+  useOptimizedScroll(handleScroll, 16)
   
   const setCardRef = (index: number) => (el: HTMLDivElement | null) => {
     cardsRefs.current[index] = el
   }
+  
+  // Mobile menu focus management
+  const openMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(true)
+    // Focus on first menu item after menu opens
+    setTimeout(() => {
+      if (firstMenuItemRef.current) {
+        firstMenuItemRef.current.focus()
+      }
+    }, 100)
+  }, [])
+  
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false)
+    // Return focus to hamburger button
+    setTimeout(() => {
+      if (mobileMenuButtonRef.current) {
+        mobileMenuButtonRef.current.focus()
+      }
+    }, 100)
+  }, [])
+  
+  // Focus trap for mobile menu
+  const handleMenuKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!isMobileMenuOpen) return
+    
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      closeMobileMenu()
+    }
+    
+    if (e.key === 'Tab') {
+      const menuElement = mobileMenuRef.current
+      if (!menuElement) return
+      
+      const focusableElements = menuElement.querySelectorAll(
+        'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
+      )
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement.focus()
+        }
+      }
+    }
+  }, [isMobileMenuOpen, closeMobileMenu])
+  
+  // Close menu on escape key
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu()
+      }
+    }
+    
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => document.removeEventListener('keydown', handleEscapeKey)
+  }, [isMobileMenuOpen, closeMobileMenu])
+  
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen])
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -73,12 +147,19 @@ function LandingPageContent() {
             height={48}
             className="h-10 w-10 md:h-12 md:w-12"
           />
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav id="navigation" className="hidden md:flex items-center space-x-8">
             <a href="https://drink124.com/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium">Home</a>
             <a href="https://drink124.com/pages/chi-siamo-cafe-124" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium">Chi siamo</a>
             <button 
               onClick={actions.startConfigurator}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  actions.startConfigurator()
+                }
+              }}
               className="text-gray-700 hover:text-[#ed6d23] transition-colors font-medium cursor-pointer"
+              aria-label="Apri configuratore packaging"
             >
               Configuratore
             </button>
@@ -87,8 +168,19 @@ function LandingPageContent() {
           
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden p-2 relative z-50"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            ref={mobileMenuButtonRef}
+            className="md:hidden p-2 relative z-50 focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 rounded-lg"
+            onClick={() => isMobileMenuOpen ? closeMobileMenu() : openMobileMenu()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                isMobileMenuOpen ? closeMobileMenu() : openMobileMenu()
+              }
+            }}
+            aria-label={isMobileMenuOpen ? 'Chiudi menu di navigazione' : 'Apri menu di navigazione'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation-menu"
+            aria-haspopup="true"
           >
             <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5 bg-[#ed6d23]' : ''}`}></div>
             <div className={`w-6 h-0.5 bg-[#171717] mb-1 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
@@ -98,15 +190,20 @@ function LandingPageContent() {
         
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 w-screen h-screen bg-white z-40 block md:hidden">
+          <div 
+            ref={mobileMenuRef as React.RefObject<HTMLDivElement>}
+            className="fixed inset-0 w-screen h-screen bg-white z-40 block md:hidden"
+            onKeyDown={handleMenuKeyDown}
+          >
             <div className="pt-20 px-4">
-              <nav className="flex flex-col">
+              <nav id="mobile-navigation-menu" className="flex flex-col" role="navigation" aria-label="Menu di navigazione mobile">
                 <a 
+                  ref={firstMenuItemRef}
                   href="https://drink124.com/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Home
                 </a>
@@ -114,24 +211,32 @@ function LandingPageContent() {
                   href="https://drink124.com/pages/chi-siamo-cafe-124" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Chi siamo
                 </a>
                 <button 
                   onClick={() => {
                     actions.startConfigurator()
-                    setIsMobileMenuOpen(false)
+                    closeMobileMenu()
                   }}
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 text-left w-full block"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      actions.startConfigurator()
+                      closeMobileMenu()
+                    }
+                  }}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 text-left w-full block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  aria-label="Apri configuratore packaging"
                 >
                   Configuratore
                 </button>
                 <a 
                   href="/contact" 
-                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-[#171717] font-medium text-xl py-6 border-b border-gray-200 block focus:outline-none focus:ring-2 focus:ring-[#ed6d23] focus:ring-offset-2 focus:bg-gray-50 rounded-lg mx-2"
+                  onClick={closeMobileMenu}
                 >
                   Contatti
                 </a>
@@ -142,6 +247,7 @@ function LandingPageContent() {
       </header>
 
       {/* Hero Section */}
+      <main id="main-content">
       <section className="relative pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 lg:px-0">
           {/* Text Section */}
@@ -203,7 +309,14 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    actions.startConfigurator()
+                  }
+                }}
                 className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                aria-label="Inizia configuratore per lattine White Label"
               >
                 <span className="relative flex items-center gap-2">
                   Start Configurator
@@ -249,7 +362,14 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      actions.startConfigurator()
+                    }
+                  }}
                   className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                  aria-label="Configura il tuo packaging personalizzato"
                 >
                   <span className="relative flex items-center gap-2">
                     Configura il tuo
@@ -306,7 +426,14 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      actions.startConfigurator()
+                    }
+                  }}
                   className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                  aria-label="Scala il business con packaging enterprise"
                 >
                   <span className="relative flex items-center gap-2">
                     Scala il business
@@ -362,7 +489,14 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      actions.startConfigurator()
+                    }
+                  }}
                   className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                  aria-label="Valida l'idea con packaging startup"
                 >
                   <span className="relative flex items-center gap-2">
                     Valida l&apos;idea
@@ -418,7 +552,14 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      actions.startConfigurator()
+                    }
+                  }}
                   className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                  aria-label="Soluzioni eco-sostenibili per packaging"
                 >
                   <span className="relative flex items-center gap-2">
                     Soluzioni eco
@@ -474,7 +615,14 @@ function LandingPageContent() {
                 
                 <button 
                   onClick={actions.startConfigurator}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      actions.startConfigurator()
+                    }
+                  }}
                   className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                  aria-label="Scala globalmente con packaging internazionale"
                 >
                   <span className="relative flex items-center gap-2">
                     Scala globalmente
@@ -525,7 +673,14 @@ function LandingPageContent() {
               
               <button 
                 onClick={actions.startConfigurator}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    actions.startConfigurator()
+                  }
+                }}
                 className="text-[#ed6d23] font-medium cursor-pointer relative group"
+                aria-label="Configurazione premium Private Label"
               >
                 <span className="relative flex items-center gap-2">
                   Configurazione Premium
@@ -706,14 +861,19 @@ function LandingPageContent() {
           </div>
         </div>
       </footer>
+      </main>
     </div>
   )
 }
 
 export default function HomePage() {
   return (
-    <ConfiguratorProvider>
-      <LandingPageContent />
-    </ConfiguratorProvider>
+    <ErrorBoundary>
+      <ConfiguratorProvider>
+        <ErrorBoundary>
+          <LandingPageContent />
+        </ErrorBoundary>
+      </ConfiguratorProvider>
+    </ErrorBoundary>
   )
 }

@@ -1,11 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useConfigurator } from '@/context'
+import { useAutoFocus, focusVisibleClasses } from '@/utils/focusManagement'
+import { validateSearchTerm, sanitizeInput } from '@/utils/security'
+import { useMemoizedCountrySearch, useDebounce } from '@/utils/performance'
 
 export function Step1Country() {
   const { state, actions } = useConfigurator()
   const [searchTerm, setSearchTerm] = useState('')
+  const [searchError, setSearchError] = useState('')
+  
+  // Auto-focus search input when component loads  
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchInputRef.current?.focus()
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [])
+  
+  // Performance optimization: debounce search term
+  const debouncedSearchTerm = useDebounce(searchTerm, 200)
+
+  // Secure search handler
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchError('')
+    
+    const validation = validateSearchTerm(value)
+    
+    if (!validation.isValid) {
+      setSearchError(validation.errors[0] || 'Termine di ricerca non valido')
+      return
+    }
+    
+    setSearchTerm(validation.sanitized)
+  }, [])
 
   const countries = [
     // Europa
@@ -95,13 +126,11 @@ export function Step1Country() {
     { id: 'australia', label: 'Australia', flag: '🇦🇺' }
   ]
 
-  // Se c'è ricerca, filtra da tutti i paesi, altrimenti mostra solo i popolari
-  const displayCountries = searchTerm 
-    ? countries.filter(country =>
-        country.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        country.id.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : popularCountries
+  // Performance optimized country filtering with memoization
+  const displayCountries = useMemoizedCountrySearch(
+    debouncedSearchTerm ? countries : popularCountries, 
+    debouncedSearchTerm
+  )
 
   const handleCountrySelect = (countryId: string) => {
     actions.setCountry(countryId)
@@ -115,17 +144,37 @@ export function Step1Country() {
     <div className="space-y-4">
         {/* Search Bar */}
         <div className="max-w-md">
+          <label htmlFor="country-search" className="sr-only">
+            Cerca paesi per nome
+          </label>
           <input
+            ref={searchInputRef}
+            id="country-search"
             type="text"
             placeholder="Cerca paesi..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border-b border-gray-300 focus:border-[#ed6d23] focus:outline-none bg-transparent text-gray-900 placeholder-gray-500"
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className={`w-full px-4 py-2 border-b focus:outline-none bg-transparent text-gray-900 placeholder-gray-500 ${
+              searchError ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#ed6d23]'
+            }`}
+            aria-label="Cerca paesi per nome"
+            role="searchbox"
+            aria-invalid={!!searchError}
+            aria-describedby={`country-search-help ${searchError ? 'search-error' : ''}`}
           />
+          {searchError && (
+            <p id="search-error" className="text-xs text-red-600 mt-1" role="alert">
+              {searchError}
+            </p>
+          )}
+          <div id="country-search-help" className="sr-only">
+            Inserisci il nome di un paese per filtrare la lista
+          </div>
         </div>
 
         {/* Country Selection Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" role="radiogroup" aria-labelledby="country-selection-heading">
+          <div id="country-selection-heading" className="sr-only">Seleziona il paese di destinazione</div>
           {displayCountries.map((country) => (
             <div
               key={country.id}
@@ -135,9 +184,19 @@ export function Step1Country() {
                   : 'border border-gray-200 hover:border-gray-400'
               }`}
               onClick={() => handleCountrySelect(country.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleCountrySelect(country.id)
+                }
+              }}
+              tabIndex={0}
+              role="radio"
+              aria-checked={state.country === country.id}
+              aria-label={`Seleziona ${country.label} come paese di destinazione`}
             >
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-2xl">{country.flag}</span>
+                <span className="text-2xl" aria-hidden="true">{country.flag}</span>
               </div>
               <h4 className="font-medium text-gray-900 text-xs leading-tight">
                 {country.label}
@@ -148,11 +207,22 @@ export function Step1Country() {
 
         {/* Sample Request Option */}
         <div className="border-t border-gray-200 pt-4">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={handleSampleToggle}>
+          <div className="flex items-center gap-3">
             <button
+              onClick={handleSampleToggle}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSampleToggle()
+                }
+              }}
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                 state.wantsSample ? 'bg-[#ed6d23]' : 'bg-gray-300'
               }`}
+              role="switch"
+              aria-checked={state.wantsSample}
+              aria-labelledby="sample-toggle-label"
+              aria-describedby="sample-toggle-description"
             >
               <span
                 className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
@@ -161,10 +231,10 @@ export function Step1Country() {
               />
             </button>
             <div className="flex-1">
-              <h4 className="text-sm font-medium text-gray-900">
+              <h4 id="sample-toggle-label" className="text-sm font-medium text-gray-900">
                 Richiedi un Campione
               </h4>
-              <p className="text-gray-500 text-xs mt-1">
+              <p id="sample-toggle-description" className="text-gray-500 text-xs mt-1">
                 Campione fisico per €50
               </p>
             </div>

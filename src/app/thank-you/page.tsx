@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 function ThankYouContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const type = searchParams.get('type') // 'white-label' or 'private-label'
   const [isLoading, setIsLoading] = useState(true)
 
@@ -16,7 +18,7 @@ function ThankYouContent() {
     }, 1500)
 
     return () => clearTimeout(timer)
-  }, [])
+  }, [setIsLoading])
 
   const isPrivateLabel = type === 'private-label'
 
@@ -60,7 +62,7 @@ function ThankYouContent() {
             width={48}
             height={48}
             className="h-10 w-10 md:h-12 md:w-12 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push('/')}
           />
         </div>
       </header>
@@ -167,7 +169,7 @@ function ThankYouContent() {
                 {/* Mobile CTA - After Timeline */}
                 <div className="lg:hidden pt-6 border-t border-gray-200 mb-6">
                   <span 
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => router.push('/')}
                     className="relative inline-flex items-center gap-2 text-[#ed6d23] font-medium cursor-pointer text-base"
                   >
                     Torna alla Home
@@ -193,28 +195,32 @@ function ThankYouContent() {
 
 export default function ThankYouPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-100 flex flex-col">
-        <header className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 lg:px-0 py-4">
-            <Image 
-              src="/logo-124.png" 
-              alt="124 Logo" 
-              width={48}
-              height={48}
-              className="h-10 w-10 md:h-12 md:w-12"
-            />
-          </div>
-        </header>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="max-w-2xl mx-auto text-center px-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ed6d23] mx-auto mb-6"></div>
-            <h2 className="text-xl md:text-2xl font-medium text-[#171717] mb-3">Caricamento...</h2>
+    <ErrorBoundary>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-100 flex flex-col">
+          <header className="bg-white border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 lg:px-0 py-4">
+              <Image 
+                src="/logo-124.png" 
+                alt="124 Logo" 
+                width={48}
+                height={48}
+                className="h-10 w-10 md:h-12 md:w-12"
+              />
+            </div>
+          </header>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="max-w-2xl mx-auto text-center px-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ed6d23] mx-auto mb-6"></div>
+              <h2 className="text-xl md:text-2xl font-medium text-[#171717] mb-3">Caricamento...</h2>
+            </div>
           </div>
         </div>
-      </div>
-    }>
-      <ThankYouContent />
-    </Suspense>
+      }>
+        <ErrorBoundary>
+          <ThankYouContent />
+        </ErrorBoundary>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

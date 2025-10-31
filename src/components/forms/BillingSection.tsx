@@ -1,7 +1,21 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
+import {
+  validateVATNumber,
+  validateFiscalCode,
+  validateCompany,
+  validateAddress,
+  validateCityOrProvince,
+  validatePostalCode,
+  validateSDI,
+  validatePEC,
+  validateBillingData,
+  sanitizeInput,
+  ValidationStateManager,
+  type BillingDataValidation
+} from '@/utils/security'
 
 interface BillingData {
   // Dati aziendali
@@ -32,13 +46,129 @@ export function BillingSection({
   disabled = false 
 }: BillingSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [validationManager] = useState(() => new ValidationStateManager())
+  const [fieldValidationState, setFieldValidationState] = useState<Record<string, { isValid: boolean; errors: string[] }>>({})
+  const [formValidation, setFormValidation] = useState<BillingDataValidation | null>(null)
+
+  // Real-time validation handler
+  const handleFieldValidation = useCallback((field: keyof BillingData, value: string, country: string = 'IT') => {
+    let validator: (value: string) => { isValid: boolean; sanitized: string; errors: string[] }
+    
+    switch (field) {
+      case 'vatNumber':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            const isValid = validateVATNumber(sanitized, country)
+            if (!isValid) errors.push('Formato Partita IVA non valido')
+          }
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      case 'fiscalCode':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim() && country.toUpperCase() === 'IT') {
+            const isValid = validateFiscalCode(sanitized)
+            if (!isValid) errors.push('Formato Codice Fiscale non valido')
+          }
+          return { isValid: errors.length === 0, sanitized: sanitized.toUpperCase(), errors }
+        }
+        break
+      case 'legalName':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            if (sanitized.length < 2) errors.push('Minimo 2 caratteri')
+            if (sanitized.length > 200) errors.push('Massimo 200 caratteri')
+            if (!validateCompany(sanitized)) errors.push('Caratteri non validi')
+          }
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      case 'billingAddress':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            if (!validateAddress(sanitized)) errors.push('Formato indirizzo non valido')
+          }
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      case 'billingCity':
+      case 'billingProvince':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            if (!validateCityOrProvince(sanitized)) errors.push('Formato non valido')
+          }
+          return { isValid: errors.length === 0, sanitized: field === 'billingProvince' ? sanitized.toUpperCase() : sanitized, errors }
+        }
+        break
+      case 'billingPostalCode':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            if (!validatePostalCode(sanitized, country)) errors.push('Formato CAP non valido')
+          }
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      case 'sdi':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            if (!validateSDI(sanitized)) errors.push('Codice SDI non valido (7 caratteri alfanumerici)')
+          }
+          return { isValid: errors.length === 0, sanitized: sanitized.toUpperCase(), errors }
+        }
+        break
+      case 'pec':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          if (sanitized.trim()) {
+            if (!validatePEC(sanitized)) errors.push('Formato email PEC non valido')
+          }
+          return { isValid: errors.length === 0, sanitized: sanitized.toLowerCase(), errors }
+        }
+        break
+      default:
+        return { isValid: true, sanitized: value, errors: [] }
+    }
+    
+    const sanitized = validationManager.validateField(field, value, validator)
+    const fieldState = validationManager.getFieldState(field)
+    
+    if (fieldState) {
+      setFieldValidationState(prev => ({
+        ...prev,
+        [field]: fieldState
+      }))
+    }
+    
+    return sanitized
+  }, [validationManager])
 
   const handleFieldChange = (field: keyof BillingData, value: string) => {
+    const sanitized = handleFieldValidation(field, value)
+    
     const updatedData = {
       ...billingData,
-      [field]: value || undefined // Convert empty strings to undefined
+      [field]: sanitized || undefined // Convert empty strings to undefined
     }
     onBillingDataChange(updatedData)
+    
+    // Validate entire billing data for form validation state
+    const validation = validateBillingData(updatedData, 'IT')
+    setFormValidation(validation)
   }
 
 
@@ -85,8 +215,21 @@ export function BillingSection({
                   value={billingData.vatNumber || ''}
                   onChange={(e) => handleFieldChange('vatNumber', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.vatNumber?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.vatNumber?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.vatNumber?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.vatNumber?.errors?.length > 0 ? 'vatNumber-error' : undefined}
                 />
+                {fieldValidationState.vatNumber?.errors?.length > 0 && (
+                  <p id="vatNumber-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.vatNumber.errors[0]}
+                  </p>
+                )}
               </div>
               
               <div>
@@ -99,8 +242,21 @@ export function BillingSection({
                   value={billingData.fiscalCode || ''}
                   onChange={(e) => handleFieldChange('fiscalCode', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.fiscalCode?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.fiscalCode?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.fiscalCode?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.fiscalCode?.errors?.length > 0 ? 'fiscalCode-error' : undefined}
                 />
+                {fieldValidationState.fiscalCode?.errors?.length > 0 && (
+                  <p id="fiscalCode-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.fiscalCode.errors[0]}
+                  </p>
+                )}
               </div>
               
               <div className="md:col-span-2">
@@ -113,8 +269,21 @@ export function BillingSection({
                   value={billingData.legalName || ''}
                   onChange={(e) => handleFieldChange('legalName', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.legalName?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.legalName?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.legalName?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.legalName?.errors?.length > 0 ? 'legalName-error' : undefined}
                 />
+                {fieldValidationState.legalName?.errors?.length > 0 && (
+                  <p id="legalName-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.legalName.errors[0]}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -133,8 +302,21 @@ export function BillingSection({
                   value={billingData.billingAddress || ''}
                   onChange={(e) => handleFieldChange('billingAddress', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.billingAddress?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.billingAddress?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.billingAddress?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.billingAddress?.errors?.length > 0 ? 'billingAddress-error' : undefined}
                 />
+                {fieldValidationState.billingAddress?.errors?.length > 0 && (
+                  <p id="billingAddress-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.billingAddress.errors[0]}
+                  </p>
+                )}
               </div>
               
               <div>
@@ -147,8 +329,21 @@ export function BillingSection({
                   value={billingData.billingCity || ''}
                   onChange={(e) => handleFieldChange('billingCity', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.billingCity?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.billingCity?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.billingCity?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.billingCity?.errors?.length > 0 ? 'billingCity-error' : undefined}
                 />
+                {fieldValidationState.billingCity?.errors?.length > 0 && (
+                  <p id="billingCity-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.billingCity.errors[0]}
+                  </p>
+                )}
               </div>
               
               <div>
@@ -161,8 +356,21 @@ export function BillingSection({
                   value={billingData.billingPostalCode || ''}
                   onChange={(e) => handleFieldChange('billingPostalCode', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.billingPostalCode?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.billingPostalCode?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.billingPostalCode?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.billingPostalCode?.errors?.length > 0 ? 'billingPostalCode-error' : undefined}
                 />
+                {fieldValidationState.billingPostalCode?.errors?.length > 0 && (
+                  <p id="billingPostalCode-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.billingPostalCode.errors[0]}
+                  </p>
+                )}
               </div>
               
               <div>
@@ -175,8 +383,21 @@ export function BillingSection({
                   value={billingData.billingProvince || ''}
                   onChange={(e) => handleFieldChange('billingProvince', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.billingProvince?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.billingProvince?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.billingProvince?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.billingProvince?.errors?.length > 0 ? 'billingProvince-error' : undefined}
                 />
+                {fieldValidationState.billingProvince?.errors?.length > 0 && (
+                  <p id="billingProvince-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.billingProvince.errors[0]}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -195,8 +416,21 @@ export function BillingSection({
                   value={billingData.sdi || ''}
                   onChange={(e) => handleFieldChange('sdi', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.sdi?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.sdi?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.sdi?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.sdi?.errors?.length > 0 ? 'sdi-error' : undefined}
                 />
+                {fieldValidationState.sdi?.errors?.length > 0 && (
+                  <p id="sdi-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.sdi.errors[0]}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-1">
                   Codice destinatario per fatturazione elettronica
                 </p>
@@ -212,8 +446,21 @@ export function BillingSection({
                   value={billingData.pec || ''}
                   onChange={(e) => handleFieldChange('pec', e.target.value)}
                   disabled={disabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldValidationState.pec?.errors?.length 
+                      ? 'border-red-300 focus:ring-red-500' 
+                      : fieldValidationState.pec?.isValid 
+                      ? 'border-green-300 focus:ring-green-500' 
+                      : 'border-gray-300 focus:ring-[#ed6d23]'
+                  } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-invalid={fieldValidationState.pec?.errors?.length > 0}
+                  aria-describedby={fieldValidationState.pec?.errors?.length > 0 ? 'pec-error' : undefined}
                 />
+                {fieldValidationState.pec?.errors?.length > 0 && (
+                  <p id="pec-error" className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldValidationState.pec.errors[0]}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-1">
                   Solo se non hai codice SDI
                 </p>

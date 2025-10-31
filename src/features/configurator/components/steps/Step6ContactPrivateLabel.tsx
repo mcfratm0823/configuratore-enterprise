@@ -1,15 +1,41 @@
 'use client'
 
 import { useConfigurator, ServiceSubType } from '@/context'
-import { useState } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAutoFocus, useFocusFirstError, announceToScreenReader } from '@/utils/focusManagement'
 import { stripeService, type OrderData } from '@/services/stripeService'
 import { BillingSection } from '@/components/forms/BillingSection'
+import { 
+  validateEmail, 
+  validateName, 
+  validatePhone, 
+  validateCompany,
+  validateContactForm,
+  sanitizeInput,
+  ValidationStateManager,
+  type ContactFormValidation
+} from '@/utils/security'
 
 export function Step6ContactPrivateLabel() {
   const { state, actions } = useConfigurator()
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  
+  // Focus management
+  const firstFieldRef = useRef<HTMLInputElement>(null)
+  const focusFirstError = useFocusFirstError()
+  const errorMessageRef = useRef<HTMLDivElement>(null)
+  const submitErrorRef = useRef<HTMLDivElement>(null)
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      firstFieldRef.current?.focus()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
   
   // Solo per Private Label
   if (state.serviceSubType !== ServiceSubType.PRIVATELABEL) {
@@ -43,22 +69,135 @@ export function Step6ContactPrivateLabel() {
     )
   }
 
-  // Validation form enterprise
+  // Enhanced form validation
   const isFormValid = (): boolean => {
     const { firstName, lastName, email, phone, company } = state.contactForm
-    return Boolean(
-      firstName?.trim() && 
-      lastName?.trim() && 
-      email?.trim() && 
-      phone?.trim() && 
-      company?.trim()
-    )
+    
+    // First check if all required fields are present
+    if (!firstName?.trim() || !lastName?.trim() || !email?.trim() || !phone?.trim() || !company?.trim()) {
+      return false
+    }
+    
+    // Validate the entire form
+    const validation = validateContactForm({
+      firstName,
+      lastName,
+      email,
+      phone,
+      company
+    })
+    
+    setFormValidation(validation)
+    
+    // Check if all fields are valid
+    return validation.firstName.isValid && 
+           validation.lastName.isValid && 
+           validation.email.isValid && 
+           validation.phone.isValid && 
+           validation.company.isValid
   }
 
-  // Email validation enterprise
+  // Production-grade validation state manager
+  const [validationManager] = useState(() => new ValidationStateManager())
+  const [fieldValidationState, setFieldValidationState] = useState<Record<string, { isValid: boolean; errors: string[] }>>({})
+  const [formValidation, setFormValidation] = useState<ContactFormValidation | null>(null)
+  
+  // Auto-focus on first field when component mounts
+  useEffect(() => {
+    const focusTimer = setTimeout(() => {
+      if (firstFieldRef.current) {
+        firstFieldRef.current.focus()
+      }
+    }, 100)
+    
+    return () => clearTimeout(focusTimer)
+  }, [])
+  
+  // Focus management for validation errors
+  useEffect(() => {
+    if (formValidation && !formValidation.firstName.isValid && firstFieldRef.current) {
+      firstFieldRef.current.focus()
+    }
+  }, [formValidation])
+  
+  // Focus management for submit errors
+  useEffect(() => {
+    if (submitError && submitErrorRef.current) {
+      submitErrorRef.current.focus()
+      submitErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [submitError])
+
+  // Real-time validation handler
+  const handleFieldValidation = useCallback((field: string, value: string) => {
+    let validator: (value: string) => { isValid: boolean; sanitized: string; errors: string[] }
+    
+    switch (field) {
+      case 'firstName':
+      case 'lastName':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          const isValid = validateName(sanitized)
+          if (!sanitized.trim()) errors.push(`${field === 'firstName' ? 'Nome' : 'Cognome'} richiesto`)
+          if (!isValid && sanitized.trim()) errors.push('Caratteri non validi')
+          if (sanitized.length < 2) errors.push('Minimo 2 caratteri')
+          if (sanitized.length > 50) errors.push('Massimo 50 caratteri')
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      case 'email':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          const isValid = validateEmail(sanitized)
+          if (!sanitized.trim()) errors.push('Email richiesta')
+          if (!isValid && sanitized.trim()) errors.push('Formato email non valido')
+          return { isValid: errors.length === 0, sanitized: sanitized.toLowerCase(), errors }
+        }
+        break
+      case 'phone':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          const isValid = validatePhone(sanitized)
+          if (!sanitized.trim()) errors.push('Numero di telefono richiesto')
+          if (!isValid && sanitized.trim()) errors.push('Formato telefono non valido')
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      case 'company':
+        validator = (val) => {
+          const errors: string[] = []
+          const sanitized = sanitizeInput(val)
+          const isValid = validateCompany(sanitized)
+          if (!sanitized.trim()) errors.push('Nome azienda richiesto')
+          if (!isValid && sanitized.trim()) errors.push('Caratteri non validi nel nome azienda')
+          if (sanitized.length < 2) errors.push('Minimo 2 caratteri')
+          if (sanitized.length > 100) errors.push('Massimo 100 caratteri')
+          return { isValid: errors.length === 0, sanitized, errors }
+        }
+        break
+      default:
+        return { isValid: true, sanitized: value, errors: [] }
+    }
+    
+    const sanitized = validationManager.validateField(field, value, validator)
+    const fieldState = validationManager.getFieldState(field)
+    
+    if (fieldState) {
+      setFieldValidationState(prev => ({
+        ...prev,
+        [field]: fieldState
+      }))
+    }
+    
+    return sanitized.sanitized
+  }, [validationManager])
+
+  // Enhanced email validation
   const isEmailValid = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email.trim())
+    return validateEmail(email)
   }
 
   // Invio form enterprise Private Label
@@ -116,6 +255,11 @@ export function Step6ContactPrivateLabel() {
       setIsSubmitting(false)
       const errorMessage = error instanceof Error ? error.message : 'Errore durante l\'invio della richiesta'
       setSubmitError(errorMessage)
+      // Focus error message for screen readers
+      setTimeout(() => {
+        submitErrorRef.current?.focus()
+        announceToScreenReader(`Errore: ${errorMessage}`)
+      }, 100)
       console.error('📤 Private Label form submission error:', error)
       return false
     }
@@ -197,11 +341,22 @@ export function Step6ContactPrivateLabel() {
     // Validation critica
     if (!isFormValid()) {
       setSubmitError('Compila tutti i campi obbligatori')
+      // Focus first invalid field
+      const invalidFields = {
+        firstName: !state.contactForm.firstName,
+        lastName: !state.contactForm.lastName,
+        email: !state.contactForm.email,
+        company: !state.contactForm.company
+      }
+      focusFirstError(invalidFields)
+      announceToScreenReader('Errore: compila tutti i campi obbligatori')
       return
     }
 
     if (!isEmailValid(state.contactForm.email)) {
       setSubmitError('Inserisci un indirizzo email valido')
+      document.getElementById('email')?.focus()
+      announceToScreenReader('Errore: inserisci un indirizzo email valido')
       return
     }
     
@@ -214,7 +369,7 @@ export function Step6ContactPrivateLabel() {
       const submissionSuccess = await handleFormSubmission()
       if (submissionSuccess) {
         // Redirect a pagina di ringraziamento Private Label
-        window.location.href = '/thank-you?type=private-label'
+        router.push('/thank-you?type=private-label')
       }
     }
   }
@@ -224,9 +379,15 @@ export function Step6ContactPrivateLabel() {
 
       {/* Error Message */}
       {submitError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4">
+        <div 
+          ref={submitErrorRef}
+          className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" 
+          role="alert" 
+          aria-live="polite"
+          tabIndex={-1}
+        >
           <div className="flex items-center">
-            <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <p className="text-xs md:text-sm text-red-700">{submitError}</p>
@@ -243,80 +404,164 @@ export function Step6ContactPrivateLabel() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="firstName" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Nome *
               </label>
               <input
+                ref={firstFieldRef}
+                id="firstName"
                 type="text"
                 required
                 value={state.contactForm.firstName}
-                onChange={(e) => actions.setContactForm({ firstName: e.target.value })}
-                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
-                placeholder="Il tuo nome"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-                Cognome *
-              </label>
-              <input
-                type="text"
-                required
-                value={state.contactForm.lastName}
-                onChange={(e) => actions.setContactForm({ lastName: e.target.value })}
-                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
-                placeholder="Il tuo cognome"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-                Email *
-              </label>
-              <input
-                type="email"
-                required
-                value={state.contactForm.email}
-                onChange={(e) => actions.setContactForm({ email: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
-                  state.contactForm.email && !isEmailValid(state.contactForm.email) 
+                onChange={(e) => {
+                  const sanitized = handleFieldValidation('firstName', e.target.value)
+                  actions.setContactForm({ firstName: sanitized })
+                }}
+                className={`w-full px-3 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  fieldValidationState.firstName?.errors?.length 
                     ? 'border-red-300 focus:ring-red-500' 
+                    : fieldValidationState.firstName?.isValid 
+                    ? 'border-green-300 focus:ring-green-500' 
                     : 'border-gray-300 focus:ring-[#ed6d23]'
                 }`}
-                placeholder="email@esempio.com"
+                placeholder="Il tuo nome"
+                aria-required="true"
+                aria-invalid={fieldValidationState.firstName?.errors?.length > 0}
+                aria-describedby={fieldValidationState.firstName?.errors?.length > 0 ? 'firstName-error' : undefined}
               />
-              {state.contactForm.email && !isEmailValid(state.contactForm.email) && (
-                <p className="text-xs text-red-600 mt-1">Inserisci un indirizzo email valido</p>
+              {fieldValidationState.firstName?.errors?.length > 0 && (
+                <p id="firstName-error" className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldValidationState.firstName.errors[0]}
+                </p>
               )}
             </div>
             
             <div>
-              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lastName" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                Cognome *
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                required
+                value={state.contactForm.lastName}
+                onChange={(e) => {
+                  const sanitized = handleFieldValidation('lastName', e.target.value)
+                  actions.setContactForm({ lastName: sanitized })
+                }}
+                className={`w-full px-3 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  fieldValidationState.lastName?.errors?.length 
+                    ? 'border-red-300 focus:ring-red-500' 
+                    : fieldValidationState.lastName?.isValid 
+                    ? 'border-green-300 focus:ring-green-500' 
+                    : 'border-gray-300 focus:ring-[#ed6d23]'
+                }`}
+                placeholder="Il tuo cognome"
+                aria-required="true"
+                aria-invalid={fieldValidationState.lastName?.errors?.length > 0}
+                aria-describedby={fieldValidationState.lastName?.errors?.length > 0 ? 'lastName-error' : undefined}
+              />
+              {fieldValidationState.lastName?.errors?.length > 0 && (
+                <p id="lastName-error" className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldValidationState.lastName.errors[0]}
+                </p>
+              )}
+            </div>
+            
+            <div>
+              <label htmlFor="email" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                Email *
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={state.contactForm.email}
+                onChange={(e) => {
+                  const sanitized = handleFieldValidation('email', e.target.value)
+                  actions.setContactForm({ email: sanitized })
+                }}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  fieldValidationState.email?.errors?.length 
+                    ? 'border-red-300 focus:ring-red-500' 
+                    : fieldValidationState.email?.isValid 
+                    ? 'border-green-300 focus:ring-green-500' 
+                    : 'border-gray-300 focus:ring-[#ed6d23]'
+                }`}
+                placeholder="email@esempio.com"
+                aria-required="true"
+                aria-invalid={fieldValidationState.email?.errors?.length > 0}
+                aria-describedby={fieldValidationState.email?.errors?.length > 0 ? 'email-error' : undefined}
+              />
+              {fieldValidationState.email?.errors?.length > 0 && (
+                <p id="email-error" className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldValidationState.email.errors[0]}
+                </p>
+              )}
+            </div>
+            
+            <div>
+              <label htmlFor="phone" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Numero di Telefono *
               </label>
               <input
+                id="phone"
                 type="tel"
                 required
                 value={state.contactForm.phone}
-                onChange={(e) => actions.setContactForm({ phone: e.target.value })}
-                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                onChange={(e) => {
+                  const sanitized = handleFieldValidation('phone', e.target.value)
+                  actions.setContactForm({ phone: sanitized })
+                }}
+                className={`w-full px-3 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  fieldValidationState.phone?.errors?.length 
+                    ? 'border-red-300 focus:ring-red-500' 
+                    : fieldValidationState.phone?.isValid 
+                    ? 'border-green-300 focus:ring-green-500' 
+                    : 'border-gray-300 focus:ring-[#ed6d23]'
+                }`}
                 placeholder="+39 123 456 7890"
+                aria-required="true"
+                aria-invalid={fieldValidationState.phone?.errors?.length > 0}
+                aria-describedby={fieldValidationState.phone?.errors?.length > 0 ? 'phone-error' : undefined}
               />
+              {fieldValidationState.phone?.errors?.length > 0 && (
+                <p id="phone-error" className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldValidationState.phone.errors[0]}
+                </p>
+              )}
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="company" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                 Azienda *
               </label>
               <input
+                id="company"
                 type="text"
                 required
                 value={state.contactForm.company}
-                onChange={(e) => actions.setContactForm({ company: e.target.value })}
-                className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
+                onChange={(e) => {
+                  const sanitized = handleFieldValidation('company', e.target.value)
+                  actions.setContactForm({ company: sanitized })
+                }}
+                className={`w-full px-3 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  fieldValidationState.company?.errors?.length 
+                    ? 'border-red-300 focus:ring-red-500' 
+                    : fieldValidationState.company?.isValid 
+                    ? 'border-green-300 focus:ring-green-500' 
+                    : 'border-gray-300 focus:ring-[#ed6d23]'
+                }`}
                 placeholder="Nome della tua azienda"
+                aria-required="true"
+                aria-invalid={fieldValidationState.company?.errors?.length > 0}
+                aria-describedby={fieldValidationState.company?.errors?.length > 0 ? 'company-error' : undefined}
               />
+              {fieldValidationState.company?.errors?.length > 0 && (
+                <p id="company-error" className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldValidationState.company.errors[0]}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -361,13 +606,15 @@ export function Step6ContactPrivateLabel() {
             
             {state.contactForm.canCall && !state.contactForm.emailOnly && (
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="preferredCallTime" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                   Quando preferisci essere contattato?
                 </label>
                 <select
+                  id="preferredCallTime"
                   value={state.contactForm.preferredCallTime}
                   onChange={(e) => actions.setContactForm({ preferredCallTime: e.target.value })}
                   className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ed6d23] focus:border-transparent text-gray-900"
+                  aria-describedby="call-time-help"
                 >
                   <option value="">Seleziona un orario</option>
                   <option value="mattina">Mattina (9:00 - 12:00)</option>
