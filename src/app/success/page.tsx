@@ -75,16 +75,6 @@ function SuccessContent() {
               <p className="text-gray-600 text-sm md:text-lg leading-relaxed mb-6 md:mb-8">
                 Riceverai una email di conferma a breve con tutti i dettagli.
               </p>
-              
-              {/* CTA - Hidden on mobile, shown on desktop */}
-              <span 
-                onClick={() => window.location.href = '/'}
-                className="relative hidden lg:inline-flex items-center gap-2 text-[#ed6d23] font-medium cursor-pointer text-lg"
-              >
-                Torna alla Home
-                <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
-                <span className="absolute left-0 -bottom-1 right-0 h-0.5 bg-[#ed6d23]"></span>
-              </span>
             </div>
 
             {/* Empty space */}
