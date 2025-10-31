@@ -129,9 +129,9 @@ export function Step1Country() {
           {displayCountries.map((country) => (
             <div
               key={country.id}
-              className={`cursor-pointer transition-all hover:shadow-md hover:scale-105 text-center p-3 rounded-lg bg-white ${
+              className={`cursor-pointer transition-all hover:shadow-md md:hover:scale-105 text-center p-3 rounded-lg bg-white ${
                 state.country === country.id 
-                  ? 'border-2 border-[#ed6d23] scale-105' 
+                  ? 'border-2 border-[#ed6d23] md:scale-105' 
                   : 'border border-gray-200 hover:border-gray-400'
               }`}
               onClick={() => handleCountrySelect(country.id)}

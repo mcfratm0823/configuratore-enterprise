@@ -157,10 +157,8 @@ export function ConfiguratorWizard() {
         </div>
         
         {/* Step Content */}
-        <div className="px-2 flex-1 relative">
-          <div className="relative z-10 bg-white" style={{isolation: 'isolate'}}>
-            <StepComponent />
-          </div>
+        <div className="px-2 flex-1">
+          <StepComponent />
         </div>
 
         {/* Mobile Navigation - Bottom */}
