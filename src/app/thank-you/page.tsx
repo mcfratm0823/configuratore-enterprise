@@ -173,21 +173,20 @@ function ThankYouContent() {
 
 
 
-                {/* Mobile CTA + Contact Info */}
+                {/* Mobile CTA - After Timeline */}
+                <div className="lg:hidden pt-6 border-t border-gray-200 mb-6">
+                  <span 
+                    onClick={() => window.location.href = '/'}
+                    className="relative inline-flex items-center gap-2 text-[#ed6d23] font-medium cursor-pointer text-base"
+                  >
+                    Torna alla Home
+                    <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
+                    <span className="absolute left-0 -bottom-1 right-0 h-0.5 bg-[#ed6d23]"></span>
+                  </span>
+                </div>
+
+                {/* Contact Info */}
                 <div className="pt-6 border-t border-gray-200">
-                  {/* Mobile CTA */}
-                  <div className="lg:hidden mb-4">
-                    <span 
-                      onClick={() => window.location.href = '/'}
-                      className="relative inline-flex items-center gap-2 text-[#ed6d23] font-medium cursor-pointer text-base"
-                    >
-                      Torna alla Home
-                      <img src="/arrow.svg" alt="→" className="w-4 h-4 brightness-0 saturate-100" style={{filter: 'invert(47%) sepia(83%) saturate(3207%) hue-rotate(8deg) brightness(96%) contrast(91%)'}} />
-                      <span className="absolute left-0 -bottom-1 right-0 h-0.5 bg-[#ed6d23]"></span>
-                    </span>
-                  </div>
-                  
-                  {/* Contact Info */}
                   <p className="text-xs md:text-sm text-gray-500">
                     Hai domande? Contattaci a <span className="text-[#ed6d23] font-medium">info@drink124.com</span>
                   </p>
