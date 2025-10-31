@@ -156,9 +156,11 @@ export function ConfiguratorWizard() {
           </div>
         </div>
         
-        {/* Step Content */}
-        <div className="px-2 flex-1">
-          <StepComponent />
+        {/* Step Content - Isolated container for mobile layering fix */}
+        <div className="px-2 flex-1 relative">
+          <div className="relative z-10 bg-white">
+            <StepComponent />
+          </div>
         </div>
 
         {/* Mobile Navigation - Bottom */}
