@@ -156,9 +156,9 @@ export function ConfiguratorWizard() {
           </div>
         </div>
         
-        {/* Step Content - Isolated container for mobile layering fix */}
+        {/* Step Content */}
         <div className="px-2 flex-1 relative">
-          <div className="relative z-20 bg-white min-h-full w-full shadow-lg md:shadow-none">
+          <div className="relative z-10 bg-white">
             <StepComponent />
           </div>
         </div>
